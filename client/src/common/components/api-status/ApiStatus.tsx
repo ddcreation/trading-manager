@@ -19,7 +19,7 @@ class ApiStatus extends React.Component<AppProperties, AppState> {
       .then((res) => this.setState({ apiResponse: res }));
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.callAPI();
   }
 
