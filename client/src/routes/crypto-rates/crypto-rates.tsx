@@ -1,9 +1,18 @@
 import React from 'react';
+import TradingCard from '../../common/components/trading-card/TradingCard';
 import api from '../../utils/api';
 
-class CryptoRates extends React.Component {
+interface CryptoRatesProperties {}
+
+interface CryptoRatesState {
+  symbols: { [key: string]: string };
+}
+
+class CryptoRates extends React.Component<
+  CryptoRatesProperties,
+  CryptoRatesState
+> {
   ws = new WebSocket('ws://localhost:8080/');
-  symbols = [];
 
   componentDidMount() {
     this.loadCryptos();
@@ -13,7 +22,7 @@ class CryptoRates extends React.Component {
     //TODO: get resources from API
     fetch(`${api.resources.cryptos}/prices`)
       .then((res) => res.text())
-      .then((res) => (this.symbols = JSON.parse(res)));
+      .then((res) => this.setState({ symbols: JSON.parse(res) }));
 
     // this.socketHandler();
   }
@@ -27,7 +36,6 @@ class CryptoRates extends React.Component {
     this.ws.onmessage = (evt) => {
       // listen to data sent from the websocket server
       const message = JSON.parse(evt.data);
-      this.setState({ dataFromServer: message });
       console.log(message);
     };
 
@@ -37,6 +45,15 @@ class CryptoRates extends React.Component {
   }
 
   render() {
+    const assets = Object.keys(this.state?.symbols || []).map((symbol) => ({
+      name: symbol,
+      price: Number(this.state.symbols[symbol]),
+    }));
+
+    const cards = assets.map((asset, idx) => (
+      <TradingCard asset={asset} key={asset.name + idx} />
+    ));
+
     return (
       <div>
         <p>TODO: For each resources Card with: </p>
@@ -47,6 +64,7 @@ class CryptoRates extends React.Component {
           <li>Graph of evolution</li>
           <li>Opportunity indicator</li>
         </ul>
+        {cards}
       </div>
     );
   }
