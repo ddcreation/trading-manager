@@ -1,7 +1,9 @@
 import React from 'react';
+import api from '../../utils/api';
 
 class CryptoRates extends React.Component {
   ws = new WebSocket('ws://localhost:8080/');
+  symbols = [];
 
   componentDidMount() {
     this.loadCryptos();
@@ -9,8 +11,11 @@ class CryptoRates extends React.Component {
 
   loadCryptos() {
     //TODO: get resources from API
+    fetch(`${api.resources.cryptos}/prices`)
+      .then((res) => res.text())
+      .then((res) => (this.symbols = JSON.parse(res)));
 
-    this.socketHandler();
+    // this.socketHandler();
   }
 
   socketHandler() {

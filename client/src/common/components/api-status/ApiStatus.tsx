@@ -1,5 +1,6 @@
 import React from 'react';
 import { Badge } from 'react-bootstrap';
+import api from '../../../utils/api';
 
 interface AppProperties {}
 
@@ -14,7 +15,7 @@ class ApiStatus extends React.Component<AppProperties, AppState> {
   }
 
   callAPI() {
-    fetch('http://localhost:9000/api/healthcheck')
+    fetch(api.resources.healthcheck)
       .then((res) => res.text())
       .then((res) => this.setState({ apiResponse: res }));
   }
