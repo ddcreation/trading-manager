@@ -12,7 +12,8 @@
       "@daos/*": ["src/daos/*"],
       "@entities/*": ["src/entities/*"],
       "@shared/*": ["src/shared/*"],
-      "@server": ["src/Server"]
+      "@server": ["src/Server"],
+      "@websocket": ["src/WebSocket"]
     }
   },
   "include": ["src/**/*.ts", "spec/**/*.ts"]
