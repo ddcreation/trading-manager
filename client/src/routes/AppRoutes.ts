@@ -1,3 +1,4 @@
+import CryptoRates from './crypto-rates/crypto-rates';
 import Home from './home/Home';
 import Opportunities from './opportunities/Opportunities';
 
@@ -15,6 +16,12 @@ const AppRoutes: RouteProps[] = [
     nav: { visible: true, sort: 1 },
     path: '/opportunities',
     title: 'Opportunities',
+  },
+  {
+    component: CryptoRates,
+    nav: { label: 'Crypto', visible: true, sort: 2 },
+    path: '/crypto',
+    title: 'Crypto currencies',
   },
   {
     component: Home,
