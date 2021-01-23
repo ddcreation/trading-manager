@@ -70,7 +70,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((req: Request, res: Response) => {
-  return res.send(NOT_FOUND);
+  return res.sendStatus(NOT_FOUND);
 });
 
 // Export express instance
