@@ -1,6 +1,5 @@
 import binance from '@shared/binance';
 import { Request, Response, Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
 const router = Router();
 
