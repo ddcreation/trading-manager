@@ -19,10 +19,9 @@ class CryptoRates extends React.Component<
   }
 
   loadCryptos() {
-    //TODO: get resources from API
-    fetch(`${api.resources.cryptos}/prices`)
-      .then((res) => res.text())
-      .then((res) => this.setState({ symbols: JSON.parse(res) }));
+    api
+      .retrieve<{ [key: string]: string }>(`${api.resources.cryptos}/prices`)
+      .then((symbols) => this.setState({ symbols }));
 
     // this.socketHandler();
   }

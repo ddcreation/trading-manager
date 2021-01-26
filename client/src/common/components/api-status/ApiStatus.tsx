@@ -14,14 +14,10 @@ class ApiStatus extends React.Component<AppProperties, AppState> {
     this.state = { apiResponse: '' };
   }
 
-  callAPI() {
-    fetch(api.resources.healthcheck)
-      .then((res) => res.text())
-      .then((res) => this.setState({ apiResponse: res }));
-  }
-
   componentDidMount() {
-    this.callAPI();
+    api
+      .retrieve<string>(api.resources.healthcheck)
+      .then((res) => this.setState({ apiResponse: res }));
   }
 
   render() {

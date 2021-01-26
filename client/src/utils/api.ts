@@ -7,6 +7,12 @@ export const ApiResources = {
 
 class Api {
   resources = ApiResources;
+
+  async retrieve<T>(url: string): Promise<T> {
+    return fetch(url)
+      .then((res) => res.text())
+      .then((res) => JSON.parse(res));
+  }
 }
 
 export default new Api();
