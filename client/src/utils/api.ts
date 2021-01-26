@@ -10,8 +10,20 @@ class Api {
 
   async retrieve<T>(url: string): Promise<T> {
     return fetch(url)
+      .then(this.errorHandler)
       .then((res) => res.text())
-      .then((res) => JSON.parse(res));
+      .then((res) => JSON.parse(res))
+      .catch((error) => {
+        // TODO: toaster error
+        console.error(error);
+      });
+  }
+
+  errorHandler(response: Response) {
+    if (!response.ok) {
+      throw Error(response.statusText);
+    }
+    return response;
   }
 }
 
