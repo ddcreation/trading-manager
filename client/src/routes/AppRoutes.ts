@@ -1,5 +1,5 @@
 import CryptoRates from './crypto-rates/crypto-rates';
-import Home from './home/Home';
+import Dashboard from './dashboard/Dashboard';
 import Opportunities from './opportunities/Opportunities';
 
 export type RouteProps = {
@@ -24,10 +24,10 @@ const AppRoutes: RouteProps[] = [
     title: 'Crypto currencies',
   },
   {
-    component: Home,
+    component: Dashboard,
     nav: { visible: true, sort: 0 },
     path: '/',
-    title: 'Home',
+    title: 'Dashboard',
   },
 ];
 
