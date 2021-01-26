@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table } from 'react-bootstrap';
+import { Card, Col, Row, Spinner, Table } from 'react-bootstrap';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import api from '../../utils/api';
 
@@ -46,55 +46,71 @@ class Dashboard extends React.Component<unknown, DashboardState> {
   }
 
   render() {
-    return (
-      this.state && (
-        <div>
-          <Card>
+    return this.state ? (
+      <div>
+        <Card className='my-5'>
+          <Card.Header>
+            <Card.Title>
+              <h2>My Balances</h2>
+            </Card.Title>
+          </Card.Header>
+          <Card.Body>{this.renderBalance()}</Card.Body>
+        </Card>
+        {this.state.exchangeInfos && this.state.exchangeInfos.symbols && (
+          <Card className='my-5'>
             <Card.Header>
-              <Card.Title>My Balances</Card.Title>
+              <Card.Title>Buy crypto</Card.Title>
             </Card.Header>
-            <Card.Body>{this.renderBalance()}</Card.Body>
+            <Card.Body>
+              <form method='post'>
+                <input
+                  type='text'
+                  id='amount'
+                  name='amount'
+                  placeholder='eg. 10'
+                  min=''
+                />
+
+                <select id='symbol' name='symbol'>
+                  {this.state.exchangeInfos.symbols.map((symbol) => (
+                    <option key={symbol.symbol}>{symbol.symbol}</option>
+                  ))}
+                </select>
+
+                <input type='submit' name='buy' value='buy' />
+              </form>
+            </Card.Body>
           </Card>
-          {this.state.exchangeInfos && this.state.exchangeInfos.symbols && (
-            <Card>
-              <Card.Header>
-                <Card.Title>Buy crypto</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <form method='post'>
-                  <input
-                    type='text'
-                    id='amount'
-                    name='amount'
-                    placeholder='eg. 10'
-                    min=''
-                  />
+        )}
 
-                  <select id='symbol' name='symbol'>
-                    {this.state.exchangeInfos.symbols.map((symbol) => (
-                      <option key={symbol.symbol}>{symbol.symbol}</option>
-                    ))}
-                  </select>
-
-                  <input type='submit' name='buy' value='buy' />
-                </form>
-              </Card.Body>
-            </Card>
-          )}
-          <div>
-            <h2>Account</h2>
-            <pre>{this.state && JSON.stringify(this.state.account)}</pre>
-          </div>
-        </div>
-      )
+        <Card className='my-5'>
+          <Card.Header>
+            <Card.Title>
+              <h2>Account params</h2>
+            </Card.Title>
+          </Card.Header>
+          <Card.Body>
+            {Object.keys(this.state.account).map((param) => (
+              <Row>
+                <Col>
+                  <label>{param}</label>
+                </Col>
+                <Col className='text-aling-right'>
+                  {JSON.stringify(this.state.account[param as keyof Account])}
+                </Col>
+              </Row>
+            ))}
+          </Card.Body>
+        </Card>
+      </div>
+    ) : (
+      <div className='text-center'>
+        <Spinner animation='border' role='status'>
+          <span className='sr-only'>Loading...</span>
+        </Spinner>
+      </div>
     );
   }
 }
 
 export default Dashboard;
-
-// <select id='symbol' name='symbol'>
-//                   {this.state.symbols.map((symbol) => (
-//                     <option>{symbol.name}</option>
-//                   ))}
-//                 </select>

@@ -12,7 +12,7 @@ class Page extends React.Component<PageProps, unknown> {
 
     return (
       <Container>
-        <h1>{this.props.title}</h1>
+        <h1 className='my-5'>{this.props.title}</h1>
         <ComponentToRender />
       </Container>
     );
