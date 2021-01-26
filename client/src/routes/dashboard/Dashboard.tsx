@@ -10,13 +10,12 @@ interface DashboardState {
 
 class Dashboard extends React.Component<unknown, DashboardState> {
   componentDidMount() {
-    api
-      .retrieve<Account>(`${api.resources.cryptos}/account`)
-      .then((res) => this.setState({ account: res }));
-
-    api
-      .retrieve(`${api.resources.cryptos}/exchange-info`)
-      .then((res) => this.setState({ exchangeInfos: res }));
+    Promise.all([
+      api.retrieve<Account>(`${api.resources.cryptos}/account`),
+      api.retrieve(`${api.resources.cryptos}/exchange-info`),
+    ]).then(([account, exchangeInfos]) =>
+      this.setState({ account, exchangeInfos })
+    );
   }
 
   renderBalance() {
