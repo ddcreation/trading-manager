@@ -10,6 +10,9 @@ router.get('/account', async (req: Request, res: Response) => {
 });
 
 router.get('/exchange-info', async (req: Request, res: Response) => {
+  // TODO: reactivate exchange infos with favorite filters:
+  res.sendStatus(500);
+  return;
   const exchangeInfos = await binance.exchangeInfo();
 
   res.json(exchangeInfos);
