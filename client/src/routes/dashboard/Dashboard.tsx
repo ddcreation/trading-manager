@@ -8,7 +8,7 @@ interface DashboardState {
   exchangeInfos: ExchangeInfoResponse;
 }
 
-class Dashboard extends React.Component<unknown, DashboardState> {
+class DashboardRoute extends React.Component<unknown, DashboardState> {
   componentDidMount() {
     Promise.all([
       api.retrieve<Account>(`${api.resources.cryptos}/account`),
@@ -86,26 +86,6 @@ class Dashboard extends React.Component<unknown, DashboardState> {
             </Card.Body>
           </Card>
         )}
-
-        <Card className='my-5'>
-          <Card.Header>
-            <Card.Title>
-              <h2>Account params</h2>
-            </Card.Title>
-          </Card.Header>
-          <Card.Body>
-            {Object.keys(this.state.account).map((param) => (
-              <Row>
-                <Col>
-                  <label>{param}</label>
-                </Col>
-                <Col className='text-aling-right'>
-                  {JSON.stringify(this.state.account[param as keyof Account])}
-                </Col>
-              </Row>
-            ))}
-          </Card.Body>
-        </Card>
       </div>
     ) : (
       <div className='text-center'>
@@ -117,4 +97,4 @@ class Dashboard extends React.Component<unknown, DashboardState> {
   }
 }
 
-export default Dashboard;
+export default DashboardRoute;

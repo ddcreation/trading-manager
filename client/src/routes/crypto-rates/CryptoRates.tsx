@@ -8,7 +8,7 @@ interface CryptoRatesState {
   symbols: { [key: string]: string };
 }
 
-class CryptoRates extends React.Component<
+class CryptoRatesRoute extends React.Component<
   CryptoRatesProperties,
   CryptoRatesState
 > {
@@ -69,4 +69,4 @@ class CryptoRates extends React.Component<
   }
 }
 
-export default CryptoRates;
+export default CryptoRatesRoute;
