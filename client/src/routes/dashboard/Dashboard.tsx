@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Col, Row, Spinner, Table } from 'react-bootstrap';
+import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import api from '../../utils/api';
 
@@ -59,26 +59,30 @@ class Dashboard extends React.Component<unknown, DashboardState> {
         {this.state.exchangeInfos && this.state.exchangeInfos.symbols && (
           <Card className='my-5'>
             <Card.Header>
-              <Card.Title>Buy crypto</Card.Title>
+              <Card.Title>Buy crypto (WIP)</Card.Title>
             </Card.Header>
             <Card.Body>
-              <form method='post'>
-                <input
-                  type='text'
-                  id='amount'
-                  name='amount'
-                  placeholder='eg. 10'
-                  min=''
-                />
+              <Form>
+                <Form.Row>
+                  <Form.Group as={Col} controlId='amount'>
+                    <Form.Control name='amount' placeholder='eg. 10' />
+                  </Form.Group>
 
-                <select id='symbol' name='symbol'>
-                  {this.state.exchangeInfos.symbols.map((symbol) => (
-                    <option key={symbol.symbol}>{symbol.symbol}</option>
-                  ))}
-                </select>
-
-                <input type='submit' name='buy' value='buy' />
-              </form>
+                  <Form.Group as={Col} controlId='symbol'>
+                    <Form.Control as='select' defaultValue='Choose...'>
+                      <option disabled>Choose...</option>
+                      {this.state.exchangeInfos.symbols.map((symbol) => (
+                        <option key={symbol.symbol}>{symbol.symbol}</option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+                  <Col>
+                    <Button type='submit' disabled>
+                      Buy
+                    </Button>
+                  </Col>
+                </Form.Row>
+              </Form>
             </Card.Body>
           </Card>
         )}
