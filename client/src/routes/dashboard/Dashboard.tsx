@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
+import { Button, Card, Col, Form, Spinner, Table } from 'react-bootstrap';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import api from '../../utils/api';
 
