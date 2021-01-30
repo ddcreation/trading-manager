@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
-import { Account, ExchangeInfoResponse } from '../../common/models';
+import { Card, Col, Row, Spinner } from 'react-bootstrap';
+import { Account } from '../../common/models';
 import api from '../../utils/api';
 
 interface AccountState {
@@ -24,7 +24,7 @@ class AccountRoute extends React.Component<unknown, AccountState> {
         </Card.Header>
         <Card.Body>
           {Object.keys(this.state.account).map((param) => (
-            <Row>
+            <Row key={`account-${param}`}>
               <Col>
                 <label>{param}</label>
               </Col>
