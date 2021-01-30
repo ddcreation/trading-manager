@@ -4,8 +4,8 @@
   "scripts": {
     "build": "ts-node build.ts",
     "lint": "eslint . --ext .ts",
-    "start": "node -r module-alias/register ./dist --env=production",
-    "start:dev": "nodemon",
+    "start": "nodemon",
+    "start:dist": "node -r module-alias/register ./dist --env=production",
     "test": "nodemon --config ./spec/nodemon.json"
   },
   "nodemonConfig": {
