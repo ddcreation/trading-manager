@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently --kill-others \"yarn start:server\" \"yarn start:client\"",
-    "start:server": "cd server && yarn start:dev",
+    "start:server": "cd server && yarn start",
     "start:client": "cd client && yarn start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
