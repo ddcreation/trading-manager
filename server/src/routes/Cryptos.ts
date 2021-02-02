@@ -41,7 +41,7 @@ router.get('/:symbol/history', async (req: Request, res: Response) => {
   const history = await new Promise((resolve, reject) => {
     // Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
     binance.candlesticks(
-      'BNBBTC',
+      req.params.symbol,
       '5m',
       (error: unknown, ticks: Array<string[]>, symbol: string) => {
         if (error) {
@@ -80,7 +80,7 @@ router.get('/:symbol/history', async (req: Request, res: Response) => {
         });
         resolve(formatedTicks);
       },
-      { limit: 5 /*, endTime: 1514764800000*/ }
+      { limit: 100 /*, endTime: 1514764800000*/ }
     );
   });
 
