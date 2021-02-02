@@ -1,11 +1,10 @@
 import React from 'react';
-import { ListGroup, Spinner } from 'react-bootstrap';
-import CryptoSimulation from '../../common/components/crypto-simulation/CryptoSimulation';
+import { ListGroup } from 'react-bootstrap';
+import CryptoCard from '../../common/components/crypto-card/CryptoCard';
 import api from '../../utils/api';
 
 interface OpportunitiesState {
-  loading: boolean;
-  simulation: unknown;
+  currentSymbol: string;
   symbols: string[];
 }
 
@@ -14,8 +13,6 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
     super(props);
 
     this.setState({
-      loading: true,
-      simulation: null,
       symbols: [],
     });
   }
@@ -33,7 +30,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
           <ListGroup
             className='mb-5'
             horizontal
-            onSelect={(evtKey) => this.symbolSelection(evtKey)}
+            onSelect={(evtKey) => this.symbolSelection(evtKey as string)}
           >
             {this.state &&
               this.state.symbols &&
@@ -47,29 +44,16 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
                 </ListGroup.Item>
               ))}
           </ListGroup>
-          {this.state.loading && (
-            <div className='text-center mt-5'>
-              <Spinner animation='border' role='status'>
-                <span className='sr-only'>Loading...</span>
-              </Spinner>
-            </div>
-          )}
-          {this.state.simulation && (
-            <CryptoSimulation simulation={this.state.simulation} />
+          {this.state.currentSymbol && (
+            <CryptoCard symbol={this.state.currentSymbol} />
           )}
         </div>
       )
     );
   }
 
-  symbolSelection(key: unknown): void {
-    this.setState({ loading: true, simulation: null });
-
-    api
-      .retrieve<unknown>(`${api.resources.cryptos}/${key}/history`)
-      .then((response) => {
-        this.setState({ loading: false, simulation: JSON.stringify(response) });
-      });
+  symbolSelection(key: string): void {
+    this.setState({ currentSymbol: key });
   }
 }
 
