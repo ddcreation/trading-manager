@@ -66,9 +66,8 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
     this.setState({ loading: true, simulation: null });
 
     api
-      .retrieve<unknown>(`${api.resources.cryptos}/${key}/simulation`)
+      .retrieve<unknown>(`${api.resources.cryptos}/${key}/history`)
       .then((response) => {
-        response = 'Crypto simulate';
         this.setState({ loading: false, simulation: JSON.stringify(response) });
       });
   }
