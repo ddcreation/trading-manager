@@ -1,22 +1,25 @@
 import React from 'react';
-import { Button, Card, Col, Form, Spinner, Table } from 'react-bootstrap';
+import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
+import CryptoCard from '../../common/components/crypto-card/CryptoCard';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import api from '../../utils/api';
 
 interface DashboardState {
   account: Account;
+  favoritesSymbols: string[];
   exchangeInfos: ExchangeInfoResponse;
 }
 
 class DashboardRoute extends React.Component<unknown, DashboardState> {
   componentDidMount() {
     Promise.all([
+      api.retrieve<string[]>(`${api.resources.cryptos}/favorites`),
       api.retrieve<Account>(`${api.resources.cryptos}/account`),
       api.retrieve<ExchangeInfoResponse>(
         `${api.resources.cryptos}/exchange-info`
       ),
-    ]).then(([account, exchangeInfos]) =>
-      this.setState({ account, exchangeInfos })
+    ]).then(([favoritesSymbols, account, exchangeInfos]) =>
+      this.setState({ account, exchangeInfos, favoritesSymbols })
     );
   }
 
@@ -85,6 +88,18 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
               </Form>
             </Card.Body>
           </Card>
+        )}
+        {this.state.favoritesSymbols && (
+          <div className='my-5'>
+            <h2>My favorites</h2>
+            <Row>
+              {this.state.favoritesSymbols.map((symbol) => (
+                <div className='col-12 col-lg-6 mt-3'>
+                  <CryptoCard symbol={symbol} />
+                </div>
+              ))}
+            </Row>
+          </div>
         )}
       </div>
     ) : (

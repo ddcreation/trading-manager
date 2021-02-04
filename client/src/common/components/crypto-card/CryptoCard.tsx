@@ -55,7 +55,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
     return (
       <Card>
         <Card.Header>
-          <h3>{this.props.symbol}</h3>
+          <Card.Title>{this.props.symbol}</Card.Title>
         </Card.Header>
         <Card.Body>
           {this.state.loading ? (
