@@ -24,7 +24,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
   }
 
   renderBalance() {
-    return this.state.account.balances.length ? (
+    return this.state?.account.balances.length ? (
       <Table striped bordered>
         <thead>
           <tr>
@@ -49,64 +49,58 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
   }
 
   render() {
-    return this.state ? (
+    return (
       <div>
-        <Card className='my-5'>
-          <Card.Header>
-            <Card.Title>
-              <h2>My Balances</h2>
-            </Card.Title>
-          </Card.Header>
+        <h2>My Balances</h2>
+        <Card className='my-3'>
           <Card.Body>{this.renderBalance()}</Card.Body>
         </Card>
-        {this.state.exchangeInfos && this.state.exchangeInfos.symbols && (
-          <Card className='my-5'>
-            <Card.Header>
-              <Card.Title>Buy crypto (WIP)</Card.Title>
-            </Card.Header>
-            <Card.Body>
-              <Form>
-                <Form.Row>
-                  <Form.Group as={Col} controlId='amount'>
-                    <Form.Control name='amount' placeholder='eg. 10' />
-                  </Form.Group>
+        <hr className='my-5' />
+        <h2>Buy crypto (WIP)</h2>
+        {this.state?.exchangeInfos && this.state.exchangeInfos.symbols ? (
+          <Row className='my-3'>
+            <Form className='col-12'>
+              <Form.Row>
+                <Form.Group as={Col} controlId='amount' className='col-6'>
+                  <Form.Control name='amount' placeholder='eg. 10' />
+                </Form.Group>
 
-                  <Form.Group as={Col} controlId='symbol'>
-                    <Form.Control as='select' defaultValue='Choose...'>
-                      <option disabled>Choose...</option>
-                      {this.state.exchangeInfos.symbols.map((symbol) => (
-                        <option key={symbol.symbol}>{symbol.symbol}</option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Col>
-                    <Button type='submit' disabled>
-                      Buy
-                    </Button>
-                  </Col>
-                </Form.Row>
-              </Form>
-            </Card.Body>
-          </Card>
+                <Form.Group as={Col} controlId='symbol' className='col-4'>
+                  <Form.Control as='select' defaultValue='Choose...'>
+                    <option disabled>Choose...</option>
+                    {this.state.exchangeInfos.symbols.map((symbol) => (
+                      <option key={symbol.symbol}>{symbol.symbol}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+                <Col className='col-2'>
+                  <Button type='submit' disabled>
+                    Buy
+                  </Button>
+                </Col>
+              </Form.Row>
+            </Form>
+          </Row>
+        ) : (
+          <Spinner animation='border' role='status'>
+            <span className='sr-only'>Loading...</span>
+          </Spinner>
         )}
-        {this.state.favoritesSymbols && (
-          <div className='my-5'>
-            <h2>My favorites</h2>
-            <Row>
-              {this.state.favoritesSymbols.map((symbol) => (
-                <div key={symbol} className='col-12 col-lg-6 mt-3'>
-                  <CryptoCard symbol={symbol} />
-                </div>
-              ))}
-            </Row>
-          </div>
+        <hr className='my-5' />
+        <h2>My favorites</h2>
+        {this.state?.favoritesSymbols ? (
+          <Row>
+            {this.state.favoritesSymbols.map((symbol) => (
+              <div key={symbol} className='col-12 col-lg-6 mt-3'>
+                <CryptoCard symbol={symbol} />
+              </div>
+            ))}
+          </Row>
+        ) : (
+          <Spinner animation='border' role='status'>
+            <span className='sr-only'>Loading...</span>
+          </Spinner>
         )}
-      </div>
-    ) : (
-      <div className='text-center'>
-        <Spinner animation='border' role='status'>
-          <span className='sr-only'>Loading...</span>
-        </Spinner>
       </div>
     );
   }
