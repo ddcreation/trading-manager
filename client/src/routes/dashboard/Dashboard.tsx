@@ -94,7 +94,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
             <h2>My favorites</h2>
             <Row>
               {this.state.favoritesSymbols.map((symbol) => (
-                <div className='col-12 col-lg-6 mt-3'>
+                <div key={symbol} className='col-12 col-lg-6 mt-3'>
                   <CryptoCard symbol={symbol} />
                 </div>
               ))}
