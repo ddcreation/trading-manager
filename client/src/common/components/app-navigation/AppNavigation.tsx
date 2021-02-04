@@ -1,12 +1,20 @@
+import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AppRoutes from '../../../routes/AppRoutes';
 import ApiStatus from '../api-status/ApiStatus';
 
-function AppNavigation() {
-  const navRoutes = AppRoutes.sort((navA, navB) =>
-    navA.nav.sort < navB.nav.sort ? -1 : 1
-  );
+const navRoutes = AppRoutes.sort((navA, navB) =>
+  navA.nav.sort < navB.nav.sort ? -1 : 1
+);
+
+const AppNavigation = () => {
+  const location = useLocation();
+
+  navRoutes.forEach((route) => {
+    route.active = location.pathname === route.path;
+  });
+
   return (
     <Navbar sticky='top' bg='primary' variant='dark'>
       <Navbar.Brand as={Link} to='/'>
@@ -16,7 +24,12 @@ function AppNavigation() {
         {navRoutes.map(
           (route, idx) =>
             route.nav.visible && (
-              <Nav.Link key={idx} as={Link} to={route.path}>
+              <Nav.Link
+                key={idx}
+                as={Link}
+                to={route.path}
+                className={route.active ? 'active' : ''}
+              >
                 {route.nav.label || route.title}
               </Nav.Link>
             )
@@ -25,6 +38,6 @@ function AppNavigation() {
       <ApiStatus />
     </Navbar>
   );
-}
+};
 
 export default AppNavigation;

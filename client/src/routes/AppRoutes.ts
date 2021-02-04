@@ -4,6 +4,7 @@ import DashboardRoute from './dashboard/Dashboard';
 import OpportunitiesRoute from './opportunities/Opportunities';
 
 export type RouteProps = {
+  active?: boolean;
   children?: RouteProps[];
   component: any;
   nav: { label?: string; visible: boolean; sort: number };
