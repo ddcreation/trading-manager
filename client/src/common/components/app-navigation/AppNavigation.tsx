@@ -4,12 +4,12 @@ import { Link, useLocation } from 'react-router-dom';
 import AppRoutes from '../../../routes/AppRoutes';
 import ApiStatus from '../api-status/ApiStatus';
 
-const navRoutes = AppRoutes.sort((navA, navB) =>
-  navA.nav.sort < navB.nav.sort ? -1 : 1
-);
-
 const AppNavigation = () => {
   const location = useLocation();
+
+  const navRoutes = AppRoutes.sort((navA, navB) =>
+    navA.nav.sort < navB.nav.sort ? -1 : 1
+  );
 
   navRoutes.forEach((route) => {
     route.active = location.pathname === route.path;
@@ -25,8 +25,8 @@ const AppNavigation = () => {
           (route, idx) =>
             route.nav.visible && (
               <Nav.Link
-                key={idx}
                 as={Link}
+                key={idx}
                 to={route.path}
                 className={route.active ? 'active' : ''}
               >
