@@ -11,7 +11,7 @@ class Page extends React.Component<PageProps, unknown> {
     const ComponentToRender = this.props.component;
 
     return (
-      <Container>
+      <Container className='pb-5'>
         <h1 className='mt-5'>{this.props.title}</h1>
         <hr className='mb-5' />
         <ComponentToRender />
