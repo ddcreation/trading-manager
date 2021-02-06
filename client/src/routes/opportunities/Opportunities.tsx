@@ -51,15 +51,11 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
           {this.state.currentSymbol && (
             <div>
               <CryptoCard symbol={this.state.currentSymbol} />
-              <Row className='mt-5'>
-                <h2>Simulations</h2>
-                <hr />
-              </Row>
-              <Row>
-                <SimulationsGroup
-                  symbol={this.state.currentSymbol}
-                ></SimulationsGroup>
-              </Row>
+              <h2 className='mt-5'>Simulations</h2>
+              <hr />
+              <SimulationsGroup
+                symbol={this.state.currentSymbol}
+              ></SimulationsGroup>
             </div>
           )}
         </div>
