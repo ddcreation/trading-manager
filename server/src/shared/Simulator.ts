@@ -10,7 +10,7 @@ export class Simulator {
   }
 
   public simulate(params?: { capital: number; leverage: number }): unknown[] {
-    const leverage = params?.leverage ? params.leverage : 5;
+    const leverage = params?.leverage ? params.leverage : 1;
     const startingCapital = params?.capital ? params.capital : 20;
 
     const simulations = strategies.map((strategy) => {
