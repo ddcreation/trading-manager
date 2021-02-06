@@ -55,12 +55,15 @@
     "build.ts"
   ],
   "dependencies": {
+    "chai": "^4.3.0",
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "data-forge": "^1.8.17",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "grademark": "^0.2.9",
     "helmet": "^4.3.1",
     "http-status-codes": "^2.1.4",
     "jet-logger": "^1.0.4",

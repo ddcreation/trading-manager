@@ -1,7 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import CryptoProviderApi from '../shared/CryptoProviderApi';
-import { CryptoFilterType } from '@entities/CryptoApiParams';
+import { CryptoFilterType, IntervalType } from '@entities/CryptoApiParams';
+import { Simulator } from '@shared/Simulator';
 
 const router = Router();
 
@@ -38,13 +39,23 @@ router.get('/:symbol/history', async (req: Request, res: Response) => {
 });
 
 router.get('/:symbol/simulations', async (req: Request, res: Response) => {
-  const simulations: unknown = [];
+  const tickInterval = IntervalType['1d'];
+  const history = await CryptoProviderApi.symbolHistory$(
+    req.params.symbol,
+    tickInterval,
+    { limit: 300 }
+  );
 
-  // TODO Get history:
+  // Generate simulations:
+  const simulator = new Simulator(history);
+  const simulations = simulator.simulate();
 
-  // TODO Generate simulations:
-
-  res.json(simulations);
+  res.json({
+    symbol: req.params.symbol,
+    interval: tickInterval,
+    history,
+    simulations,
+  });
 });
 
 export default router;
