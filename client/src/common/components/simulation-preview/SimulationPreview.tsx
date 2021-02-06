@@ -1,7 +1,8 @@
 import React from 'react';
-import { Alert, Card } from 'react-bootstrap';
+import { Alert, Card, Col, Container, Row } from 'react-bootstrap';
 import TmLoader from '../tm-loader/TmLoader';
 import api from '../../../utils/api';
+import PercentBadge from '../percent-badge/PercentBadge';
 
 interface SimulationPreviewProps {
   symbol: string;
@@ -54,7 +55,20 @@ class SimulationPreview extends React.Component<
                 (simulation: any, simulIndex: number) => (
                   <Card key={simulIndex}>
                     <Card.Header>
-                      <Card.Title>{simulation.name}</Card.Title>
+                      <Container className='px-0'>
+                        <Row>
+                          <Col md='auto'>
+                            <Card.Title>{simulation.name}</Card.Title>
+                          </Col>
+                          <Col>
+                            <div className='float-right'>
+                              <PercentBadge
+                                percent={simulation.analysis.profitPct}
+                              />
+                            </div>
+                          </Col>
+                        </Row>
+                      </Container>
                     </Card.Header>
                     <Card.Body>
                       {JSON.stringify(this.state.simulations)}
