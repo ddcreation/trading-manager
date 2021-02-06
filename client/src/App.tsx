@@ -1,9 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './App.scss';
-import AppNavigation from './common/components/app-navigation/AppNavigation';
+import { AppNavigation, Page } from './common/components';
 import AppRoutes from './routes/AppRoutes';
-import Page from './common/components/page/Page';
 
 function App() {
   return (

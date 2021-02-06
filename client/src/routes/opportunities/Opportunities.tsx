@@ -1,10 +1,11 @@
 import React from 'react';
-import { ListGroup } from 'react-bootstrap';
-import CryptoCard from '../../common/components/crypto-card/CryptoCard';
+import { ListGroup, Row } from 'react-bootstrap';
+import { CryptoCard, TmLoader } from '../../common/components';
 import api from '../../utils/api';
 
 interface OpportunitiesState {
   currentSymbol: string;
+  simulations: unknown[];
   symbols: string[];
 }
 
@@ -13,6 +14,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
     super(props);
 
     this.setState({
+      simulations: [],
       symbols: [],
     });
   }
@@ -45,11 +47,28 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
               ))}
           </ListGroup>
           {this.state.currentSymbol && (
-            <CryptoCard symbol={this.state.currentSymbol} />
+            <div>
+              <CryptoCard symbol={this.state.currentSymbol} />
+              <Row className='mt-5'>
+                <h2>Simulations</h2>
+                <hr />
+              </Row>
+              {this.state.simulations && this.state.simulations.length ? (
+                this.state.simulations.map((simulation) =>
+                  this.renderSimulation(simulation)
+                )
+              ) : (
+                <TmLoader />
+              )}
+            </div>
           )}
         </div>
       )
     );
+  }
+
+  renderSimulation(simulation: unknown) {
+    return JSON.stringify(simulation);
   }
 
   symbolSelection(key: string): void {

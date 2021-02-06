@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Col, Row, Spinner } from 'react-bootstrap';
+import { Card, Col, Row } from 'react-bootstrap';
+import { TmLoader } from '../../common/components';
 import { Account } from '../../common/models';
 import api from '../../utils/api';
 
@@ -36,11 +37,7 @@ class AccountRoute extends React.Component<unknown, AccountState> {
         </Card.Body>
       </Card>
     ) : (
-      <div className='text-center'>
-        <Spinner animation='border' role='status'>
-          <span className='sr-only'>Loading...</span>
-        </Spinner>
-      </div>
+      <TmLoader />
     );
   }
 }

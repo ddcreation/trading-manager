@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Spinner } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import api from '../../../utils/api';
 import { Tick } from '../../models';
+import TmLoader from '../tm-loader/TmLoader';
 
 interface CryptoCardProps {
   symbol: string;
@@ -59,11 +60,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
         </Card.Header>
         <Card.Body>
           {this.state.loading ? (
-            <div className='text-center mt-3'>
-              <Spinner animation='border' role='status'>
-                <span className='sr-only'>Loading...</span>
-              </Spinner>
-            </div>
+            <TmLoader />
           ) : (
             this.state.history.length && (
               <Line data={this.graphDatas()} options={graphOptions} />

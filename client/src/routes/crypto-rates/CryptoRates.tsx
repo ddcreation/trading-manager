@@ -1,5 +1,5 @@
 import React from 'react';
-import TradingCard from '../../common/components/trading-card/TradingCard';
+import { TradingCard } from '../../common/components';
 import api from '../../utils/api';
 
 interface CryptoRatesProperties {}

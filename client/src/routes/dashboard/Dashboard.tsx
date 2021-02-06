@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
-import CryptoCard from '../../common/components/crypto-card/CryptoCard';
+import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap';
+import { CryptoCard, TmLoader } from '../../common/components';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import api from '../../utils/api';
 
@@ -82,9 +82,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
             </Form>
           </Row>
         ) : (
-          <Spinner animation='border' role='status'>
-            <span className='sr-only'>Loading...</span>
-          </Spinner>
+          <TmLoader />
         )}
         <hr className='my-5' />
         <h2>My favorites</h2>
@@ -97,9 +95,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
             ))}
           </Row>
         ) : (
-          <Spinner animation='border' role='status'>
-            <span className='sr-only'>Loading...</span>
-          </Spinner>
+          <TmLoader />
         )}
       </div>
     );
