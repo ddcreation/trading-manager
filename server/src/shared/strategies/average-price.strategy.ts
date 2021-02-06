@@ -12,14 +12,14 @@ export const AvgPriceStrategy: Strategy = {
 
   // Buy when price is below average.
   entryRule: (enterPosition: any, args: any): void => {
-    if (args.bar.close < args.bar.avgMonth * 0.95) {
+    if (args.bar.close < args.bar.intervalAvg * 0.95) {
       enterPosition({ direction: 'long' }); // Long is default, pass in "short" to short sell.
     }
   },
 
   // Sell when price is above average.
   exitRule: (exitPosition: any, args: any): void => {
-    if (args.bar.close > args.bar.avgMonth * 1.05) {
+    if (args.bar.close > args.bar.intervalAvg * 1.05) {
       exitPosition();
     }
   },
@@ -36,25 +36,27 @@ export const AvgPriceStrategy: Strategy = {
       };
     });
     let dataFrame = new dataForge.DataFrame(formatedHistoric)
-      .tail(30)
       .setIndex('date')
       .renameSeries({ date: 'time' });
 
     // Add average:
-    const serie = dataFrame.deflate((bar) => bar.close);
-    const movingAverage = serie.average();
-    dataFrame = dataFrame.select((row) => {
-      return {
-        ...row,
-        avgMonth: movingAverage,
-      };
+    const avgDays = 30; // Price avg on last 30 days
+    const dataFramewithAvg = dataFrame.generateSeries({
+      intervalAvg: (row, rowIndex) => {
+        const startIdx = avgDays < rowIndex ? rowIndex - avgDays : 0;
+
+        return dataFrame
+          .between(startIdx, rowIndex)
+          .deflate((bar) => bar.close)
+          .average();
+      },
     });
 
-    return dataFrame;
+    return dataFramewithAvg;
   },
 
+  // Stop out on 10% loss from entry price.
   stopLoss: (args) => {
-    // Optional intrabar stop loss.
     return args.entryPrice * 0.1; // Stop out on 10% loss from entry price.
   },
 };
