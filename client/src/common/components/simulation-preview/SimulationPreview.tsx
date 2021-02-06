@@ -64,6 +64,7 @@ class SimulationPreview extends React.Component<
                             <div className='float-right'>
                               <PercentBadge
                                 percent={simulation.analysis.profitPct}
+                                totalTrades={simulation.analysis.totalTrades}
                               />
                             </div>
                           </Col>
