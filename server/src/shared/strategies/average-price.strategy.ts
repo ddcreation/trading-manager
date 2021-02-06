@@ -35,12 +35,13 @@ export const AvgPriceStrategy: Strategy = {
         volume: history.volume,
       };
     });
-    let dataFrame = new dataForge.DataFrame(formatedHistoric)
+
+    const dataFrame = new dataForge.DataFrame(formatedHistoric)
       .setIndex('date')
       .renameSeries({ date: 'time' });
 
-    // Add average:
-    const avgDays = 30; // Price avg on last 30 days
+    // Add average price:
+    const avgDays = 30;
     const dataFramewithAvg = dataFrame.generateSeries({
       intervalAvg: (row, rowIndex) => {
         const startIdx = avgDays < rowIndex ? rowIndex - avgDays : 0;
