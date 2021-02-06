@@ -1,11 +1,10 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { CryptoCard, SimulationsGroup } from '../../common/components';
+import { CryptoCard, SimulationPreview } from '../../common/components';
 import api from '../../utils/api';
 
 interface OpportunitiesState {
   currentSymbol: string;
-  simulations: unknown[];
   symbols: string[];
 }
 
@@ -13,10 +12,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   constructor(props: null) {
     super(props);
 
-    this.setState({
-      simulations: [],
-      symbols: [],
-    });
+    this.setState({ symbols: [] });
   }
 
   componentDidMount() {
@@ -24,8 +20,6 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
       .retrieve<string[]>(`${api.resources.cryptos}/favorites`)
       .then((symbols) => this.setState({ symbols }));
   }
-
-  loadSimulations() {}
 
   render() {
     return (
@@ -53,9 +47,9 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
               <CryptoCard symbol={this.state.currentSymbol} />
               <h2 className='mt-5'>Simulations</h2>
               <hr />
-              <SimulationsGroup
+              <SimulationPreview
                 symbol={this.state.currentSymbol}
-              ></SimulationsGroup>
+              ></SimulationPreview>
             </div>
           )}
         </div>
@@ -64,9 +58,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   }
 
   symbolSelection(key: string): void {
-    this.setState({ currentSymbol: key, simulations: [] });
-
-    this.loadSimulations();
+    this.setState({ currentSymbol: key });
   }
 }
 
