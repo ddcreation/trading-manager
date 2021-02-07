@@ -53,7 +53,6 @@ router.get('/:symbol/simulations', async (req: Request, res: Response) => {
   res.json({
     symbol: req.params.symbol,
     interval: tickInterval,
-    history,
     simulations,
   });
 });

@@ -3,22 +3,8 @@ import { Alert, Card, Col, Container, Row, Table } from 'react-bootstrap';
 import TmLoader from '../tm-loader/TmLoader';
 import api from '../../../utils/api';
 import PercentBadge from '../percent-badge/PercentBadge';
-
-interface SimulationTrade {
-  entryPrice: number;
-  entryTime: string;
-  exitPrice: number;
-  exitTime: string;
-  holdingPeriod: number;
-  profit: number;
-}
-
-interface Simulation {
-  history: any[];
-  id: string;
-  name: string;
-  trades: SimulationTrade[];
-}
+import { Simulation, Tick } from '../../models';
+import { Line } from 'react-chartjs-2';
 
 interface SimulationPreviewProps {
   symbol: string;
@@ -28,6 +14,9 @@ interface SimulationPreviewState {
   loading: boolean;
   simulations: Simulation[];
 }
+
+const formatDateForGraph = (date: string | number): string =>
+  new Date(date).toISOString().substr(0, 10);
 
 class SimulationPreview extends React.Component<
   SimulationPreviewProps,
@@ -43,6 +32,70 @@ class SimulationPreview extends React.Component<
     if (prevProps.symbol !== this.props.symbol) {
       this.loadSimulations();
     }
+  }
+
+  graphDatas(simulation: Simulation) {
+    const tradesPointsColor = Array(simulation.history.length).fill('black');
+
+    const tradesStyles = {
+      pointStyle: Array(simulation.history.length).fill('circle'),
+      pointBackgroundColor: tradesPointsColor,
+      pointBorderColor: tradesPointsColor,
+      pointBorderWidth: '5',
+    };
+
+    const tradesDataset: (number | null)[] = simulation.history.map(
+      (tick: Tick, idx: number) => {
+        const currentDate = formatDateForGraph(tick.closeTime);
+
+        // Entry
+        const entryTrade = simulation.trades.find(
+          (trade) => formatDateForGraph(trade.entryTime) === currentDate
+        );
+
+        if (entryTrade) {
+          tradesStyles.pointStyle[idx] = 'triangle';
+          return entryTrade.entryPrice;
+        }
+
+        // Close
+        const closeTrade = simulation.trades.find(
+          (trade) => formatDateForGraph(trade.exitTime) === currentDate
+        );
+
+        if (closeTrade) {
+          tradesStyles.pointStyle[idx] = 'rect';
+          tradesPointsColor[idx] =
+            closeTrade.exitPrice < closeTrade.entryPrice ? 'red' : 'green';
+          return closeTrade.exitPrice;
+        }
+
+        return null;
+      }
+    );
+
+    return {
+      labels: simulation.history.map((tick: Tick) =>
+        formatDateForGraph(tick.closeTime)
+      ),
+      datasets: [
+        {
+          label: 'Crypto close price',
+          fill: false,
+          data: simulation.history.map((tick: Tick) => tick.close),
+          pointRadius: 0,
+        },
+
+        {
+          label: 'Trades',
+          fill: false,
+          data: tradesDataset,
+          backgroundColor: 'black',
+          borderColor: 'black',
+          ...tradesStyles,
+        },
+      ],
+    };
   }
 
   loadSimulations() {
@@ -68,7 +121,7 @@ class SimulationPreview extends React.Component<
           <div>
             {this.state.simulations.length > 0 &&
               this.state.simulations.map(
-                (simulation: any, simulIndex: number) => (
+                (simulation: Simulation, simulIndex: number) => (
                   <Card key={simulIndex}>
                     <Card.Header>
                       <Container className='px-0'>
@@ -90,6 +143,8 @@ class SimulationPreview extends React.Component<
                       </Container>
                     </Card.Header>
                     <Card.Body>
+                      <Line data={this.graphDatas(simulation)} />
+                      <hr />
                       <h4>Trades</h4>
                       {simulation.trades.length && (
                         <Table striped bordered size='sm'>
@@ -104,39 +159,41 @@ class SimulationPreview extends React.Component<
                             </tr>
                           </thead>
                           <tbody>
-                            {simulation.trades.map((trade: any) => {
-                              let diffDaysVariant = 'success';
-                              if (
-                                10 < trade.holdingPeriod &&
-                                trade.holdingPeriod < 30
-                              ) {
-                                diffDaysVariant = 'warning';
-                              } else if (trade.holdingPeriod >= 30) {
-                                diffDaysVariant = 'danger';
-                              }
+                            {simulation.trades.map(
+                              (trade: any, idx: number) => {
+                                let diffDaysVariant = 'success';
+                                if (
+                                  10 < trade.holdingPeriod &&
+                                  trade.holdingPeriod < 30
+                                ) {
+                                  diffDaysVariant = 'warning';
+                                } else if (trade.holdingPeriod >= 30) {
+                                  diffDaysVariant = 'danger';
+                                }
 
-                              return (
-                                <tr>
-                                  <td>{trade.entryTime.substr(0, 10)}</td>
-                                  <td>{trade.entryPrice}</td>
-                                  <td>{trade.exitTime.substr(0, 10)}</td>
-                                  <td>{trade.exitPrice}</td>
-                                  <td className={'table-' + diffDaysVariant}>
-                                    {trade.holdingPeriod}
-                                  </td>
-                                  <td
-                                    className={
-                                      trade.profit > 0
-                                        ? 'table-success'
-                                        : 'table-danger'
-                                    }
-                                  >
-                                    {(trade.profit > 0 ? '+' : '') +
-                                      trade.profit.toFixed(2)}
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                                return (
+                                  <tr key={'trade-' + idx}>
+                                    <td>{trade.entryTime.substr(0, 10)}</td>
+                                    <td>{trade.entryPrice}</td>
+                                    <td>{trade.exitTime.substr(0, 10)}</td>
+                                    <td>{trade.exitPrice}</td>
+                                    <td className={'table-' + diffDaysVariant}>
+                                      {trade.holdingPeriod}
+                                    </td>
+                                    <td
+                                      className={
+                                        trade.profit > 0
+                                          ? 'table-success'
+                                          : 'table-danger'
+                                      }
+                                    >
+                                      {(trade.profit > 0 ? '+' : '') +
+                                        trade.profit.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            )}
                           </tbody>
                         </Table>
                       )}
