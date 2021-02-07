@@ -90,6 +90,7 @@ class SimulationPreview extends React.Component<
                       </Container>
                     </Card.Header>
                     <Card.Body>
+                      <h4>Trades</h4>
                       {simulation.trades.length && (
                         <Table striped bordered size='sm'>
                           <thead>
@@ -138,6 +139,9 @@ class SimulationPreview extends React.Component<
                             })}
                           </tbody>
                         </Table>
+                      )}
+                      {simulation.trades.length === 0 && (
+                        <i>No trades generated with this strategy...</i>
                       )}
                     </Card.Body>
                   </Card>
