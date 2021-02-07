@@ -25,7 +25,7 @@ export class Simulator {
       const datas = strategy.historicToDataframe(this._datas);
 
       // Backtest each strategy
-      const trades = backtest(strategy, datas as any);
+      const trades = backtest(strategy, datas as any, {});
       const analysis = analyze(startingCapital * leverage, trades);
 
       return {

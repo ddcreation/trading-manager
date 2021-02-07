@@ -9,9 +9,19 @@ import { Strategy } from '@entities/Strategies';
 export const AvgPriceStrategy: Strategy = {
   id: 'avg-price',
   name: 'Average price',
+  parameters: { startDate: null },
 
   // Buy when price is below average.
   entryRule: (enterPosition: any, args: any): void => {
+    const startAnalyzeDate = new Date(args.parameters.startDate);
+    const blankAnalyzingPeriod = startAnalyzeDate.setDate(
+      startAnalyzeDate.getDate() + 30
+    );
+
+    if (blankAnalyzingPeriod > new Date(args.bar.time).getTime()) {
+      return;
+    }
+
     if (args.bar.close < args.bar.intervalAvg * 0.95) {
       enterPosition({ direction: 'long' }); // Long is default, pass in "short" to short sell.
     }
@@ -52,6 +62,9 @@ export const AvgPriceStrategy: Strategy = {
           .average();
       },
     });
+
+    // Set first date:
+    AvgPriceStrategy.parameters.startDate = formatedHistoric[0].date;
 
     return dataFramewithAvg;
   },

@@ -11,6 +11,7 @@ export interface IBar {
 export interface Strategy {
   id: string;
   name: string;
+  parameters?: any;
   historicToDataframe: (history: CryptoHistory[]) => any;
   entryRule: (enterPosition: any, args: any) => void;
   exitRule: (exitPosition: any, args: any) => void;
