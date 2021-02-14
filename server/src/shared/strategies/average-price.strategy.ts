@@ -13,9 +13,10 @@ export const AvgPriceStrategy: Strategy = {
 
   // Buy when price is below average.
   entryRule: (enterPosition: any, args: any): void => {
+    const blankDays = 30;
     const startAnalyzeDate = new Date(args.parameters.startDate);
     const blankAnalyzingPeriod = startAnalyzeDate.setDate(
-      startAnalyzeDate.getDate() + 30
+      startAnalyzeDate.getDate() + blankDays
     );
 
     if (blankAnalyzingPeriod > new Date(args.bar.time).getTime()) {
@@ -27,9 +28,16 @@ export const AvgPriceStrategy: Strategy = {
     }
   },
 
-  // Sell when price is above average.
+  // Sell when 5% bonus or too long
   exitRule: (exitPosition: any, args: any): void => {
-    if (args.bar.close > args.bar.intervalAvg * 1.05) {
+    const maxDuration = 10;
+    const entryTime = new Date(args.position.entryTime).getTime();
+    const currentTime = new Date(args.bar.time).getTime();
+
+    if (
+      args.bar.close > args.entryPrice * 1.05 ||
+      (currentTime - entryTime) / (1000 * 3600 * 24) > maxDuration
+    ) {
       exitPosition();
     }
   },
@@ -51,13 +59,15 @@ export const AvgPriceStrategy: Strategy = {
       .renameSeries({ date: 'time' });
 
     // Add average price:
-    const avgDays = 30;
+    const avgDays = 10;
+    const rows = dataFrame.toPairs() as any[];
+
     const dataFramewithAvg = dataFrame.generateSeries({
       intervalAvg: (row, rowIndex) => {
         const startIdx = avgDays < rowIndex ? rowIndex - avgDays : 0;
 
         return dataFrame
-          .between(startIdx, rowIndex)
+          .between(rows[startIdx][0], rows[rowIndex][0])
           .deflate((bar) => bar.close)
           .average();
       },
@@ -71,6 +81,6 @@ export const AvgPriceStrategy: Strategy = {
 
   // Stop out on 10% loss from entry price.
   stopLoss: (args) => {
-    return args.entryPrice * 0.1; // Stop out on 10% loss from entry price.
+    return args.entryPrice * 0.2; // Stop out on 20% loss from entry price.
   },
 };
