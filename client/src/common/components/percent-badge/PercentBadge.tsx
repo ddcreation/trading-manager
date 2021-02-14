@@ -40,8 +40,7 @@ class PercentBadge extends React.Component<PercentBadgeProperties, unknown> {
             <FontAwesomeIcon icon={faPercent} />
           </ListGroup.Item>
           <ListGroup.Item variant={percentVariant} className={badgeClasses}>
-            {this.props.percent > 0 ? '+' : ''} {this.props.percent.toFixed(2)}{' '}
-            %
+            {this.props.percent > 0 ? '+' : ''} {this.props.percent.toFixed(2)}
           </ListGroup.Item>
         </ListGroup>
       </Row>
