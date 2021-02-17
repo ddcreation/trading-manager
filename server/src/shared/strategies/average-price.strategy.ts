@@ -3,7 +3,7 @@ import { CryptoHistory } from '@entities/CryptoHistory';
 import { Strategy } from '@entities/Strategies';
 
 /**
- * Stretegy AvgPrice
+ * Strategy AvgPrice
  * @description Simple strategy that sell if the price is higher than the Avg and buy if lower
  */
 export const AvgPriceStrategy: Strategy = {
@@ -11,19 +11,22 @@ export const AvgPriceStrategy: Strategy = {
   name: 'Average price',
   parameters: { startDate: null },
 
-  // Buy when price is below average.
-  entryRule: (enterPosition: any, args: any): void => {
+  checkBuyOpportunity: (args: any): boolean => {
     const blankDays = 30;
     const startAnalyzeDate = new Date(args.parameters.startDate);
     const blankAnalyzingPeriod = startAnalyzeDate.setDate(
       startAnalyzeDate.getDate() + blankDays
     );
 
-    if (blankAnalyzingPeriod > new Date(args.bar.time).getTime()) {
-      return;
-    }
+    return (
+      blankAnalyzingPeriod < new Date(args.bar.time).getTime() &&
+      args.bar.close < args.bar.intervalAvg * 0.95
+    );
+  },
 
-    if (args.bar.close < args.bar.intervalAvg * 0.95) {
+  // Buy when price is below average.
+  entryRule: (enterPosition: any, args: any): void => {
+    if (AvgPriceStrategy.checkBuyOpportunity!(args)) {
       enterPosition({ direction: 'long' }); // Long is default, pass in "short" to short sell.
     }
   },

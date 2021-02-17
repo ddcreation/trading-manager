@@ -10,13 +10,7 @@ import { Symbol } from '@entities/Symbol';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
 // TODO: set this list in user preferences
-const defaultFavoritesCrypto = [
-  'ETHUSDT',
-  'BCHUSDT',
-  'BTCUSDT',
-  'LTCUSDT',
-  'XRPUSDT',
-];
+const defaultFavoritesCrypto = ['ETHUSDT', 'BCHUSDT', 'BTCUSDT', 'LTCUSDT'];
 
 export class CryptoProviderApi {
   public defaultHistoryParams: HistoryParams = {

@@ -12,8 +12,10 @@ export interface Strategy {
   id: string;
   name: string;
   parameters?: any;
-  historicToDataframe: (history: CryptoHistory[]) => any;
+  checkBuyOpportunity?: (args: any) => boolean;
+  checkSellOpportunity?: (args: any) => boolean;
   entryRule: (enterPosition: any, args: any) => void;
   exitRule: (exitPosition: any, args: any) => void;
+  historicToDataframe: (history: CryptoHistory[]) => any;
   stopLoss?: (args: any) => number;
 }
