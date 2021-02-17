@@ -1,6 +1,11 @@
 import * as dataForge from 'data-forge';
 import { CryptoHistory } from '@entities/CryptoHistory';
 import { Strategy } from '@entities/Strategies';
+import {
+  EnterPositionFn,
+  ExitPositionFn,
+  TradeDirection,
+} from 'grademark/build/lib/strategy';
 
 /**
  * Strategy AvgPrice
@@ -11,28 +16,32 @@ export const AvgPriceStrategy: Strategy = {
   name: 'Average price',
   parameters: { startDate: null },
 
+  // Buy when price is below average.
   checkBuyOpportunity: (args: any): boolean => {
+    return args.bar.close < args.bar.intervalAvg * 0.95;
+  },
+
+  checkSellOpportunity: (args: any): boolean => {
+    return false;
+  },
+
+  entryRule: (enterPosition: EnterPositionFn, args: any): void => {
     const blankDays = 30;
     const startAnalyzeDate = new Date(args.parameters.startDate);
     const blankAnalyzingPeriod = startAnalyzeDate.setDate(
       startAnalyzeDate.getDate() + blankDays
     );
 
-    return (
+    if (
       blankAnalyzingPeriod < new Date(args.bar.time).getTime() &&
-      args.bar.close < args.bar.intervalAvg * 0.95
-    );
-  },
-
-  // Buy when price is below average.
-  entryRule: (enterPosition: any, args: any): void => {
-    if (AvgPriceStrategy.checkBuyOpportunity!(args)) {
-      enterPosition({ direction: 'long' }); // Long is default, pass in "short" to short sell.
+      AvgPriceStrategy.checkBuyOpportunity!(args)
+    ) {
+      enterPosition({ direction: TradeDirection.Long }); // Long is default, pass in "short" to short sell.
     }
   },
 
   // Sell when 5% bonus or too long
-  exitRule: (exitPosition: any, args: any): void => {
+  exitRule: (exitPosition: ExitPositionFn, args: any): void => {
     const maxDuration = 10;
     const entryTime = new Date(args.position.entryTime).getTime();
     const currentTime = new Date(args.bar.time).getTime();

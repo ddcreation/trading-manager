@@ -3,8 +3,9 @@ import { Alert, Card, Col, Container, Row, Table } from 'react-bootstrap';
 import TmLoader from '../tm-loader/TmLoader';
 import api from '../../../utils/api';
 import PercentBadge from '../percent-badge/PercentBadge';
-import { Simulation, Tick } from '../../models';
+import { Simulation, Tick, TransactionDirection } from '../../models';
 import { Line } from 'react-chartjs-2';
+import OpportunityButton from '../opportunity-button/OpportunityButton';
 
 interface SimulationPreviewProps {
   symbol: string;
@@ -129,6 +130,20 @@ class SimulationPreview extends React.Component<
                           <Col md='auto'>
                             <Card.Title>
                               <h4>{simulation.name}</h4>
+                              {Object.keys(simulation.oportunities).map(
+                                (opportunityKey: any) => {
+                                  return (
+                                    simulation.oportunities[
+                                      opportunityKey as TransactionDirection
+                                    ] && (
+                                      <OpportunityButton
+                                        symbol={this.props.symbol}
+                                        direction={opportunityKey}
+                                      ></OpportunityButton>
+                                    )
+                                  );
+                                }
+                              )}
                             </Card.Title>
                           </Col>
                           <Col>

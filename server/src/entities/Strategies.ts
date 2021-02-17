@@ -12,8 +12,8 @@ export interface Strategy {
   id: string;
   name: string;
   parameters?: any;
-  checkBuyOpportunity?: (args: any) => boolean;
-  checkSellOpportunity?: (args: any) => boolean;
+  checkBuyOpportunity: (args: any) => boolean;
+  checkSellOpportunity: (args: any) => boolean;
   entryRule: (enterPosition: any, args: any) => void;
   exitRule: (exitPosition: any, args: any) => void;
   historicToDataframe: (history: CryptoHistory[]) => any;

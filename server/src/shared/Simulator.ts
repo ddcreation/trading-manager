@@ -28,11 +28,22 @@ export class Simulator {
       const trades = backtest(strategy, datas as any, {});
       const analysis = analyze(startingCapital * leverage, trades);
 
+      const lastBar = datas.tail(1).toArray()[0];
+      const lastDatasArgs = {
+        bar: lastBar,
+        lookback: datas,
+        parameters: strategy.parameters,
+      };
+
       return {
         analysis: analysis as SimulationAnalysis,
         history: this._datas,
         id: strategy.id,
         name: strategy.name,
+        oportunities: {
+          buy: strategy.checkBuyOpportunity(lastDatasArgs),
+          sell: strategy.checkSellOpportunity(lastDatasArgs),
+        },
         trades: trades as SimulationTrade[],
       };
     });

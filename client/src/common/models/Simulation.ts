@@ -33,10 +33,15 @@ export interface SimulationAnalysis {
   totalTrades: number;
 }
 
+export type TransactionDirection = 'buy' | 'sell';
+
 export interface Simulation {
   analysis: SimulationAnalysis;
   history: Tick[];
   id: string;
   name: string;
+  oportunities: {
+    [key in TransactionDirection]: boolean;
+  };
   trades: SimulationTrade[];
 }
