@@ -6,6 +6,7 @@ import {
   SimulationAnalysis,
   SimulationTrade,
 } from '@entities/Simulation';
+import { Strategy } from '@entities/Strategies';
 
 export class Simulator {
   private _datas: CryptoHistory[];
@@ -21,7 +22,7 @@ export class Simulator {
     const leverage = params?.leverage ? params.leverage : 1;
     const startingCapital = params?.capital ? params.capital : 20;
 
-    const simulations = strategies.map((strategy) => {
+    const simulations = strategies.map((strategy: Strategy) => {
       const datas = strategy.historicToDataframe(this._datas);
 
       // Backtest each strategy

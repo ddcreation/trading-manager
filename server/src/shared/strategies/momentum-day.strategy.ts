@@ -11,32 +11,32 @@ import {
  * Strategy Momentum day
  * @description Strategy based on make high profit when the price rises (inspired by https://www.warriortrading.com/momentum-day-trading-strategy/)
  */
-export const MomentumDayStrategy: Strategy = {
-  id: 'momentum-day',
-  name: 'Momentum day',
+export class MomentumDayStrategy implements Strategy {
+  public id = 'momentum-day';
+  public name = 'Momentum day';
 
-  checkBuyOpportunity: (args: any): boolean => {
+  public checkBuyOpportunity(args: any): boolean {
     return true;
-  },
+  }
 
-  checkSellOpportunity: (args: any): boolean => {
+  public checkSellOpportunity(args: any): boolean {
     return false;
-  },
+  }
 
-  entryRule: (enterPosition: EnterPositionFn, args: any): void => {
+  public entryRule(enterPosition: EnterPositionFn, args: any): void {
     if (true) {
       enterPosition({ direction: TradeDirection.Long });
     }
-  },
+  }
 
   // Sell when 5% bonus or too long
-  exitRule: (exitPosition: ExitPositionFn, args: any): void => {
+  public exitRule(exitPosition: ExitPositionFn, args: any): void {
     if (args.bar.close > args.entryPrice * 1.05) {
       exitPosition();
     }
-  },
+  }
 
-  historicToDataframe: (historic: CryptoHistory[]): any => {
+  public historicToDataframe(historic: CryptoHistory[]): any {
     const formatedHistoric = historic.map((history) => {
       return {
         close: history.close,
@@ -53,10 +53,10 @@ export const MomentumDayStrategy: Strategy = {
       .renameSeries({ date: 'time' });
 
     return dataFrame;
-  },
+  }
 
   // Stop out on lost.
-  stopLoss: () => {
+  public stopLoss(): number {
     return 0.5;
-  },
-};
+  }
+}

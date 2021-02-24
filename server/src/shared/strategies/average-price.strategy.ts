@@ -11,21 +11,21 @@ import {
  * Strategy AvgPrice
  * @description Simple strategy that sell if the price is higher than the Avg and buy if lower
  */
-export const AvgPriceStrategy: Strategy = {
-  id: 'avg-price',
-  name: 'Average price',
-  parameters: { startDate: null },
+export class AvgPriceStrategy implements Strategy {
+  public id = 'avg-price';
+  public name = 'Average price';
+  public parameters = { startDate: '' };
 
   // Buy when price is below average.
-  checkBuyOpportunity: (args: any): boolean => {
+  public checkBuyOpportunity(args: any): boolean {
     return args.bar.close < args.bar.intervalAvg * 0.95;
-  },
+  }
 
-  checkSellOpportunity: (args: any): boolean => {
+  public checkSellOpportunity(args: any): boolean {
     return false;
-  },
+  }
 
-  entryRule: (enterPosition: EnterPositionFn, args: any): void => {
+  public entryRule(enterPosition: EnterPositionFn, args: any): void {
     const blankDays = 30;
     const startAnalyzeDate = new Date(args.parameters.startDate);
     const blankAnalyzingPeriod = startAnalyzeDate.setDate(
@@ -34,14 +34,14 @@ export const AvgPriceStrategy: Strategy = {
 
     if (
       blankAnalyzingPeriod < new Date(args.bar.time).getTime() &&
-      AvgPriceStrategy.checkBuyOpportunity!(args)
+      this.checkBuyOpportunity!(args)
     ) {
       enterPosition({ direction: TradeDirection.Long }); // Long is default, pass in "short" to short sell.
     }
-  },
+  }
 
   // Sell when 5% bonus or too long
-  exitRule: (exitPosition: ExitPositionFn, args: any): void => {
+  public exitRule(exitPosition: ExitPositionFn, args: any): void {
     const maxDuration = 10;
     const entryTime = new Date(args.position.entryTime).getTime();
     const currentTime = new Date(args.bar.time).getTime();
@@ -52,9 +52,9 @@ export const AvgPriceStrategy: Strategy = {
     ) {
       exitPosition();
     }
-  },
+  }
 
-  historicToDataframe: (historic: CryptoHistory[]): any => {
+  public historicToDataframe(historic: CryptoHistory[]): any {
     const formatedHistoric = historic.map((history) => {
       return {
         close: history.close,
@@ -86,13 +86,13 @@ export const AvgPriceStrategy: Strategy = {
     });
 
     // Set first date:
-    AvgPriceStrategy.parameters.startDate = formatedHistoric[0].date;
+    this.parameters.startDate = formatedHistoric[0].date;
 
     return dataFramewithAvg;
-  },
+  }
 
   // Stop out on 10% loss from entry price.
-  stopLoss: (args) => {
+  public stopLoss(args: any): number {
     return args.entryPrice * 0.2; // Stop out on 20% loss from entry price.
-  },
-};
+  }
+}
