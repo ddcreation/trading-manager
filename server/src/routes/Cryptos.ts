@@ -39,20 +39,12 @@ router.get('/:symbol/history', async (req: Request, res: Response) => {
 });
 
 router.get('/:symbol/simulations', async (req: Request, res: Response) => {
-  const tickInterval = IntervalType['1d'];
-  const history = await CryptoProviderApi.symbolHistory$(
-    req.params.symbol,
-    tickInterval,
-    { limit: 300 }
-  );
-
   // Generate simulations:
-  const simulator = new Simulator(history);
-  const simulations = simulator.simulate();
+  const simulator = new Simulator();
+  const simulations = await simulator.simulate$({ symbol: req.params.symbol });
 
   res.json({
     symbol: req.params.symbol,
-    interval: tickInterval,
     simulations,
   });
 });

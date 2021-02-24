@@ -6,13 +6,16 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
+import CryptoProviderApi from '@shared/CryptoProviderApi';
+import { IntervalType } from '@entities/CryptoApiParams';
 
 /**
  * Strategy Momentum day
  * @description Strategy based on make high profit when the price rises (inspired by https://www.warriortrading.com/momentum-day-trading-strategy/)
  */
-export class MomentumDayStrategy implements Strategy {
+class MomentumDayStrategy implements Strategy {
   public id = 'momentum-day';
+  public interval = IntervalType['1m'];
   public name = 'Momentum day';
 
   public checkBuyOpportunity(args: any): boolean {
@@ -34,6 +37,12 @@ export class MomentumDayStrategy implements Strategy {
     if (args.bar.close > args.entryPrice * 1.05) {
       exitPosition();
     }
+  }
+
+  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
+    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+      limit: 1000,
+    });
   }
 
   public historicToDataframe(historic: CryptoHistory[]): any {
@@ -60,3 +69,5 @@ export class MomentumDayStrategy implements Strategy {
     return 0.5;
   }
 }
+
+export default new MomentumDayStrategy();

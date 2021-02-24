@@ -123,22 +123,26 @@ class SimulationPreview extends React.Component<
             {this.state.simulations.length > 0 &&
               this.state.simulations.map(
                 (simulation: Simulation, simulIndex: number) => (
-                  <Card key={simulIndex}>
+                  <Card key={simulIndex} className='mb-3'>
                     <Card.Header>
                       <Container className='px-0'>
                         <Row>
                           <Col md='auto'>
                             <Card.Title>
                               <h4>{simulation.name}</h4>
-                              {Object.keys(simulation.oportunities).map(
-                                (opportunityKey: any) => {
+                              {Object.keys(simulation.opportunities).map(
+                                (
+                                  opportunityKey: any,
+                                  opportunityIndex: number
+                                ) => {
                                   return (
-                                    simulation.oportunities[
+                                    simulation.opportunities[
                                       opportunityKey as TransactionDirection
                                     ] && (
                                       <OpportunityButton
-                                        symbol={this.props.symbol}
+                                        key={opportunityIndex}
                                         direction={opportunityKey}
+                                        symbol={this.props.symbol}
                                       ></OpportunityButton>
                                     )
                                   );

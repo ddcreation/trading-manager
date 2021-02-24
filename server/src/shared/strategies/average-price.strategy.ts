@@ -6,13 +6,16 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
+import CryptoProviderApi from '@shared/CryptoProviderApi';
+import { IntervalType } from '@entities/CryptoApiParams';
 
 /**
  * Strategy AvgPrice
  * @description Simple strategy that sell if the price is higher than the Avg and buy if lower
  */
-export class AvgPriceStrategy implements Strategy {
+class AvgPriceStrategy implements Strategy {
   public id = 'avg-price';
+  public interval = IntervalType['1d'];
   public name = 'Average price';
   public parameters = { startDate: '' };
 
@@ -52,6 +55,12 @@ export class AvgPriceStrategy implements Strategy {
     ) {
       exitPosition();
     }
+  }
+
+  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
+    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+      limit: 300,
+    });
   }
 
   public historicToDataframe(historic: CryptoHistory[]): any {
@@ -96,3 +105,5 @@ export class AvgPriceStrategy implements Strategy {
     return args.entryPrice * 0.2; // Stop out on 20% loss from entry price.
   }
 }
+
+export default new AvgPriceStrategy();

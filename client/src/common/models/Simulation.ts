@@ -40,7 +40,7 @@ export interface Simulation {
   history: Tick[];
   id: string;
   name: string;
-  oportunities: {
+  opportunities: {
     [key in TransactionDirection]: boolean;
   };
   trades: SimulationTrade[];

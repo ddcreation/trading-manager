@@ -1,3 +1,4 @@
+import { IntervalType } from './CryptoApiParams';
 import { CryptoHistory } from './CryptoHistory';
 
 export interface SimulationTrade {
@@ -37,6 +38,10 @@ export interface Simulation {
   analysis: SimulationAnalysis;
   history: CryptoHistory[];
   id: string;
+  interval: IntervalType;
   name: string;
+  opportunities: {
+    [key in 'buy' | 'sell']: boolean;
+  };
   trades: SimulationTrade[];
 }

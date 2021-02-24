@@ -9,46 +9,51 @@ import {
 import { Strategy } from '@entities/Strategies';
 
 export class Simulator {
-  private _datas: CryptoHistory[];
-
-  constructor(history: CryptoHistory[]) {
-    this._datas = history;
-  }
-
-  public simulate(params?: {
-    capital: number;
-    leverage: number;
-  }): Simulation[] {
+  public simulate$(params: {
+    symbol: string;
+    capital?: number;
+    leverage?: number;
+  }): Promise<Simulation[]> {
     const leverage = params?.leverage ? params.leverage : 1;
     const startingCapital = params?.capital ? params.capital : 20;
 
-    const simulations = strategies.map((strategy: Strategy) => {
-      const datas = strategy.historicToDataframe(this._datas);
+    const simulations: Simulation[] = [];
+    return new Promise((resolve, reject) => {
+      strategies.forEach((strategy: Strategy, index: number) => {
+        strategy.getHistory$(params.symbol).then((datas) => {
+          const dataFrame = strategy.historicToDataframe(datas);
 
-      // Backtest each strategy
-      const trades = backtest(strategy, datas as any, {});
-      const analysis = analyze(startingCapital * leverage, trades);
+          // Backtest each strategy
+          const trades = backtest(strategy, dataFrame as any, {});
+          const analysis = analyze(startingCapital * leverage, trades);
 
-      const lastBar = datas.tail(1).toArray()[0];
-      const lastDatasArgs = {
-        bar: lastBar,
-        lookback: datas,
-        parameters: strategy.parameters,
-      };
+          const lastBar = dataFrame.tail(1).toArray()[0];
+          const lastDatasArgs = {
+            bar: lastBar,
+            lookback: dataFrame,
+            parameters: strategy.parameters,
+          };
 
-      return {
-        analysis: analysis as SimulationAnalysis,
-        history: this._datas,
-        id: strategy.id,
-        name: strategy.name,
-        oportunities: {
-          buy: strategy.checkBuyOpportunity(lastDatasArgs),
-          sell: strategy.checkSellOpportunity(lastDatasArgs),
-        },
-        trades: trades as SimulationTrade[],
-      };
+          simulations.push({
+            analysis: analysis as SimulationAnalysis,
+            history: datas,
+            id: strategy.id,
+            interval: strategy.interval,
+            name: strategy.name,
+            opportunities: {
+              buy: strategy.checkBuyOpportunity(lastDatasArgs),
+              sell: strategy.checkSellOpportunity(lastDatasArgs),
+            },
+            trades: trades as SimulationTrade[],
+          });
+
+          if (index === strategies.length - 1) {
+            resolve(simulations);
+          }
+        });
+      });
+
+      return simulations;
     });
-
-    return simulations;
   }
 }
