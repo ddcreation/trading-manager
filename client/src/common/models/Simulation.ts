@@ -1,5 +1,22 @@
 import { Tick } from './Tick';
 
+export type IntervalType =
+  | '1m'
+  | '3m'
+  | '5m'
+  | '15m'
+  | '30m'
+  | '1h'
+  | '2h'
+  | '4h'
+  | '6h'
+  | '8h'
+  | '12h'
+  | '1d'
+  | '3d'
+  | '1w'
+  | '1M';
+
 export interface SimulationTrade {
   entryPrice: number;
   entryTime: string;
@@ -39,6 +56,7 @@ export interface Simulation {
   analysis: SimulationAnalysis;
   history: Tick[];
   id: string;
+  interval: IntervalType;
   name: string;
   opportunities: {
     [key in TransactionDirection]: boolean;

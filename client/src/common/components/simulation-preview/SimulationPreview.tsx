@@ -3,7 +3,12 @@ import { Alert, Card, Col, Container, Row, Table } from 'react-bootstrap';
 import TmLoader from '../tm-loader/TmLoader';
 import api from '../../../utils/api';
 import PercentBadge from '../percent-badge/PercentBadge';
-import { Simulation, Tick, TransactionDirection } from '../../models';
+import {
+  IntervalType,
+  Simulation,
+  Tick,
+  TransactionDirection,
+} from '../../models';
 import { Line } from 'react-chartjs-2';
 import OpportunityButton from '../opportunity-button/OpportunityButton';
 
@@ -16,8 +21,34 @@ interface SimulationPreviewState {
   simulations: Simulation[];
 }
 
-const formatDateForGraph = (date: string | number): string =>
-  new Date(date).toISOString().substr(0, 10);
+const formatDateForGraph = (
+  dateString: string | number,
+  interval: IntervalType
+): string => {
+  const date = new Date(dateString);
+
+  let formatedDate: string;
+  switch (interval.substr(interval.length - 1, 1)) {
+    default:
+    case 'M': // Month
+    case 'w': // Week
+    case 'd': {
+      // Day
+      formatedDate = date.toISOString().substr(0, 10);
+      break;
+    }
+    case 'h': // Hours
+    case 'm': {
+      // minutes
+      formatedDate = `${date
+        .toISOString()
+        .substr(0, 10)} ${date.toISOString().substr(11, 5)}`;
+      break;
+    }
+  }
+
+  return formatedDate;
+};
 
 class SimulationPreview extends React.Component<
   SimulationPreviewProps,
@@ -47,11 +78,16 @@ class SimulationPreview extends React.Component<
 
     const tradesDataset: (number | null)[] = simulation.history.map(
       (tick: Tick, idx: number) => {
-        const currentDate = formatDateForGraph(tick.closeTime);
+        const currentDate = formatDateForGraph(
+          tick.closeTime,
+          simulation.interval
+        );
 
         // Entry
         const entryTrade = simulation.trades.find(
-          (trade) => formatDateForGraph(trade.entryTime) === currentDate
+          (trade) =>
+            formatDateForGraph(trade.entryTime, simulation.interval) ===
+            currentDate
         );
 
         if (entryTrade) {
@@ -61,7 +97,9 @@ class SimulationPreview extends React.Component<
 
         // Close
         const closeTrade = simulation.trades.find(
-          (trade) => formatDateForGraph(trade.exitTime) === currentDate
+          (trade) =>
+            formatDateForGraph(trade.exitTime, simulation.interval) ===
+            currentDate
         );
 
         if (closeTrade) {
@@ -77,7 +115,7 @@ class SimulationPreview extends React.Component<
 
     return {
       labels: simulation.history.map((tick: Tick) =>
-        formatDateForGraph(tick.closeTime)
+        formatDateForGraph(tick.closeTime, simulation.interval)
       ),
       datasets: [
         {
@@ -192,9 +230,19 @@ class SimulationPreview extends React.Component<
 
                                 return (
                                   <tr key={'trade-' + idx}>
-                                    <td>{trade.entryTime.substr(0, 10)}</td>
+                                    <td>
+                                      {formatDateForGraph(
+                                        trade.entryTime,
+                                        simulation.interval
+                                      )}
+                                    </td>
                                     <td>{trade.entryPrice}</td>
-                                    <td>{trade.exitTime.substr(0, 10)}</td>
+                                    <td>
+                                      {formatDateForGraph(
+                                        trade.exitTime,
+                                        simulation.interval
+                                      )}
+                                    </td>
                                     <td>{trade.exitPrice}</td>
                                     <td className={'table-' + diffDaysVariant}>
                                       {trade.holdingPeriod}
