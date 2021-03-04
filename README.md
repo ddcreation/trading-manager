@@ -49,7 +49,7 @@ You will need:
 
 - Create your dev environment file
 
-      `cp server/src/pre-start/env/example.env server/src/pre-start/env/development.env`
+      $ cp server/src/pre-start/env/example.env server/src/pre-start/env/development.env
 
 - Edit this new `server/src/pre-start/env/development.env` file to put your binance API params (replace `BINANCE_API_KEY` and `BINANCE_API_SECRET` by your real values)
 
@@ -61,7 +61,7 @@ For the moment they are harcoded at the top of this file `server/src/shared/Cryp
 
 - Copy the example strategy
 
-      `cp server/src/shared/strategies/example.strategy.ts server/src/shared/strategies/YOUR-STRATEGY-NAME.strategy.ts`
+      $ cp server/src/shared/strategies/example.strategy.ts server/src/shared/strategies/YOUR-STRATEGY-NAME.strategy.ts
 
 - Edit this file
   - Changing the name and params (class name, top public properties...)
