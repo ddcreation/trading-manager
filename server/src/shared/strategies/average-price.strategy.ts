@@ -100,9 +100,9 @@ class AvgPriceStrategy implements Strategy {
     return dataFramewithAvg;
   }
 
-  // Stop out on 10% loss from entry price.
+  // Stop out on 20% loss from entry price.
   public stopLoss(args: any): number {
-    return args.entryPrice * 0.2; // Stop out on 20% loss from entry price.
+    return args.entryPrice * 0.2;
   }
 }
 
