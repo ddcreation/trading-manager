@@ -18,6 +18,7 @@ class AvgPriceStrategy implements Strategy {
   public interval = IntervalType['1d'];
   public name = 'Average price';
   public parameters = { startDate: '' };
+  private _averageDays = 10;
 
   // Buy when price is below average.
   public checkBuyOpportunity(args: any): boolean {
@@ -29,10 +30,9 @@ class AvgPriceStrategy implements Strategy {
   }
 
   public entryRule(enterPosition: EnterPositionFn, args: any): void {
-    const blankDays = 30;
     const startAnalyzeDate = new Date(args.parameters.startDate);
     const blankAnalyzingPeriod = startAnalyzeDate.setDate(
-      startAnalyzeDate.getDate() + blankDays
+      startAnalyzeDate.getDate() + this._averageDays
     );
 
     if (
@@ -80,12 +80,12 @@ class AvgPriceStrategy implements Strategy {
       .renameSeries({ date: 'time' });
 
     // Add average price:
-    const avgDays = 10;
     const rows = dataFrame.toPairs() as any[];
 
     const dataFramewithAvg = dataFrame.generateSeries({
       intervalAvg: (row, rowIndex) => {
-        const startIdx = avgDays < rowIndex ? rowIndex - avgDays : 0;
+        const startIdx =
+          this._averageDays < rowIndex ? rowIndex - this._averageDays : 0;
 
         return dataFrame
           .between(rows[startIdx][0], rows[rowIndex][0])
