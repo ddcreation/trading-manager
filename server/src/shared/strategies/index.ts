@@ -6,5 +6,5 @@ import MomentumDayStrategy from './momentum-day.strategy';
 export const strategies: Strategy[] = [
   AvgPriceStrategy,
   MomentumDayStrategy,
-  ExampleStrategy,
+  // ExampleStrategy,
 ];
