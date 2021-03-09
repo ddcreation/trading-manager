@@ -8,18 +8,19 @@ import {
 } from 'grademark/build/lib/strategy';
 import CryptoProviderApi from '@shared/CryptoProviderApi';
 import { IntervalType } from '@entities/CryptoApiParams';
+import { bullishFlagRecognition, chainedCandles } from './pattern-recognition';
 
 /**
- * Strategy Momentum day
+ * Strategy bullish flag double
  * @description Strategy based on make high profit when the price rises (inspired by https://www.warriortrading.com/momentum-day-trading-strategy/)
  */
-class MomentumDayStrategy implements Strategy {
-  public id = 'momentum-day';
+class BullishFlagDoubleStrategy implements Strategy {
+  public id = 'bullish-flag-double';
   public interval = IntervalType['1m'];
-  public name = 'Momentum day';
+  public name = 'Bullish flag double';
 
   public checkBuyOpportunity(args: any): boolean {
-    return true;
+    return args.bar.flags.bullish;
   }
 
   public checkSellOpportunity(args: any): boolean {
@@ -27,14 +28,13 @@ class MomentumDayStrategy implements Strategy {
   }
 
   public entryRule(enterPosition: EnterPositionFn, args: any): void {
-    if (true) {
+    if (this.checkBuyOpportunity(args)) {
       enterPosition({ direction: TradeDirection.Long });
     }
   }
 
-  // Sell when 5% bonus or too long
   public exitRule(exitPosition: ExitPositionFn, args: any): void {
-    if (args.bar.close > args.entryPrice * 1.05) {
+    if (args.bar.close > args.bar.stoploss * 2) {
       exitPosition();
     }
   }
@@ -46,7 +46,7 @@ class MomentumDayStrategy implements Strategy {
   }
 
   public historicToDataframe(historic: CryptoHistory[]): any {
-    const formatedHistoric = historic.map((history) => {
+    const formatedHistoric = historic.map((history, index) => {
       return {
         close: history.close,
         date: new Date(history.closeTime).toISOString(),
@@ -54,6 +54,8 @@ class MomentumDayStrategy implements Strategy {
         low: history.low,
         open: history.open,
         volume: history.volume,
+        flags: { bullish: bullishFlagRecognition(historic, index, 5) },
+        stoploss: historic[index].open - historic[index - 1]?.low || 0,
       };
     });
 
@@ -65,9 +67,9 @@ class MomentumDayStrategy implements Strategy {
   }
 
   // Stop out on lost.
-  public stopLoss(): number {
-    return 0.5;
+  public stopLoss(args: any): number {
+    return args.bar.stoploss;
   }
 }
 
-export default new MomentumDayStrategy();
+export default new BullishFlagDoubleStrategy();

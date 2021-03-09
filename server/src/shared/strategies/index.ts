@@ -1,10 +1,10 @@
 import { Strategy } from '@entities/Strategies';
 import AvgPriceStrategy from './average-price.strategy';
+import BullishFlagDoubleStrategy from './bullish-flag-double.strategy';
 import ExampleStrategy from './example.strategy';
-import MomentumDayStrategy from './momentum-day.strategy';
 
 export const strategies: Strategy[] = [
   AvgPriceStrategy,
-  MomentumDayStrategy,
+  BullishFlagDoubleStrategy,
   // ExampleStrategy,
 ];
