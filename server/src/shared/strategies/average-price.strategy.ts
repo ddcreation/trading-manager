@@ -43,16 +43,9 @@ class AvgPriceStrategy implements Strategy {
     }
   }
 
-  // Sell when 5% bonus or too long
+  // Sell when 5% bonus
   public exitRule(exitPosition: ExitPositionFn, args: any): void {
-    const maxDuration = 10;
-    const entryTime = new Date(args.position.entryTime).getTime();
-    const currentTime = new Date(args.bar.time).getTime();
-
-    if (
-      args.bar.close > args.entryPrice * 1.05 ||
-      (currentTime - entryTime) / (1000 * 3600 * 24) > maxDuration
-    ) {
+    if (args.bar.close > args.entryPrice * 1.05) {
       exitPosition();
     }
   }
@@ -100,9 +93,9 @@ class AvgPriceStrategy implements Strategy {
     return dataFramewithAvg;
   }
 
-  // Stop out on 20% loss from entry price.
+  // Stop out on 5% loss from entry price.
   public stopLoss(args: any): number {
-    return args.entryPrice * 0.2;
+    return args.entryPrice * 0.05;
   }
 }
 
