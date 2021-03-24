@@ -11,6 +11,7 @@
     "paths": {
       "@daos/*": ["src/daos/*"],
       "@entities/*": ["src/entities/*"],
+      "@jobs/*": ["src/jobs/*"],
       "@shared/*": ["src/shared/*"],
       "@server": ["src/Server"],
       "@websocket": ["src/WebSocket"]

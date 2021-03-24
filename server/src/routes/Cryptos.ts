@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
-import CryptoProviderApi from '../shared/CryptoProviderApi';
-import { CryptoFilterType, IntervalType } from '@entities/CryptoApiParams';
+import CryptoProviderApi from '@shared/CryptoProviderApi';
+import { CryptoFilterType } from '@entities/CryptoApiParams';
 import { Simulator } from '@shared/Simulator';
 
 const router = Router();
