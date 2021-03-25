@@ -41,7 +41,9 @@ router.get('/:symbol/history', async (req: Request, res: Response) => {
 router.get('/:symbol/simulations', async (req: Request, res: Response) => {
   // Generate simulations:
   const simulator = new Simulator();
-  const simulations = await simulator.simulate$({ symbol: req.params.symbol });
+  const simulations = await simulator.simulateAllStrategies$({
+    symbol: req.params.symbol,
+  });
 
   res.json({
     symbol: req.params.symbol,
