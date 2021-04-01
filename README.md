@@ -41,7 +41,15 @@ You will need:
 
     $ git clone https://github.com/ddcreation/trading-manager
     $ cd trading-manager
+
+### For local dev
+
     $ yarn install:all
+    $ yarn start
+
+### Or if you prefer [docker](https://www.docker.com)
+
+    $ docker-compose up
 
 ## Configure
 
