@@ -13,3 +13,17 @@ services:
       - '3000:3000'
     environment:
       - CHOKIDAR_USEPOLLING=true
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    volumes:
+      - ./db/.docker/conf/mongod.conf:/etc/mongod.conf
+      - ./db/.docker/initdb.d:/docker-entrypoint-initdb.d
+      - ./db/data/:/data/db/
+      - ./db/log/:/var/log/mongodb/
+    env_file:
+      - ./db/.docker/.env.development
+    ports:
+      - '27017:27017'
+    command: ['-f', '/etc/mongod.conf']
