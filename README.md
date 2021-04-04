@@ -105,7 +105,7 @@ To come in the future
 
 Project is: _in progress_
 
-## Inspiration
+## Credits
 
 I wanna give a special BIG UP to this dependencies that save a lot of days of hard work!
 
