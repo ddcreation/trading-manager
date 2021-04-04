@@ -228,6 +228,11 @@
   resolved "https://registry.yarnpkg.com/@types/tz-offset/-/tz-offset-0.0.0.tgz#d58f1cebd794148d245420f8f0660305d320e565"
   integrity sha512-XLD/llTSB6EBe3thkN+/I0L+yCTB6sjrcVovQdx2Cnl6N6bTzHmwe/J8mWnsXFgxLrj/emzdv8IR4evKYG2qxQ==
 
+"@types/uniqid@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@types/uniqid/-/uniqid-5.3.0.tgz#085e406b2fe01eca81bf5c6e009aa641d6f069fe"
+  integrity sha512-1bVk2JhP660eMBtJQWJp5a3wPvS/TtqFBW4t5akMUNnEPr7Qj7QXuGCOBF6nSEqYBBQ9KuwZpp/6OzcQI5hkXg==
+
 "@types/ws@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.0.tgz#499690ea08736e05a8186113dac37769ab251a0e"

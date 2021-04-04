@@ -1,26 +1,21 @@
+import uniqid from 'uniqid';
+
 export interface IUser {
-    id: number;
-    name: string;
-    email: string;
+  id: string;
+  name: string;
+  email: string;
 }
 
 class User implements IUser {
+  public id: string;
+  public name: string;
+  public email: string;
 
-    public id: number;
-    public name: string;
-    public email: string;
-
-    constructor(nameOrUser: string | IUser, email?: string, id?: number) {
-        if (typeof nameOrUser === 'string') {
-            this.name = nameOrUser;
-            this.email = email || '';
-            this.id = id || -1;
-        } else {
-            this.name = nameOrUser.name;
-            this.email = nameOrUser.email;
-            this.id = nameOrUser.id;
-        }
-    }
+  constructor(user: IUser) {
+    this.name = user.name;
+    this.email = user.email;
+    this.id = user.id || uniqid();
+  }
 }
 
 export default User;
