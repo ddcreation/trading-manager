@@ -7,7 +7,7 @@ RUN npm install -g ts-node typescript
 
 COPY package.json ./
 COPY yarn.lock ./
-COPY . ./
+COPY . .
 RUN yarn install
 
 EXPOSE 9000
