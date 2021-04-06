@@ -1,3 +1,4 @@
+import { hashPassword } from '../utils/crypto';
 import uniqid from 'uniqid';
 
 export interface IUser {
@@ -13,7 +14,7 @@ class User implements IUser {
 
   constructor(user: IUser) {
     this.username = user.username;
-    this.password = user.password;
+    this.password = hashPassword(user.password);
     this.id = user.id || uniqid();
   }
 }

@@ -25,6 +25,7 @@
     "@middlewares": "dist/middlewares",
     "@shared": "dist/shared",
     "@server": "dist/Server.js",
+    "@utils": "dist/utils",
     "@websocket": "dist/WebSocket.js"
   },
   "eslintConfig": {

@@ -15,6 +15,7 @@
       "@middlewares/*": ["src/middlewares/*"],
       "@shared/*": ["src/shared/*"],
       "@server": ["src/Server"],
+      "@utils": ["src/utils/*"],
       "@websocket": ["src/WebSocket"]
     },
     "types": ["node"],
