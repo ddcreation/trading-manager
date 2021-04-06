@@ -1,4 +1,4 @@
-import { Collection, MongoClient } from 'mongodb';
+import { Collection, FilterQuery, MongoClient } from 'mongodb';
 
 export class DatabaseConnector<T extends { id: string }> {
   private _collection: string;
@@ -24,6 +24,15 @@ export class DatabaseConnector<T extends { id: string }> {
     await client.close();
 
     return (insert as any) as T;
+  }
+
+  public async find$(params: FilterQuery<T>): Promise<T[]> {
+    const { client, collection } = await this.connect$();
+
+    const entities = await collection.find(params).toArray();
+    await client.close();
+
+    return entities;
   }
 
   public async getById$(id: string): Promise<T> {
