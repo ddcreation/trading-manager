@@ -21,6 +21,8 @@
   "_moduleAliases": {
     "@daos": "dist/daos",
     "@entities": "dist/entities",
+    "@jobs": "dist/jobs",
+    "@middlewares": "dist/middlewares",
     "@shared": "dist/shared",
     "@server": "dist/Server.js",
     "@websocket": "dist/WebSocket.js"
@@ -63,6 +65,7 @@
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "data-forge": "^1.8.17",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -72,6 +75,7 @@
     "http-status-codes": "^2.1.4",
     "jet-logger": "^1.0.4",
     "jsonfile": "^6.1.0",
+    "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "mongodb": "^3.6.5",
     "morgan": "^1.10.0",

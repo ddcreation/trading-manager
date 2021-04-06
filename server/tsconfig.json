@@ -12,6 +12,7 @@
       "@daos/*": ["src/daos/*"],
       "@entities/*": ["src/entities/*"],
       "@jobs/*": ["src/jobs/*"],
+      "@middlewares/*": ["src/middlewares/*"],
       "@shared/*": ["src/shared/*"],
       "@server": ["src/Server"],
       "@websocket": ["src/WebSocket"]
