@@ -1,11 +1,16 @@
 import User, { IUser } from '@entities/User';
 import { DatabaseConnector } from '@shared/DatabaseConnector';
+import { FilterQuery } from 'mongodb';
 
 export class UserDao {
   private _connector: DatabaseConnector<IUser>;
 
   constructor() {
     this._connector = new DatabaseConnector('users');
+  }
+
+  public find$(params: FilterQuery<IUser>) {
+    return this._connector.find$(params);
   }
 
   public getOne$(id: string): Promise<IUser | null> {
