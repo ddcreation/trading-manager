@@ -2,18 +2,18 @@ import uniqid from 'uniqid';
 
 export interface IUser {
   id: string;
-  name: string;
-  email: string;
+  username: string;
+  password: string;
 }
 
 class User implements IUser {
   public id: string;
-  public name: string;
-  public email: string;
+  public password: string;
+  public username: string;
 
   constructor(user: IUser) {
-    this.name = user.name;
-    this.email = user.email;
+    this.username = user.username;
+    this.password = user.password;
     this.id = user.id || uniqid();
   }
 }

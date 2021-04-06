@@ -8,15 +8,15 @@ const checkDuplicateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { email } = req.body;
+  const { username } = req.body;
 
-  if (!email) {
-    res.status(400).send({ message: 'Email required' });
+  if (!username) {
+    res.status(400).send({ message: 'Username required' });
   }
 
-  const existingUser = await userDao.find$({ email });
+  const existingUser = await userDao.find$({ username });
 
-  if (existingUser) {
+  if (existingUser.length) {
     res.status(400).send({ message: 'User already exists' });
     return;
   }

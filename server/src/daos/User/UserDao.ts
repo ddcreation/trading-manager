@@ -24,8 +24,9 @@ export class UserDao {
 
   public async add$(user: IUser): Promise<void> {
     const newUser = new User(user);
-    // TODO
-    return Promise.resolve(undefined);
+    await this._connector.add$(newUser);
+
+    return;
   }
 
   public async update$(user: IUser): Promise<void> {
