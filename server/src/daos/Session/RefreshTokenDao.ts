@@ -1,8 +1,7 @@
-import uniqid from 'uniqid';
 import { DatabaseConnector } from '@shared/DatabaseConnector';
+import { DbEntity } from '@entities/DbEntity';
 
-interface RefreshToken {
-  id: string;
+interface RefreshToken extends DbEntity {
   token: string;
 }
 
@@ -18,8 +17,8 @@ export class RefreshTokenDao {
     return token || null;
   }
 
-  public async add$(token: string): Promise<void> {
-    await this._connector.add$({ id: uniqid(), token });
+  public async add$(refreshToken: string): Promise<void> {
+    await this._connector.add$({ token: refreshToken });
 
     return;
   }

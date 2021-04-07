@@ -1,6 +1,7 @@
+import { DbEntity } from '@entities/DbEntity';
 import { Collection, FilterQuery, MongoClient } from 'mongodb';
 
-export class DatabaseConnector<T extends { id: string }> {
+export class DatabaseConnector<T extends DbEntity> {
   private _collection: string;
   private _dbName: string;
   private _dbUri: string;
@@ -39,7 +40,7 @@ export class DatabaseConnector<T extends { id: string }> {
     const { client, collection } = await this.connect$();
 
     const byId = await collection.findOne({
-      id: id as any,
+      _id: id as any,
     });
     await client.close();
 
@@ -55,10 +56,10 @@ export class DatabaseConnector<T extends { id: string }> {
     return entities;
   }
 
-  public async update$(entity: T): Promise<T> {
+  public async update$(id: string, entity: T): Promise<T> {
     const { client, collection } = await this.connect$();
 
-    const update = await collection.updateOne({ id: entity.id as any }, entity);
+    const update = await collection.updateOne({ _id: id as any }, entity);
     await client.close();
 
     return (update as any) as T;

@@ -4,6 +4,7 @@ import { verifySignUp } from '@middlewares/SignUp';
 import { UserDao } from '@daos/User/UserDao';
 import { validateLoginRequest } from '@middlewares/Login';
 import { RefreshTokenDao } from '@daos/Session/RefreshTokenDao';
+import { hashPassword } from '../utils/crypto';
 
 const router = Router();
 const userDao = new UserDao();
@@ -32,18 +33,25 @@ router.post(
     const { username, password } = req.body;
 
     // filter user from the users array by username and password
-    const [user] = await userDao.find$({ username, password });
+    const [user] = await userDao.find$({
+      username,
+      password: hashPassword(password),
+    });
 
     if (user) {
+      console.log(
+        process.env.ACCESS_TOKEN_SECRET,
+        process.env.REFRESH_TOKEN_SECRET
+      );
       // generate an access token
       const accessToken = jwt.sign(
-        { username: user.username },
+        { id: user._id, username: user.username },
         process.env.ACCESS_TOKEN_SECRET as string,
         { expiresIn: '20m' }
       );
 
       const refreshToken = jwt.sign(
-        { username: user.username },
+        { _id: user._id, username: user.username },
         process.env.REFRESH_TOKEN_SECRET as string
       );
 
