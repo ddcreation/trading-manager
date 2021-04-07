@@ -27,6 +27,16 @@ export class DatabaseConnector<T extends DbEntity> {
     return (insert as any) as T;
   }
 
+  public async delete$(params: FilterQuery<T>): Promise<void> {
+    const { client, collection } = await this._connect$();
+
+    console.log(params);
+    await collection.deleteMany(params);
+    await client.close();
+
+    return;
+  }
+
   public async find$(params: FilterQuery<T>): Promise<T[]> {
     const { client, collection } = await this._connect$();
 

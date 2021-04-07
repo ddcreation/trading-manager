@@ -1,3 +1,5 @@
+import { ObjectID } from 'bson';
+
 export interface DbEntity {
-  _id?: string;
+  _id?: ObjectID;
 }

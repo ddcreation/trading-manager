@@ -9,6 +9,7 @@ import { hashPassword } from '../utils/crypto';
 const router = Router();
 const userDao = new UserDao();
 const refreshTokensDao = new RefreshTokenDao();
+const accessTokenParams = { expiresIn: '20m' };
 
 router.post(
   '/signin',
@@ -39,23 +40,25 @@ router.post(
     });
 
     if (user) {
-      console.log(
-        process.env.ACCESS_TOKEN_SECRET,
-        process.env.REFRESH_TOKEN_SECRET
-      );
-      // generate an access token
-      const accessToken = jwt.sign(
-        { id: user._id, username: user.username },
-        process.env.ACCESS_TOKEN_SECRET as string,
-        { expiresIn: '20m' }
-      );
+      const tokenUser = {
+        _id: user._id?.toHexString(),
+        username: user.username,
+      };
 
+      const accessToken = jwt.sign(
+        tokenUser,
+        process.env.ACCESS_TOKEN_SECRET as string,
+        accessTokenParams
+      );
       const refreshToken = jwt.sign(
-        { _id: user._id, username: user.username },
+        tokenUser,
         process.env.REFRESH_TOKEN_SECRET as string
       );
 
-      await refreshTokensDao.add$(refreshToken);
+      await refreshTokensDao.add$(
+        user._id?.toHexString() as string,
+        refreshToken
+      );
 
       res.json({
         accessToken,
@@ -66,5 +69,59 @@ router.post(
     }
   }
 );
+
+router.post('/refresh', async (req: Request, res: Response) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  const refreshExist = await refreshTokensDao.find$(token);
+  if (!refreshExist) {
+    return res.sendStatus(403);
+  }
+
+  jwt.verify(
+    token,
+    process.env.REFRESH_TOKEN_SECRET as string,
+    (err: unknown, tokenUser: any) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      const accessToken = jwt.sign(
+        tokenUser,
+        process.env.ACCESS_TOKEN_SECRET as string,
+        accessTokenParams
+      );
+
+      res.json({
+        accessToken,
+      });
+    }
+  );
+});
+
+router.post('/logout', async (req: Request, res: Response) => {
+  const { token } = req.body;
+
+  // Delete all user tokens:
+  await new Promise((resolve, reject) => {
+    jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET as string,
+      (err: unknown, tokenUser: any) => {
+        if (err) {
+          reject();
+        }
+
+        refreshTokensDao.deleteForUser$(tokenUser._id).then(resolve);
+      }
+    );
+  });
+
+  res.send('Logout successful');
+});
 
 export default router;
