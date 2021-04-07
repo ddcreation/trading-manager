@@ -19,7 +19,7 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async add$(entity: T): Promise<T> {
-    const { client, collection } = await this.connect$();
+    const { client, collection } = await this._connect$();
 
     const insert = await collection.insertOne(entity as any);
     await client.close();
@@ -28,7 +28,7 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async find$(params: FilterQuery<T>): Promise<T[]> {
-    const { client, collection } = await this.connect$();
+    const { client, collection } = await this._connect$();
 
     const entities = await collection.find(params).toArray();
     await client.close();
@@ -37,7 +37,7 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async getById$(id: string): Promise<T> {
-    const { client, collection } = await this.connect$();
+    const { client, collection } = await this._connect$();
 
     const byId = await collection.findOne({
       _id: id as any,
@@ -48,7 +48,7 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async getAll$(): Promise<T[]> {
-    const { client, collection } = await this.connect$();
+    const { client, collection } = await this._connect$();
 
     const entities = await collection.find().toArray();
     await client.close();
@@ -57,7 +57,7 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async update$(id: string, entity: T): Promise<T> {
-    const { client, collection } = await this.connect$();
+    const { client, collection } = await this._connect$();
 
     const update = await collection.updateOne({ _id: id as any }, entity);
     await client.close();
@@ -65,7 +65,7 @@ export class DatabaseConnector<T extends DbEntity> {
     return (update as any) as T;
   }
 
-  private async connect$(): Promise<{
+  private async _connect$(): Promise<{
     client: MongoClient;
     collection: Collection<T>;
   }> {
