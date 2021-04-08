@@ -1,7 +1,4 @@
-import { UserDao } from '@daos/User/UserDao';
 import { NextFunction, Request, Response } from 'express';
-
-const userDao = new UserDao();
 
 export const validateLoginRequest = async (
   req: Request,
