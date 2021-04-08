@@ -5,6 +5,8 @@ import { UserDao } from '@daos/User/UserDao';
 import { validateLoginRequest } from '@middlewares/Login';
 import { RefreshTokenDao } from '@daos/Session/RefreshTokenDao';
 import { hashPassword } from '../utils/crypto';
+import { authenticate } from '@middlewares/Auth';
+import { TokenUser } from '@entities/User';
 
 const router = Router();
 const userDao = new UserDao();
@@ -40,8 +42,8 @@ router.post(
     });
 
     if (user) {
-      const tokenUser = {
-        _id: user._id?.toHexString(),
+      const tokenUser: TokenUser = {
+        _id: user._id?.toHexString() as string,
         username: user.username,
       };
 
@@ -103,7 +105,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
   );
 });
 
-router.post('/logout', async (req: Request, res: Response) => {
+router.post('/logout', authenticate, async (req: Request, res: Response) => {
   const { token } = req.body;
 
   // Delete all user tokens:

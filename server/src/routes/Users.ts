@@ -11,10 +11,11 @@ const userDao = new UserDao();
  *                      Get All Users - "GET /api/users/all"
  ******************************************************************************/
 
-router.get('/all', async (req: Request, res: Response) => {
-  const users = await userDao.getAll$();
-  return res.status(OK).json({ users });
-});
+// TODO Reactivate after roles implementation to allow only admins
+// router.get('/all', async (req: Request, res: Response) => {
+//   const users = await userDao.getAll$();
+//   return res.status(OK).json({ users });
+// });
 
 /******************************************************************************
  *                       Add One - "POST /api/users/add"
