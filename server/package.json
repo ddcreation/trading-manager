@@ -2,7 +2,7 @@
   "name": "trading-api",
   "version": "0.1.0",
   "scripts": {
-    "build": "ts-node build.ts",
+    "build": "ts-node --files build.ts",
     "lint": "eslint . --ext .ts",
     "start": "nodemon -L",
     "start:dist": "node -r module-alias/register ./dist --env=production",
@@ -16,7 +16,7 @@
       "src"
     ],
     "ext": "ts",
-    "exec": "ts-node -r tsconfig-paths/register ./src"
+    "exec": "ts-node --files -r tsconfig-paths/register ./src"
   },
   "_moduleAliases": {
     "@daos": "dist/daos",

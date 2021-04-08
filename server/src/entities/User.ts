@@ -1,6 +1,11 @@
 import { hashPassword } from '../utils/crypto';
 import { DbEntity } from './DbEntity';
 
+export interface TokenUser {
+  _id: string;
+  username: string;
+}
+
 export interface IUser extends DbEntity {
   username: string;
   password: string;
