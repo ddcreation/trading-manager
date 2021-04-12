@@ -15,6 +15,8 @@ services:
   client:
     container_name: trading-manager-client-dev
     build: ./client
+    volumes:
+      - ./client/src:/app/src
     depends_on:
       - server
     ports:

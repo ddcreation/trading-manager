@@ -24,7 +24,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
   }
 
   renderBalance() {
-    return this.state?.account.balances.length ? (
+    return this.state?.account?.balances?.length ? (
       <Table striped bordered>
         <thead>
           <tr>
