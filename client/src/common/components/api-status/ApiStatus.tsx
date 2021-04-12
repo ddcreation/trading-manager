@@ -2,14 +2,12 @@ import React from 'react';
 import { Badge } from 'react-bootstrap';
 import api from '../../../utils/api';
 
-interface AppProperties {}
-
 interface AppState {
   apiResponse: string;
 }
 
-class ApiStatus extends React.Component<AppProperties, AppState> {
-  constructor(props: AppProperties) {
+class ApiStatus extends React.Component<unknown, AppState> {
+  constructor(props: unknown) {
     super(props);
     this.state = { apiResponse: '' };
   }
