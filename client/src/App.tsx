@@ -17,11 +17,16 @@ class App extends Component<AppProps, unknown> {
           <AppNavigation />
           <Switch>
             {this.props?.authenticated ? (
-              AppRoutes.map((route, idx) => (
-                <Route key={idx} path={route.path}>
-                  <Page title={route.title} component={route.component} />
+              <React.Fragment>
+                {AppRoutes.map((route, idx) => (
+                  <Route key={idx} exact path={route.path}>
+                    <Page title={route.title} component={route.component} />
+                  </Route>
+                ))}
+                <Route path='/'>
+                  <Redirect to='/dashboard'></Redirect>
                 </Route>
-              ))
+              </React.Fragment>
             ) : (
               <React.Fragment>
                 <Route exact path='/login'>

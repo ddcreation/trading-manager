@@ -34,7 +34,7 @@ const AppRoutes: RouteProps[] = [
   {
     component: DashboardRoute,
     nav: { visible: true, sort: 0 },
-    path: '/',
+    path: '/dashboard',
     title: 'Dashboard',
   },
 ];
