@@ -16,25 +16,21 @@ class App extends Component<AppProps, unknown> {
         <BrowserRouter>
           <AppNavigation />
           <Switch>
-            {this.props?.authenticated ? (
+            {this.props.authenticated ? (
               <React.Fragment>
                 {AppRoutes.map((route, idx) => (
                   <Route key={idx} exact path={route.path}>
                     <Page title={route.title} component={route.component} />
                   </Route>
                 ))}
-                <Route path='/'>
-                  <Redirect to='/dashboard'></Redirect>
-                </Route>
+                <Redirect to='/dashboard'></Redirect>
               </React.Fragment>
             ) : (
               <React.Fragment>
                 <Route exact path='/login'>
                   <LoginRoute></LoginRoute>
                 </Route>
-                <Route path='/'>
-                  <Redirect to='/login'></Redirect>
-                </Route>
+                <Redirect to='/login'></Redirect>
               </React.Fragment>
             )}
           </Switch>
@@ -45,7 +41,7 @@ class App extends Component<AppProps, unknown> {
 }
 
 const mapStateToProps = (state: any) => ({
-  authenticated: !!state.user.authenticated,
+  authenticated: state.user.authenticated,
 });
 
 export default connect(mapStateToProps)(App);
