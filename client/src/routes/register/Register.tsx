@@ -22,7 +22,9 @@ class RegisterRoute extends Component {
                 <Form.Control type='password' placeholder='Confirm password' />
               </Form.Group>
 
-              <Button className='w-100'>Register</Button>
+              <Button className='w-100' type='submit'>
+                Register
+              </Button>
 
               <Button as={Link} to='/login' variant='link' className='w-100'>
                 Back to login

@@ -18,7 +18,9 @@ class LoginRoute extends Component {
                 <Form.Control type='password' placeholder='Password' />
               </Form.Group>
 
-              <Button className='w-100'>Login</Button>
+              <Button className='w-100' type='submit'>
+                Login
+              </Button>
 
               <Button as={Link} to='/register' variant='link' className='w-100'>
                 Register
