@@ -1,15 +1,14 @@
 const { REACT_APP_API_URL } = process.env;
 
-export const ApiResources = {
-  cryptos: `${REACT_APP_API_URL}/cryptos`,
-  healthcheck: `${REACT_APP_API_URL}/healthcheck`,
+const ApiResources = {
+  cryptos: `/cryptos`,
+  healthcheck: `/healthcheck`,
 };
 
 class Api {
-  resources = ApiResources;
-
-  async retrieve<T>(url: string): Promise<T> {
-    return fetch(url)
+  public resources = ApiResources;
+  async retrieve<T>(resource: string): Promise<T> {
+    return fetch(`${REACT_APP_API_URL}${resource}`)
       .then(this.errorHandler)
       .then((res) => res.text())
       .then((res) => JSON.parse(res))
