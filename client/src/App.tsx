@@ -4,6 +4,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { AppNavigation, Page } from './common/components';
 import AppRoutes from './routes/AppRoutes';
 import LoginRoute from './routes/login/Login';
+import RegisterRoute from './routes/register/Register';
 
 interface AppProps {
   authenticated: boolean;
@@ -29,6 +30,9 @@ class App extends Component<AppProps, unknown> {
               <React.Fragment>
                 <Route exact path='/login'>
                   <LoginRoute></LoginRoute>
+                </Route>
+                <Route exact path='/register'>
+                  <RegisterRoute></RegisterRoute>
                 </Route>
                 <Redirect to='/login'></Redirect>
               </React.Fragment>
