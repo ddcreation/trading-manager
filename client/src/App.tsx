@@ -15,24 +15,24 @@ class App extends Component<AppProps, unknown> {
       <React.Fragment>
         <BrowserRouter>
           <AppNavigation />
-          {this.props?.authenticated ? (
-            <Switch>
-              {AppRoutes.map((route, idx) => (
+          <Switch>
+            {this.props?.authenticated ? (
+              AppRoutes.map((route, idx) => (
                 <Route key={idx} path={route.path}>
                   <Page title={route.title} component={route.component} />
                 </Route>
-              ))}
-            </Switch>
-          ) : (
-            <Switch>
-              <Route exact path='/login'>
-                <LoginRoute></LoginRoute>
-              </Route>
-              <Route path='/'>
-                <Redirect to='/login'></Redirect>
-              </Route>
-            </Switch>
-          )}
+              ))
+            ) : (
+              <React.Fragment>
+                <Route exact path='/login'>
+                  <LoginRoute></LoginRoute>
+                </Route>
+                <Route path='/'>
+                  <Redirect to='/login'></Redirect>
+                </Route>
+              </React.Fragment>
+            )}
+          </Switch>
         </BrowserRouter>
       </React.Fragment>
     );
