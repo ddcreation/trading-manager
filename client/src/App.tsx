@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import './App.scss';
 import { AppNavigation, Page } from './common/components';
-import { User } from './common/models';
 import AppRoutes from './routes/AppRoutes';
 import LoginRoute from './routes/login/Login';
 
-interface AppState {
-  user: User;
+interface AppProps {
+  authenticated: boolean;
 }
 
-class App extends Component<unknown, AppState> {
+class App extends Component<AppProps, unknown> {
   render() {
     return (
       <React.Fragment>
-        {this.state?.user ? (
-          <BrowserRouter>
-            <AppNavigation />
+        <BrowserRouter>
+          <AppNavigation />
+          {this.props?.authenticated ? (
             <Switch>
               {AppRoutes.map((route, idx) => (
                 <Route key={idx} path={route.path}>
@@ -24,9 +23,7 @@ class App extends Component<unknown, AppState> {
                 </Route>
               ))}
             </Switch>
-          </BrowserRouter>
-        ) : (
-          <BrowserRouter>
+          ) : (
             <Switch>
               <Route exact path='/login'>
                 <LoginRoute></LoginRoute>
@@ -35,11 +32,15 @@ class App extends Component<unknown, AppState> {
                 <Redirect to='/login'></Redirect>
               </Route>
             </Switch>
-          </BrowserRouter>
-        )}
+          )}
+        </BrowserRouter>
       </React.Fragment>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state: any) => ({
+  authenticated: !!state.user.authenticated,
+});
+
+export default connect(mapStateToProps)(App);
