@@ -1,3 +1,5 @@
+import { LOGIN_SUCCESS } from './user.types';
+
 interface UserState {
   authenticated: boolean;
 }
@@ -7,6 +9,12 @@ const initialState: UserState = {
 };
 
 const userReducer = (state = initialState, action: any): UserState => {
+  if (action.type === LOGIN_SUCCESS) {
+    return {
+      ...state,
+      authenticated: true,
+    };
+  }
   return state;
 };
 

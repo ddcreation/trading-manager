@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Button, Card, Container, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { authService } from '../../services/auth.service';
 
 interface LoginRouteState {
   form: {
@@ -93,8 +94,7 @@ class LoginRoute extends Component<unknown, LoginRouteState> {
             (key: string) => this.state.errors[key]
           ).length === 0
         ) {
-          // TODO: call API login
-          console.log('submit form', this.state);
+          authService.login(this.state.form as any);
         }
       }
     );
