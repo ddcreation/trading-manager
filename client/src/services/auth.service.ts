@@ -15,7 +15,7 @@ export class AuthService {
   }
 
   public login(credentials: LoginRequest): void {
-    this._api.post('/auth/login', credentials).then((response) => {
+    this._api.post('/auth/login', credentials).then(() => {
       store.dispatch({ type: LOGIN_SUCCESS });
     });
   }
