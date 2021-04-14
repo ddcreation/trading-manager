@@ -1,3 +1,5 @@
+import store from '../redux/store';
+
 const { REACT_APP_API_URL } = process.env;
 
 const ApiResources = {
@@ -8,7 +10,13 @@ const ApiResources = {
 class Api {
   public resources = ApiResources;
   async retrieve<T>(resource: string): Promise<T> {
-    return fetch(`${REACT_APP_API_URL}${resource}`)
+    const accessToken = store.getState().user.accessToken;
+
+    return fetch(`${REACT_APP_API_URL}${resource}`, {
+      headers: new Headers({
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      }),
+    })
       .then(this.errorHandler)
       .then((res) => res.text())
       .then((res) => JSON.parse(res))
