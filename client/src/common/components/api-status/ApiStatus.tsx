@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from 'react-bootstrap';
+import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import api from '../../../utils/api';
 
 interface AppState {
@@ -18,11 +18,25 @@ class ApiStatus extends React.Component<unknown, AppState> {
       .then((res) => this.setState({ apiResponse: res }));
   }
 
+  popover = (props: any) => {
+    return (
+      <Popover id='apiStatusPopover' {...props}>
+        <Popover.Title as='h3'>API Status</Popover.Title>
+        <Popover.Content>{this.state.apiResponse}</Popover.Content>
+      </Popover>
+    );
+  };
+
   render() {
-    if (!this.state.apiResponse) {
-      return <Badge variant='danger'>API Error</Badge>;
-    }
-    return <Badge variant='success'>{this.state.apiResponse}</Badge>;
+    return (
+      <OverlayTrigger trigger='click' placement='bottom' overlay={this.popover}>
+        <Button variant='link'>
+          <Badge pill variant={!this.state.apiResponse ? 'danger' : 'success'}>
+            Api
+          </Badge>
+        </Button>
+      </OverlayTrigger>
+    );
   }
 }
 
