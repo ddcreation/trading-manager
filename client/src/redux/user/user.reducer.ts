@@ -1,21 +1,30 @@
-import { LOGIN_SUCCESS } from './user.types';
+import { AUTH_REGISTER, LOGIN_SUCCESS } from './user.types';
 
 interface UserState {
   authenticated: boolean;
+  registered: boolean;
 }
 
 const initialState: UserState = {
   authenticated: false,
+  registered: false,
 };
 
 const userReducer = (state = initialState, action: any): UserState => {
-  if (action.type === LOGIN_SUCCESS) {
-    return {
-      ...state,
-      authenticated: true,
-    };
+  const newState = { ...state };
+
+  switch (action.type) {
+    case LOGIN_SUCCESS: {
+      newState.authenticated = true;
+      break;
+    }
+    case AUTH_REGISTER: {
+      newState.registered = true;
+      break;
+    }
   }
-  return state;
+
+  return newState;
 };
 
 export default userReducer;

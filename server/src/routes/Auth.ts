@@ -1,11 +1,10 @@
 import * as jwt from 'jsonwebtoken';
 import { Request, Response, Router } from 'express';
-import { verifySignUp } from '@middlewares/SignUp';
 import { UserDao } from '@daos/User/UserDao';
 import { validateLoginRequest } from '@middlewares/Login';
 import { RefreshTokenDao } from '@daos/Session/RefreshTokenDao';
 import { hashPassword } from '../utils/crypto';
-import { authenticate } from '@middlewares/Auth';
+import { authenticate, checkDuplicateUser } from '@middlewares/Auth';
 import { TokenUser } from '@entities/User';
 
 const router = Router();
@@ -14,8 +13,8 @@ const refreshTokensDao = new RefreshTokenDao();
 const accessTokenParams = { expiresIn: '20m' };
 
 router.post(
-  '/signin',
-  [verifySignUp.checkPasswordConfirm, verifySignUp.checkDuplicateUser],
+  '/register',
+  [checkDuplicateUser],
   async (req: Request, res: Response) => {
     try {
       const newUser = await userDao.add$(req.body);
