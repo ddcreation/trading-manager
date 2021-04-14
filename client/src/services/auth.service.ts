@@ -1,4 +1,4 @@
-import { AUTH_REGISTER, LOGIN_SUCCESS } from '../redux';
+import { loginAction, logoutAction, registerAction } from '../redux';
 import store from '../redux/store';
 import { ApiService } from './api.service';
 
@@ -19,14 +19,22 @@ export class AuthService {
   }
 
   public login(credentials: LoginRequest): void {
-    this._api.post('/auth/login', credentials).then(() => {
-      store.dispatch({ type: LOGIN_SUCCESS });
+    this._api.post('/auth/login', credentials).then((response) => {
+      store.dispatch(loginAction(response));
+    });
+  }
+
+  public logout(): void {
+    const token = store.getState().user.refreshToken;
+
+    this._api.post('/auth/logout', { token }).then(() => {
+      store.dispatch(logoutAction());
     });
   }
 
   public register(credentials: RegisterRequest): Promise<unknown> {
     return this._api.post('/auth/register', credentials).then((response) => {
-      store.dispatch({ type: AUTH_REGISTER });
+      store.dispatch(registerAction());
 
       return response;
     });

@@ -8,6 +8,7 @@ import React from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
+import { authService } from '../../../services/auth.service';
 
 interface UserNavigationProps {
   authenticated: boolean;
@@ -25,7 +26,11 @@ const UserNavigation = (props: UserNavigationProps) => {
             Account
           </Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item as={Button} variant='outline-danger'>
+          <Dropdown.Item
+            as={Button}
+            variant='outline-danger'
+            onClick={authService.logout}
+          >
             <FontAwesomeIcon icon={faPowerOff} /> Logout
           </Dropdown.Item>
         </Dropdown.Menu>
