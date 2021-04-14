@@ -1,9 +1,9 @@
-import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import AppRoutes from '../../../routes/AppRoutes';
 import ApiStatus from '../api-status/ApiStatus';
+import UserNavigation from '../user-nav/UserNavigation';
 
 interface AppNavigationProps {
   authenticated: boolean;
@@ -41,7 +41,10 @@ const AppNavigation = (props: AppNavigationProps) => {
               )
           )}
       </Nav>
-      <ApiStatus />
+      <UserNavigation />
+      <div className='ml-1'>
+        <ApiStatus />
+      </div>
     </Navbar>
   );
 };

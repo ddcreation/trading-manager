@@ -1,4 +1,3 @@
-import AccountRoute from './account/Account';
 import CryptoRatesRoute from './crypto-rates/CryptoRates';
 import DashboardRoute from './dashboard/Dashboard';
 import OpportunitiesRoute from './opportunities/Opportunities';
@@ -24,12 +23,6 @@ const AppRoutes: RouteProps[] = [
     nav: { label: 'Crypto', visible: true, sort: 2 },
     path: '/crypto',
     title: 'Crypto currencies',
-  },
-  {
-    component: AccountRoute,
-    nav: { label: 'Account', visible: true, sort: 3 },
-    path: '/account',
-    title: 'Account',
   },
   {
     component: DashboardRoute,
