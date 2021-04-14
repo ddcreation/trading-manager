@@ -1,5 +1,7 @@
+import { faGlobeEurope } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import api from '../../../utils/api';
 
 interface AppState {
@@ -30,10 +32,11 @@ class ApiStatus extends React.Component<unknown, AppState> {
   render() {
     return (
       <OverlayTrigger trigger='click' placement='bottom' overlay={this.popover}>
-        <Button variant='link'>
-          <Badge pill variant={!this.state.apiResponse ? 'danger' : 'success'}>
-            Api
-          </Badge>
+        <Button variant='light'>
+          <FontAwesomeIcon
+            icon={faGlobeEurope}
+            color={!this.state.apiResponse ? 'red' : 'green'}
+          />
         </Button>
       </OverlayTrigger>
     );
