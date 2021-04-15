@@ -12,12 +12,14 @@
       "@daos/*": ["src/daos/*"],
       "@entities/*": ["src/entities/*"],
       "@jobs/*": ["src/jobs/*"],
+      "@middlewares/*": ["src/middlewares/*"],
       "@shared/*": ["src/shared/*"],
       "@server": ["src/Server"],
+      "@utils": ["src/utils/*"],
       "@websocket": ["src/WebSocket"]
     },
     "types": ["node"],
-    "typeRoots": ["../node_modules/@types"]
+    "typeRoots": ["src/types", "../node_modules/@types"]
   },
   "include": ["src/**/*.ts", "spec/**/*.ts"]
 }

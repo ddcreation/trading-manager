@@ -1,10 +1,15 @@
-import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import AppRoutes from '../../../routes/AppRoutes';
 import ApiStatus from '../api-status/ApiStatus';
+import UserNavigation from '../user-nav/UserNavigation';
 
-const AppNavigation = () => {
+interface AppNavigationProps {
+  authenticated: boolean;
+}
+
+const AppNavigation = (props: AppNavigationProps) => {
   const location = useLocation();
 
   const navRoutes = AppRoutes.sort((navA, navB) =>
@@ -21,23 +26,31 @@ const AppNavigation = () => {
         Trading manager
       </Navbar.Brand>
       <Nav className='mr-auto'>
-        {navRoutes.map(
-          (route, idx) =>
-            route.nav.visible && (
-              <Nav.Link
-                as={Link}
-                key={idx}
-                to={route.path}
-                className={route.active ? 'active' : ''}
-              >
-                {route.nav.label || route.title}
-              </Nav.Link>
-            )
-        )}
+        {props.authenticated &&
+          navRoutes.map(
+            (route, idx) =>
+              route.nav.visible && (
+                <Nav.Link
+                  as={Link}
+                  key={idx}
+                  to={route.path}
+                  className={route.active ? 'active' : ''}
+                >
+                  {route.nav.label || route.title}
+                </Nav.Link>
+              )
+          )}
       </Nav>
-      <ApiStatus />
+      <UserNavigation />
+      <div className='ml-1'>
+        <ApiStatus />
+      </div>
     </Navbar>
   );
 };
 
-export default AppNavigation;
+const mapStateToProps = (state: any) => ({
+  authenticated: state.user.authenticated,
+});
+
+export default connect(mapStateToProps)(AppNavigation);

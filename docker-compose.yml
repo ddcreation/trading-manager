@@ -3,13 +3,38 @@ services:
   server:
     container_name: trading-manager-api-dev
     build: ./server
+    volumes:
+      - ./server/src:/app/src
+    env_file:
+      - ./db/.docker/.env.development
+    depends_on:
+      - mongodb
     ports:
       - '9000:9000'
       - '8080:8080'
   client:
     container_name: trading-manager-client-dev
     build: ./client
+    volumes:
+      - ./client/src:/app/src
+    depends_on:
+      - server
     ports:
       - '3000:3000'
     environment:
       - CHOKIDAR_USEPOLLING=true
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    restart: always
+    volumes:
+      - ./db/.docker/conf/mongod.conf:/etc/mongod.conf
+      - ./db/.docker/initdb.d:/docker-entrypoint-initdb.d
+      - ./db/data/:/data/db/
+      - ./db/log/:/var/log/mongodb/
+    env_file:
+      - ./db/.docker/.env.development
+    ports:
+      - '27017'
+    command: ['-f', '/etc/mongod.conf']

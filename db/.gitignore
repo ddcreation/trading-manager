@@ -1,0 +1,24 @@
+# DB
+data/*
+!data/.gitkeep
+log/*
+!log/.gitkeep
+
+# Docker env
+/.docker/.env.development
+/.docker/.env.production
+
+# misc
+.DS_Store
+development.env
+production.env
+test.env
+**/.env
+**/.env.local
+**/.env.development
+**/.env.test
+**/.env.production
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

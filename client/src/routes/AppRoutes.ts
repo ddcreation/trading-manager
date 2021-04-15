@@ -27,14 +27,15 @@ const AppRoutes: RouteProps[] = [
   },
   {
     component: AccountRoute,
-    nav: { label: 'Account', visible: true, sort: 3 },
+    nav: { label: 'Account', visible: false, sort: 99 },
     path: '/account',
     title: 'Account',
   },
+
   {
     component: DashboardRoute,
     nav: { visible: true, sort: 0 },
-    path: '/',
+    path: '/dashboard',
     title: 'Dashboard',
   },
 ];

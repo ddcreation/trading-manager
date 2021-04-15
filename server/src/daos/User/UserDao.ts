@@ -1,64 +1,41 @@
-import { IUser } from '@entities/User';
+import User, { IUser } from '@entities/User';
+import { DatabaseConnector } from '@shared/DatabaseConnector';
+import { FilterQuery } from 'mongodb';
 
+export class UserDao {
+  private _connector: DatabaseConnector<IUser>;
 
+  constructor() {
+    this._connector = new DatabaseConnector('users');
+  }
 
-export interface IUserDao {
-    getOne: (email: string) => Promise<IUser | null>;
-    getAll: () => Promise<IUser[]>;
-    add: (user: IUser) => Promise<void>;
-    update: (user: IUser) => Promise<void>;
-    delete: (id: number) => Promise<void>;
+  public find$(params: FilterQuery<IUser>) {
+    return this._connector.find$(params);
+  }
+
+  public getOne$(id: string): Promise<IUser | null> {
+    // TODO
+    return Promise.resolve(null);
+  }
+
+  public getAll$(): Promise<IUser[]> {
+    return this._connector.getAll$();
+  }
+
+  public async add$(user: IUser): Promise<void> {
+    const newUser = new User(user);
+    await this._connector.add$(newUser);
+
+    return;
+  }
+
+  public async update$(user: IUser): Promise<void> {
+    // TODO
+    return Promise.resolve(undefined);
+  }
+
+  public async delete$(id: string): Promise<void> {
+    // TODO
+    return Promise.resolve(undefined);
+  }
 }
-
-class UserDao implements IUserDao {
-
-
-    /**
-     * @param email
-     */
-    public getOne(email: string): Promise<IUser | null> {
-        // TODO
-        return Promise.resolve(null);
-    }
-
-
-    /**
-     *
-     */
-    public getAll(): Promise<IUser[]> {
-         // TODO
-        return Promise.resolve([]);
-    }
-
-
-    /**
-     *
-     * @param user
-     */
-    public async add(user: IUser): Promise<void> {
-         // TODO
-        return Promise.resolve(undefined);
-    }
-
-
-    /**
-     *
-     * @param user
-     */
-    public async update(user: IUser): Promise<void> {
-         // TODO
-        return Promise.resolve(undefined);
-    }
-
-
-    /**
-     *
-     * @param id
-     */
-    public async delete(id: number): Promise<void> {
-         // TODO
-        return Promise.resolve(undefined);
-    }
-}
-
-export default UserDao;
