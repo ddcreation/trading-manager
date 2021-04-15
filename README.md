@@ -89,15 +89,16 @@ For the moment they are harcoded at the top of this file `server/src/shared/Cryp
   - List of all existing crypto in binance with current price
 - Account
   - Show binance account parameters and trading manager user preferences
+  - Database of users
+  - User signin / login / logout
 - API Cron to launch jobs (open and close orders automatically in the future)
 
 To come in the future
 
-- Implement database
-- User management with login and preferences management
-- Connect with binance API for open/close positions
+- User preferences management
+- Implement new connectors (robinhood?) and credentials for each
+- Connect with API for open/close positions
 - Automatically check tho opportunities and open positions and place orders / close
-- Implement new connectors (robinhood?)
 - More trading strategies
 - ... (_waiting for your ideas_)
 
