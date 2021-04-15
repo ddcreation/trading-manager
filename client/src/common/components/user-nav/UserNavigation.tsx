@@ -29,7 +29,9 @@ const UserNavigation = (props: UserNavigationProps) => {
           <Dropdown.Item
             as={Button}
             variant='outline-danger'
-            onClick={authService.logout}
+            onClick={() => {
+              authService.logout();
+            }}
           >
             <FontAwesomeIcon icon={faPowerOff} /> Logout
           </Dropdown.Item>
