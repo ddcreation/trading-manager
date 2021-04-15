@@ -1,4 +1,4 @@
-import store from '../redux/store';
+import { store } from '../redux/store';
 
 const { REACT_APP_API_URL } = process.env;
 

@@ -1,5 +1,5 @@
 import { loginAction, logoutAction, registerAction } from '../redux';
-import store from '../redux/store';
+import { store } from '../redux/store';
 import { ApiService } from './api.service';
 
 export interface LoginRequest {
