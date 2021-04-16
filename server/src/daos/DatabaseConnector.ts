@@ -1,5 +1,5 @@
 import { DbEntity } from '@entities/DbEntity';
-import { Collection, FilterQuery, MongoClient } from 'mongodb';
+import { Collection, FilterQuery, MongoClient, ObjectID } from 'mongodb';
 
 export class DatabaseConnector<T extends DbEntity> {
   private _collection: string;
@@ -50,8 +50,9 @@ export class DatabaseConnector<T extends DbEntity> {
     const { client, collection } = await this._connect$();
 
     const byId = await collection.findOne({
-      _id: id as any,
+      _id: ObjectID.createFromHexString(id) as any,
     });
+
     await client.close();
 
     return byId as T;

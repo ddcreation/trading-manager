@@ -7,8 +7,8 @@ export class UserService {
     this._api = new ApiService();
   }
 
-  public async me$(): Promise<unknown> {
-    const userData = await this._api.get('/users/me');
+  public async me$(): Promise<{ [k: string]: unknown }> {
+    const userData = await this._api.get<{ [k: string]: unknown }>('/users/me');
 
     return userData;
   }
