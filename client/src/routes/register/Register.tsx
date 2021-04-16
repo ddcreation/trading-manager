@@ -133,7 +133,7 @@ class RegisterRoute extends Component<RegisterRouteProps, RegisterRouteState> {
             (key: string) => this.state.errors[key]
           ).length === 0
         ) {
-          authService.register(this.state.form as any);
+          authService.register$(this.state.form as any);
         }
       }
     );

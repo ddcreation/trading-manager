@@ -27,12 +27,21 @@ export class AuthService {
   public logout(): void {
     const token = store.getState().user.refreshToken;
 
-    this._api.post('/auth/logout', { token }).then(() => {
+    this._api.post('/auth/logout', { token }).finally(() => {
       store.dispatch(logoutAction());
     });
   }
 
-  public register(credentials: RegisterRequest): Promise<unknown> {
+  public async refreshToken$(): Promise<unknown> {
+    return this._api
+      .post('/auth/refresh', { token: store.getState().user.refreshToken })
+      .then((response) => {
+        store.dispatch(loginAction(response));
+      })
+      .catch(() => this.logout());
+  }
+
+  public async register$(credentials: RegisterRequest): Promise<unknown> {
     return this._api.post('/auth/register', credentials).then((response) => {
       store.dispatch(registerAction());
 

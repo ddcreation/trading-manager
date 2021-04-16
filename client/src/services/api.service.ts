@@ -38,7 +38,7 @@ export class ApiService {
 
   public errorHandler(error: any): void {
     if (error.response.status === 401) {
-      // TODO remove session and reset store
+      store.dispatch(logoutAction());
     }
 
     // TODO send UI redux action to show toaster
