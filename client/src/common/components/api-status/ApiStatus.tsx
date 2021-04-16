@@ -2,7 +2,7 @@ import { faGlobeEurope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
-import api from '../../../utils/api';
+import { serverService } from '../../../services/server.service';
 
 interface AppState {
   apiResponse: string;
@@ -15,8 +15,8 @@ class ApiStatus extends React.Component<unknown, AppState> {
   }
 
   componentDidMount() {
-    api
-      .retrieve<string>(api.resources.healthcheck)
+    serverService
+      .healthcheck$()
       .then((res) => this.setState({ apiResponse: res }));
   }
 
