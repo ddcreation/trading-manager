@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logoutAction } from '../redux';
 import { store } from '../redux/store';
 
 const { REACT_APP_API_URL } = process.env;
@@ -17,7 +18,16 @@ export class ApiService {
     });
   }
 
-  public post<T>(path: string, body: any): Promise<void | T> {
+  public get<T>(path: string): Promise<T> {
+    return new Promise((resolve) => {
+      axios
+        .get<T>(`${this._apiUrl}${path}`, this._config)
+        .then((response) => resolve(response.data))
+        .catch(this.errorHandler);
+    });
+  }
+
+  public post<T>(path: string, body: any): Promise<T> {
     return new Promise((resolve) => {
       axios
         .post<T>(`${this._apiUrl}${path}`, body, this._config)
@@ -27,8 +37,12 @@ export class ApiService {
   }
 
   public errorHandler(error: any): void {
+    if (error.response.status === 401) {
+      // TODO remove session and reset store
+    }
+
     // TODO send UI redux action to show toaster
-    console.log(error);
+    console.log(error.response);
   }
 
   private _setHeaders = () => {
