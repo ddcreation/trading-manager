@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { TmLoader } from '../../common/components';
 import { Account } from '../../common/models';
-import api from '../../utils/api';
+import { cryptoService } from '../../services/crypto.service';
 
 interface AccountState {
   account: Account;
@@ -10,9 +10,7 @@ interface AccountState {
 
 class AccountRoute extends React.Component<unknown, AccountState> {
   componentDidMount() {
-    api
-      .retrieve<Account>(`${api.resources.cryptos}/account`)
-      .then((account) => this.setState({ account }));
+    cryptoService.getAccount$().then((account) => this.setState({ account }));
   }
 
   render() {
