@@ -1,5 +1,5 @@
 import User, { IUser } from '@entities/User';
-import { DatabaseConnector } from '@shared/DatabaseConnector';
+import { DatabaseConnector } from '@daos/DatabaseConnector';
 import { FilterQuery } from 'mongodb';
 
 export class UserDao {
@@ -13,9 +13,8 @@ export class UserDao {
     return this._connector.find$(params);
   }
 
-  public getOne$(id: string): Promise<IUser | null> {
-    // TODO
-    return Promise.resolve(null);
+  public getById$(id: string): Promise<IUser | null> {
+    return this._connector.getById$(id);
   }
 
   public getAll$(): Promise<IUser[]> {

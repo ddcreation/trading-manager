@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
-import api from '../../../utils/api';
+import { cryptoService } from '../../../services/crypto.service';
 import { Tick } from '../../models';
 import TmLoader from '../tm-loader/TmLoader';
 
@@ -73,11 +73,9 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
 
   updateGraph() {
     this.setState({ loading: true, history: [] });
-    api
-      .retrieve<Tick[]>(`${api.resources.cryptos}/${this.props.symbol}/history`)
-      .then((response) => {
-        this.setState({ loading: false, history: response });
-      });
+    cryptoService.getSymbolHistory$(this.props.symbol).then((response) => {
+      this.setState({ loading: false, history: response });
+    });
   }
 }
 

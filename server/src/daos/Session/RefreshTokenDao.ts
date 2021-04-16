@@ -1,4 +1,4 @@
-import { DatabaseConnector } from '@shared/DatabaseConnector';
+import { DatabaseConnector } from '@daos/DatabaseConnector';
 import { DbEntity } from '@entities/DbEntity';
 
 interface RefreshToken extends DbEntity {

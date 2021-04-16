@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert, Card, Col, Container, Row, Table } from 'react-bootstrap';
 import TmLoader from '../tm-loader/TmLoader';
-import api from '../../../utils/api';
 import PercentBadge from '../percent-badge/PercentBadge';
 import {
   IntervalType,
@@ -11,6 +10,7 @@ import {
 } from '../../models';
 import { Line } from 'react-chartjs-2';
 import OpportunityButton from '../opportunity-button/OpportunityButton';
+import { cryptoService } from '../../../services/crypto.service';
 
 interface SimulationPreviewProps {
   symbol: string;
@@ -139,18 +139,14 @@ class SimulationPreview extends React.Component<
 
   loadSimulations() {
     this.setState({ loading: true, simulations: [] });
-    api
-      .retrieve<{ simulations: any[] }>(
-        `${api.resources.cryptos}/${this.props.symbol}/simulations`
-      )
-      .then(
-        (response) => {
-          this.setState({ loading: false, simulations: response.simulations });
-        },
-        (error) => {
-          this.setState({ loading: false, simulations: [] });
-        }
-      );
+    cryptoService.getSymbolSimulations$(this.props.symbol).then(
+      (response) => {
+        this.setState({ loading: false, simulations: response.simulations });
+      },
+      (error) => {
+        this.setState({ loading: false, simulations: [] });
+      }
+    );
   }
 
   render() {

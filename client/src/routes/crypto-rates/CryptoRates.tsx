@@ -1,6 +1,6 @@
 import React from 'react';
 import { TradingCard } from '../../common/components';
-import api from '../../utils/api';
+import { cryptoService } from '../../services/crypto.service';
 
 interface CryptoRatesProperties {}
 
@@ -19,9 +19,7 @@ class CryptoRatesRoute extends React.Component<
   }
 
   loadCryptos() {
-    api
-      .retrieve<{ [key: string]: string }>(`${api.resources.cryptos}/prices`)
-      .then((symbols) => this.setState({ symbols }));
+    cryptoService.getPrices$().then((symbols) => this.setState({ symbols }));
 
     // this.socketHandler();
   }

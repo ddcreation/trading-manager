@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { CryptoCard, SimulationPreview } from '../../common/components';
-import api from '../../utils/api';
+import { cryptoService } from '../../services/crypto.service';
 
 interface OpportunitiesState {
   currentSymbol: string;
@@ -16,9 +16,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   }
 
   componentDidMount() {
-    api
-      .retrieve<string[]>(`${api.resources.cryptos}/favorites`)
-      .then((symbols) => this.setState({ symbols }));
+    cryptoService.getFavorites$().then((symbols) => this.setState({ symbols }));
   }
 
   render() {
