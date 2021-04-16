@@ -28,10 +28,14 @@ const paramMissingError = 'One or more of the required parameters was missing.';
 router.get('/me', async (req: Request, res: Response) => {
   const { user } = req;
 
-  const userData = await userDao.getById$(user._id);
+  const userData: Partial<IUser> | null = await userDao.getById$(user._id);
+
   if (!userData) {
     return res.status(404).end();
   }
+
+  delete userData._id;
+  delete userData.password;
 
   return res.status(200).send(userData);
 });
