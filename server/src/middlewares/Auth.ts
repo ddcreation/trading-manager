@@ -18,7 +18,7 @@ export const authenticate = (
       process.env.ACCESS_TOKEN_SECRET as string,
       (err, user) => {
         if (err) {
-          return res.sendStatus(403);
+          return res.sendStatus(401);
         }
 
         req.user = user as TokenUser;
