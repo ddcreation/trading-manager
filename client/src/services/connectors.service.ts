@@ -35,6 +35,10 @@ export class ConnectorsService {
       `/connectors/${symbol}/simulations`
     );
   }
+
+  public listConnectors$(): Promise<unknown[]> {
+    return this._api.get<unknown[]>('/connectors');
+  }
 }
 
 export const connectorsService = new ConnectorsService();

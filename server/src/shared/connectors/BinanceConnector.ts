@@ -5,7 +5,8 @@ import { SymbolHistory } from '@entities/SymbolHistory';
 const Binance = require('node-binance-api');
 
 export const BinanceConfig: ConnectorConfig = {
-  id: 'Binance',
+  id: 'binance',
+  name: 'Binance',
   properties: {
     APIKEY: {
       label: 'API key',

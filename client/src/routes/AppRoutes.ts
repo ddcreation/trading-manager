@@ -1,4 +1,5 @@
 import AccountRoute from './account/Account';
+import ConnectorsRoute from './connectors/Connectors';
 import CryptoRatesRoute from './crypto-rates/CryptoRates';
 import DashboardRoute from './dashboard/Dashboard';
 import OpportunitiesRoute from './opportunities/Opportunities';
@@ -31,7 +32,12 @@ const AppRoutes: RouteProps[] = [
     path: '/account',
     title: 'Account',
   },
-
+  {
+    component: ConnectorsRoute,
+    nav: { label: 'Connectors', visible: false, sort: 99 },
+    path: '/connectors',
+    title: 'Account',
+  },
   {
     component: DashboardRoute,
     nav: { visible: true, sort: 0 },
