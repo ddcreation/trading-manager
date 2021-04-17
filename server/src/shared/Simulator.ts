@@ -1,4 +1,3 @@
-import { CryptoHistory } from '@entities/CryptoHistory';
 import { strategies } from './strategies';
 import { backtest, analyze } from 'grademark';
 import {

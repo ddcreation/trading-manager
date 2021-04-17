@@ -1,4 +1,4 @@
-export interface CryptoHistory {
+export interface SymbolHistory {
   assetVolume: number;
   buyAssetVolume: number;
   buyBaseVolume: number;

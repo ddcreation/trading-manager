@@ -1,5 +1,5 @@
 import * as dataForge from 'data-forge';
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import { Strategy } from '@entities/Strategies';
 import {
   EnterPositionFn,
@@ -46,14 +46,14 @@ class ExampleStrategy implements Strategy {
   }
 
   // Retrieve crypto history from external API
-  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
+  public getHistory$(symbol: string): Promise<SymbolHistory[]> {
     return TradingConnector.symbolHistory$(symbol, this.interval, {
       limit: 1000,
     });
   }
 
   // Convert a crypto history to dataframe for grademark framework simulations
-  public historicToDataframe(historic: CryptoHistory[]): any {
+  public historicToDataframe(historic: SymbolHistory[]): any {
     const formatedHistoric = historic.map((history) => {
       return {
         close: history.close,

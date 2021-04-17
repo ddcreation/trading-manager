@@ -37,7 +37,7 @@ export class ApiService {
   }
 
   public errorHandler(error: any): void {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       store.dispatch(logoutAction());
     }
 

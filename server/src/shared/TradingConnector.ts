@@ -1,11 +1,11 @@
 import { ConnectorAccount } from '@entities/ConnectorAccount';
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import {
   CryptoFilterType,
   IntervalType,
   HistoryParams,
 } from '@entities/CryptoApiParams';
-import binance from './connectors/binance';
+import { BinanceConnector } from './connectors/BinanceConnector';
 import { Symbol } from '@entities/Symbol';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
@@ -21,7 +21,7 @@ export class TradingConnector {
   private _provider: any;
 
   constructor() {
-    this._provider = binance;
+    this._provider = new BinanceConnector();
   }
 
   public exchangeInfo$(
@@ -29,7 +29,7 @@ export class TradingConnector {
   ): Promise<ExchangeInfoResponse> {
     if (cryptoFilter === CryptoFilterType.favorites) {
       return new Promise((resolve, reject) => {
-        Promise.all([this.getAccount$(), this._provider.exchangeInfo()]).then(
+        Promise.all([this.getAccount$(), this._provider.exchangeInfo$()]).then(
           ([account, exchangeInfos]) => {
             const filteredSymbols = exchangeInfos.symbols
               .filter((symbol: Symbol) =>
@@ -48,7 +48,7 @@ export class TradingConnector {
       });
     }
 
-    return this._provider.exchangeInfo();
+    return this._provider.exchangeInfo$();
   }
 
   public getAccount$(): Promise<ConnectorAccount> {
@@ -57,7 +57,7 @@ export class TradingConnector {
         resolve(this._account);
       }
 
-      this._provider.account().then(
+      this._provider.account$().then(
         (providerAccount: unknown) => {
           resolve({
             favoritesSymbols: defaultFavoritesCrypto,
@@ -76,64 +76,17 @@ export class TradingConnector {
     symbol: string,
     interval: IntervalType = IntervalType['5m'],
     params?: HistoryParams
-  ): Promise<CryptoHistory[]> {
+  ): Promise<SymbolHistory[]> {
     const requestParams: HistoryParams = {
       ...this.defaultHistoryParams,
       ...params,
     };
 
-    return new Promise((resolve, reject) => {
-      this._provider.candlesticks(
-        symbol,
-        interval,
-        (error: unknown, ticks: Array<string[]>, symbol: string) => {
-          if (error) {
-            reject(error);
-          }
-
-          const formatedTicks = this._formatTicksResponse(ticks);
-          resolve(formatedTicks);
-        },
-        requestParams
-      );
-    });
+    return this._provider.symbolHistory$(symbol, interval, requestParams);
   }
 
   public symbolPrices$(): Promise<unknown> {
-    return this._provider.prices();
-  }
-
-  private _formatTicksResponse(ticks: Array<string[]>): CryptoHistory[] {
-    return ticks.map((tick) => {
-      const [
-        time,
-        open,
-        high,
-        low,
-        close,
-        volume,
-        closeTime,
-        assetVolume,
-        trades,
-        buyBaseVolume,
-        buyAssetVolume,
-        ignored,
-      ] = tick.map((value) => parseFloat(value));
-      return {
-        assetVolume,
-        buyAssetVolume,
-        buyBaseVolume,
-        close,
-        closeTime,
-        high,
-        ignored,
-        low,
-        open,
-        time,
-        trades,
-        volume,
-      };
-    });
+    return this._provider.symbolPrices$();
   }
 }
 
