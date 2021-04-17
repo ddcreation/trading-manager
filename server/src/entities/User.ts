@@ -1,4 +1,5 @@
 import { hashPassword } from '../utils/crypto';
+import { UserConnectorConfig } from './Connector';
 import { DbEntity } from './DbEntity';
 
 export interface TokenUser {
@@ -9,13 +10,13 @@ export interface TokenUser {
 export interface IUser extends DbEntity {
   username: string;
   password: string;
-  connectors: unknown[];
+  connectors: UserConnectorConfig[];
 }
 
 class User implements IUser {
   public password: string;
   public username: string;
-  public connectors: unknown[];
+  public connectors: UserConnectorConfig[];
 
   constructor(user: IUser) {
     this.username = user.username;
