@@ -1,4 +1,5 @@
 import { Account, ExchangeInfoResponse, Tick } from '../common/models';
+import { ConnectorConfig } from '../common/models/Connector';
 import { ApiService } from './api.service';
 
 export class ConnectorsService {
@@ -36,8 +37,8 @@ export class ConnectorsService {
     );
   }
 
-  public listConnectors$(): Promise<unknown[]> {
-    return this._api.get<unknown[]>('/connectors');
+  public listConnectors$(): Promise<ConnectorConfig[]> {
+    return this._api.get<ConnectorConfig[]>('/connectors');
   }
 }
 
