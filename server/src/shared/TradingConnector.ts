@@ -21,7 +21,11 @@ export class TradingConnector {
   private _provider: any;
 
   constructor() {
-    this._provider = new BinanceConnector();
+    this._provider = new BinanceConnector({
+      APIKEY: process.env.BINANCE_API_KEY,
+      APISECRET: process.env.BINANCE_API_SECRET,
+      test: process.env.BINANCE_API_TEST,
+    });
   }
 
   public exchangeInfo$(

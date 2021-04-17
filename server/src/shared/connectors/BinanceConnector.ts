@@ -1,40 +1,37 @@
-import { Connector } from '@entities/Connector';
+import { Connector, ConnectorConfig } from '@entities/Connector';
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
 import { SymbolHistory } from '@entities/SymbolHistory';
 
 const Binance = require('node-binance-api');
 
+export const BinanceConfig: ConnectorConfig = {
+  id: 'Binance',
+  properties: {
+    APIKEY: {
+      label: 'API key',
+      type: 'string',
+    },
+    APISECRET: {
+      label: 'API secret',
+      type: 'password',
+    },
+    test: {
+      label: 'Test api',
+      type: 'boolean',
+    },
+  },
+  class: 'BinanceConnector',
+};
+
 export class BinanceConnector implements Connector {
-  public id;
-  public properties: any;
+  public config;
 
   private _binanceApi: any;
 
-  constructor() {
-    this.id = 'Binance';
-    this.properties = {
-      APIKEY: {
-        label: 'API key',
-        type: 'string',
-        value: process.env.BINANCE_API_KEY,
-      },
-      APISECRET: {
-        label: 'API secret',
-        type: 'password',
-        value: process.env.BINANCE_API_SECRET,
-      },
-      test: {
-        label: 'Test api',
-        type: 'boolean',
-        value: process.env.BINANCE_API_TEST,
-      },
-    };
+  constructor(connectorConfigValues: any) {
+    this.config = BinanceConfig;
 
-    this._binanceApi = new Binance().options({
-      APIKEY: this.properties.APIKEY.value,
-      APISECRET: this.properties.APISECRET.value,
-      test: this.properties.test.value,
-    });
+    this._binanceApi = new Binance().options(connectorConfigValues);
   }
 
   public account$() {

@@ -11,11 +11,16 @@ export interface UserConnectorConfig extends DbEntity {
   };
 }
 
-export interface Connector {
+export interface ConnectorConfig {
   id: string;
   properties: {
-    [propName: string]: { label: string; type: string; value?: string };
+    [propName: string]: { label: string; type: string };
   };
+  class: string;
+}
+
+export interface Connector {
+  config: ConnectorConfig;
 
   account$: () => Promise<any>;
   exchangeInfo$: () => Promise<any>;
