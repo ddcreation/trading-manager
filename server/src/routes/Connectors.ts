@@ -3,11 +3,11 @@ import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import TradingConnector from '@shared/TradingConnector';
 import { CryptoFilterType } from '@entities/CryptoApiParams';
 import { Simulator } from '@shared/Simulator';
+import { connectors } from '@shared/connectors';
 
 const router = Router();
 
 router.get('/', (req: Request, res: Response) => {
-  const connectors = ['Binance'];
   res.json(connectors);
 });
 
