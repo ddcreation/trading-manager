@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { TmLoader } from '../../common/components';
 import { Account } from '../../common/models';
-import { cryptoService } from '../../services/crypto.service';
+import { connectorsService } from '../../services/connectors.service';
 import { userService } from '../../services/user.service';
 
 interface AccountState {
@@ -14,7 +14,7 @@ class AccountRoute extends React.Component<unknown, AccountState> {
   componentDidMount() {
     Promise.all([
       userService.me$(),
-      cryptoService.getAccount$(),
+      connectorsService.getAccount$(),
     ]).then(([user, account]) => this.setState({ user, account }));
   }
 

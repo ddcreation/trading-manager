@@ -1,19 +1,24 @@
 import { Request, Response, Router } from 'express';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
+import TradingConnector from '@shared/TradingConnector';
 import { CryptoFilterType } from '@entities/CryptoApiParams';
 import { Simulator } from '@shared/Simulator';
 
 const router = Router();
 
+router.get('/', (req: Request, res: Response) => {
+  const connectors = ['Binance'];
+  res.json(connectors);
+});
+
 router.get('/account', async (req: Request, res: Response) => {
-  const account = await CryptoProviderApi.getAccount$();
+  const account = await TradingConnector.getAccount$();
 
   res.json(account);
 });
 
 router.get('/exchange-info', async (req: Request, res: Response) => {
-  const exchangeInfos: ExchangeInfoResponse = await CryptoProviderApi.exchangeInfo$(
+  const exchangeInfos: ExchangeInfoResponse = await TradingConnector.exchangeInfo$(
     CryptoFilterType.favorites
   );
 
@@ -21,19 +26,19 @@ router.get('/exchange-info', async (req: Request, res: Response) => {
 });
 
 router.get('/favorites', async (req: Request, res: Response) => {
-  const account = await CryptoProviderApi.getAccount$();
+  const account = await TradingConnector.getAccount$();
 
-  res.json(account.preferences.favoritesSymbols);
+  res.json(account.favoritesSymbols);
 });
 
 router.get('/prices', async (req: Request, res: Response) => {
-  const prices = await CryptoProviderApi.symbolPrices$();
+  const prices = await TradingConnector.symbolPrices$();
 
   res.json(prices);
 });
 
 router.get('/:symbol/history', async (req: Request, res: Response) => {
-  const history = await CryptoProviderApi.symbolHistory$(req.params.symbol);
+  const history = await TradingConnector.symbolHistory$(req.params.symbol);
 
   res.json(history);
 });

@@ -6,7 +6,7 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
+import TradingConnector from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
 
 /**
@@ -45,7 +45,7 @@ class LastDayFallStrategy implements Strategy {
   }
 
   public getHistory$(symbol: string): Promise<CryptoHistory[]> {
-    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+    return TradingConnector.symbolHistory$(symbol, this.interval, {
       limit: 5000,
     });
   }

@@ -6,7 +6,7 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
+import TradingConnector from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
 const talib = require('talib/build/Release/talib');
 
@@ -47,7 +47,7 @@ class ExampleStrategy implements Strategy {
 
   // Retrieve crypto history from external API
   public getHistory$(symbol: string): Promise<CryptoHistory[]> {
-    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+    return TradingConnector.symbolHistory$(symbol, this.interval, {
       limit: 1000,
     });
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap';
 import { CryptoCard, TmLoader } from '../../common/components';
 import { Account, ExchangeInfoResponse } from '../../common/models';
-import { cryptoService } from '../../services/crypto.service';
+import { connectorsService } from '../../services/connectors.service';
 
 interface DashboardState {
   account: Account;
@@ -13,9 +13,9 @@ interface DashboardState {
 class DashboardRoute extends React.Component<unknown, DashboardState> {
   componentDidMount() {
     Promise.all([
-      cryptoService.getFavorites$(),
-      cryptoService.getAccount$(),
-      cryptoService.getExchangeInfos$(),
+      connectorsService.getFavorites$(),
+      connectorsService.getAccount$(),
+      connectorsService.getExchangeInfos$(),
     ]).then(([favoritesSymbols, account, exchangeInfos]) =>
       this.setState({ account, exchangeInfos, favoritesSymbols })
     );

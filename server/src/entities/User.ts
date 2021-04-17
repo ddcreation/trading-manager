@@ -9,15 +9,18 @@ export interface TokenUser {
 export interface IUser extends DbEntity {
   username: string;
   password: string;
+  connectors: unknown[];
 }
 
 class User implements IUser {
   public password: string;
   public username: string;
+  public connectors: unknown[];
 
   constructor(user: IUser) {
     this.username = user.username;
     this.password = hashPassword(user.password);
+    this.connectors = user.connectors || [];
   }
 }
 

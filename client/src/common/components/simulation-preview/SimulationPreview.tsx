@@ -10,7 +10,7 @@ import {
 } from '../../models';
 import { Line } from 'react-chartjs-2';
 import OpportunityButton from '../opportunity-button/OpportunityButton';
-import { cryptoService } from '../../../services/crypto.service';
+import { connectorsService } from '../../../services/connectors.service';
 
 interface SimulationPreviewProps {
   symbol: string;
@@ -139,7 +139,7 @@ class SimulationPreview extends React.Component<
 
   loadSimulations() {
     this.setState({ loading: true, simulations: [] });
-    cryptoService.getSymbolSimulations$(this.props.symbol).then(
+    connectorsService.getSymbolSimulations$(this.props.symbol).then(
       (response) => {
         this.setState({ loading: false, simulations: response.simulations });
       },

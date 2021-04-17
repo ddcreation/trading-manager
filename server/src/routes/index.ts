@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CryptosRouter from './Cryptos';
+import ConnectorsRouter from './Connectors';
 import HealthCheckRouter from './HealthCheck';
 import AuthRouter from './Auth';
 import UsersRouter from './Users';
@@ -11,7 +11,7 @@ const router = Router();
 // Add sub-routes
 router.use('/healthcheck', HealthCheckRouter);
 router.use('/auth', AuthRouter);
-router.use('/cryptos', authenticate, CryptosRouter);
+router.use('/connectors', authenticate, ConnectorsRouter);
 router.use('/users', authenticate, UsersRouter);
 
 // Export the base-router

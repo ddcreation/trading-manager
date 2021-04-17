@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { CryptoCard, SimulationPreview } from '../../common/components';
-import { cryptoService } from '../../services/crypto.service';
+import { connectorsService } from '../../services/connectors.service';
 
 interface OpportunitiesState {
   currentSymbol: string;
@@ -16,7 +16,9 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   }
 
   componentDidMount() {
-    cryptoService.getFavorites$().then((symbols) => this.setState({ symbols }));
+    connectorsService
+      .getFavorites$()
+      .then((symbols) => this.setState({ symbols }));
   }
 
   render() {

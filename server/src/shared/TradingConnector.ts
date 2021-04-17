@@ -1,23 +1,23 @@
-import { CryptoAccount } from '@entities/CryptoAccount';
+import { ConnectorAccount } from '@entities/ConnectorAccount';
 import { CryptoHistory } from '@entities/CryptoHistory';
 import {
   CryptoFilterType,
   IntervalType,
   HistoryParams,
 } from '@entities/CryptoApiParams';
-import binance from './crypto-providers/binance';
+import binance from './connectors/binance';
 import { Symbol } from '@entities/Symbol';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
 // TODO: set this list in user preferences
 const defaultFavoritesCrypto = ['ETHUSDT', 'BCHUSDT', 'BTCUSDT', 'LTCUSDT'];
 
-export class CryptoProviderApi {
+export class TradingConnector {
   public defaultHistoryParams: HistoryParams = {
     limit: 100,
   };
 
-  private _account: CryptoAccount | undefined;
+  private _account: ConnectorAccount | undefined;
   private _provider: any;
 
   constructor() {
@@ -33,12 +33,12 @@ export class CryptoProviderApi {
           ([account, exchangeInfos]) => {
             const filteredSymbols = exchangeInfos.symbols
               .filter((symbol: Symbol) =>
-                account.preferences.favoritesSymbols.includes(symbol.symbol)
+                account.favoritesSymbols.includes(symbol.symbol)
               )
               .sort(
                 (symbolA: Symbol, symbolB: Symbol) =>
-                  account.preferences.favoritesSymbols.indexOf(symbolA.symbol) -
-                  account.preferences.favoritesSymbols.indexOf(symbolB.symbol)
+                  account.favoritesSymbols.indexOf(symbolA.symbol) -
+                  account.favoritesSymbols.indexOf(symbolB.symbol)
               );
 
             resolve({ ...exchangeInfos, symbols: filteredSymbols });
@@ -51,8 +51,8 @@ export class CryptoProviderApi {
     return this._provider.exchangeInfo();
   }
 
-  public getAccount$(): Promise<CryptoAccount> {
-    return new Promise<CryptoAccount>((resolve, reject) => {
+  public getAccount$(): Promise<ConnectorAccount> {
+    return new Promise<ConnectorAccount>((resolve, reject) => {
       if (this._account) {
         resolve(this._account);
       }
@@ -60,8 +60,8 @@ export class CryptoProviderApi {
       this._provider.account().then(
         (providerAccount: unknown) => {
           resolve({
-            ...(providerAccount as any),
-            preferences: { favoritesSymbols: defaultFavoritesCrypto },
+            favoritesSymbols: defaultFavoritesCrypto,
+            connectorDatas: providerAccount as any,
           });
         },
         (error: unknown) => reject(error)
@@ -137,4 +137,4 @@ export class CryptoProviderApi {
   }
 }
 
-export default new CryptoProviderApi();
+export default new TradingConnector();

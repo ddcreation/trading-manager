@@ -1,6 +1,6 @@
 import React from 'react';
 import { TradingCard } from '../../common/components';
-import { cryptoService } from '../../services/crypto.service';
+import { connectorsService } from '../../services/connectors.service';
 
 interface CryptoRatesProperties {}
 
@@ -19,7 +19,9 @@ class CryptoRatesRoute extends React.Component<
   }
 
   loadCryptos() {
-    cryptoService.getPrices$().then((symbols) => this.setState({ symbols }));
+    connectorsService
+      .getPrices$()
+      .then((symbols) => this.setState({ symbols }));
 
     // this.socketHandler();
   }
