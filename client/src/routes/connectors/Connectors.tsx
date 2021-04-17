@@ -78,7 +78,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                 </Form>
               </Card.Body>
             </Accordion.Collapse>
-            <Accordion.Toggle as={Card.Header} eventKey='1' disabled>
+            {/* <Accordion.Toggle as={Card.Header} eventKey='1'>
               Favorites symbols
             </Accordion.Toggle>
             <Accordion.Collapse eventKey='1'>
@@ -88,7 +88,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                   Save
                 </Button>
               </Card.Body>
-            </Accordion.Collapse>
+            </Accordion.Collapse> */}
           </Card>
         </Accordion>
       ))
