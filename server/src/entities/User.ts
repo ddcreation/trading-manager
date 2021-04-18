@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { hashPassword } from '../utils/crypto';
 import { UserConnectorConfig } from './Connector';
 import { DbEntity } from './DbEntity';
@@ -5,6 +6,10 @@ import { DbEntity } from './DbEntity';
 export interface TokenUser {
   _id: string;
   username: string;
+}
+
+export interface AuthRequest extends Request {
+  user: TokenUser;
 }
 
 export interface IUser extends DbEntity {

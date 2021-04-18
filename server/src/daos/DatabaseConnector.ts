@@ -67,10 +67,21 @@ export class DatabaseConnector<T extends DbEntity> {
     return entities;
   }
 
-  public async update$(id: string, entity: T): Promise<T> {
+  public async replace$(filter: FilterQuery<T>, entity: T): Promise<T> {
     const { client, collection } = await this._connect$();
 
-    const update = await collection.updateOne({ _id: id as any }, entity);
+    const replace = await collection.replaceOne(filter, entity, {
+      upsert: true,
+    });
+    await client.close();
+
+    return (replace as any) as T;
+  }
+
+  public async update$(filter: FilterQuery<T>, entity: T): Promise<T> {
+    const { client, collection } = await this._connect$();
+
+    const update = await collection.updateOne(filter, entity);
     await client.close();
 
     return (update as any) as T;

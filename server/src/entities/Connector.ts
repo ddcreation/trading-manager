@@ -6,9 +6,7 @@ export interface UserConnectorConfig extends DbEntity {
   user_id: string;
   connector_id: string;
   enabled: boolean;
-  properties: {
-    [prop: string]: unknown;
-  };
+  [prop: string]: unknown;
 }
 
 export interface ConnectorConfig {

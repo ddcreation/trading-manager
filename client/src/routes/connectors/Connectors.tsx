@@ -9,10 +9,19 @@ interface ConnectorsRouteState {
 }
 
 class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
-  componentDidMount() {
-    connectorsService
-      .listConnectors$()
-      .then((connectors) => this.setState({ connectors }));
+  async componentDidMount() {
+    const connectors = await connectorsService.listConnectors$();
+
+    const getConfigs = connectors.map((connector) => {
+      return new Promise((resolve, reject) => {
+        connectorsService.getConfig$(connector.id).then((config) => {
+          connector.config = config as any;
+          resolve(connector);
+        });
+      });
+    });
+
+    Promise.all(getConfigs).then(() => this.setState({ connectors }));
   }
 
   submitConnectorConfig = (event: any, connectorId: string) => {
@@ -33,10 +42,9 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
       return { ...acc, [property]: value };
     }, {});
 
-    form.connector_id = connectorId;
-    form.enable = formElements.enable.checked;
+    form.enabled = formElements.enabled.checked;
 
-    console.log(form, connectorId);
+    connectorsService.saveConfig$(connectorId, form);
   };
 
   render() {
@@ -65,11 +73,14 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                       {this.renderConnectorProperty(connector, property)}
                     </Form.Group>
                   ))}
-                  <Form.Group controlId={`formConnector${connector.id}.enable`}>
+                  <Form.Group
+                    controlId={`formConnector${connector.id}.enabled`}
+                  >
                     <Form.Check
                       type='checkbox'
-                      name='enable'
+                      name='enabled'
                       label='Activate connector'
+                      defaultChecked={(connector.config as any).enabled}
                     />
                   </Form.Group>
                   <Button variant='primary' type='submit'>
@@ -106,6 +117,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
           type='checkbox'
           name={property}
           label={connectorProperty.label}
+          defaultChecked={(connector.config as any)[property]}
         />
       );
     } else {
@@ -119,6 +131,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                 : connectorProperty.type
             }
             name={property}
+            defaultValue={(connector.config as any)[property]}
             required
           />
         </React.Fragment>

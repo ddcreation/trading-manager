@@ -13,6 +13,12 @@ export class ConnectorsService {
     return this._api.get<Account>('/connectors/account');
   }
 
+  public getConfig$(
+    connectorId: string
+  ): Promise<{ [k: string]: string | boolean }> {
+    return this._api.get(`/connectors/${connectorId}/user-connector-config`);
+  }
+
   public getExchangeInfos$(): Promise<ExchangeInfoResponse> {
     return this._api.get<ExchangeInfoResponse>('/connectors/exchange-info');
   }
@@ -39,6 +45,13 @@ export class ConnectorsService {
 
   public listConnectors$(): Promise<ConnectorConfig[]> {
     return this._api.get<ConnectorConfig[]>('/connectors');
+  }
+
+  public saveConfig$(connectorId: string, config: unknown): Promise<void> {
+    return this._api.put(
+      `/connectors/${connectorId}/user-connector-config`,
+      config
+    );
   }
 }
 
