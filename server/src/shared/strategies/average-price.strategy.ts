@@ -6,19 +6,24 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import TradingConnector from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
+import { TradingConnector } from '@shared/TradingConnector';
 
 /**
  * Strategy AvgPrice
  * @description Simple strategy that sell if the price is higher than the Avg and buy if lower
  */
-class AvgPriceStrategy implements Strategy {
+export class AvgPriceStrategy implements Strategy {
   public id = 'avg-price';
   public interval = IntervalType['1d'];
   public name = 'Average price';
   public parameters = { startDate: '' };
   private _averageDays = 10;
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   // Buy when price is below average.
   public checkBuyOpportunity(args: any): boolean {
@@ -51,7 +56,7 @@ class AvgPriceStrategy implements Strategy {
   }
 
   public getHistory$(symbol: string): Promise<SymbolHistory[]> {
-    return TradingConnector.symbolHistory$(symbol, this.interval, {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 300,
     });
   }
@@ -98,5 +103,3 @@ class AvgPriceStrategy implements Strategy {
     return args.entryPrice * 0.05;
   }
 }
-
-export default new AvgPriceStrategy();

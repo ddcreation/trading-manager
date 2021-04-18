@@ -139,7 +139,7 @@ class SimulationPreview extends React.Component<
 
   loadSimulations() {
     this.setState({ loading: true, simulations: [] });
-    connectorsService.getSymbolSimulations$(this.props.symbol).then(
+    connectorsService.getSymbolSimulations$('binance', this.props.symbol).then(
       (response) => {
         this.setState({ loading: false, simulations: response.simulations });
       },

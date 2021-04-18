@@ -9,8 +9,8 @@ export class ConnectorsService {
     this._api = new ApiService();
   }
 
-  public getAccount$(): Promise<Account> {
-    return this._api.get<Account>('/connectors/account');
+  public getAccount$(connectorId: string): Promise<Account> {
+    return this._api.get<Account>(`/connectors/${connectorId}/account`);
   }
 
   public getConfig$(
@@ -19,27 +19,37 @@ export class ConnectorsService {
     return this._api.get(`/connectors/${connectorId}/user-connector-config`);
   }
 
-  public getExchangeInfos$(): Promise<ExchangeInfoResponse> {
-    return this._api.get<ExchangeInfoResponse>('/connectors/exchange-info');
+  public getExchangeInfos$(connectorId: string): Promise<ExchangeInfoResponse> {
+    return this._api.get<ExchangeInfoResponse>(
+      `/connectors/${connectorId}/exchange-info`
+    );
   }
 
-  public getFavorites$(): Promise<string[]> {
-    return this._api.get<string[]>('/connectors/favorites');
+  public getFavorites$(connectorId: string): Promise<string[]> {
+    return this._api.get<string[]>(`/connectors/${connectorId}/favorites`);
   }
 
-  public getPrices$(): Promise<{ [key: string]: string }> {
-    return this._api.get<{ [key: string]: string }>('/connectors/prices');
+  public getPrices$(connectorId: string): Promise<{ [key: string]: string }> {
+    return this._api.get<{ [key: string]: string }>(
+      `/connectors/${connectorId}/prices`
+    );
   }
 
-  public getSymbolHistory$(symbol: string): Promise<Tick[]> {
-    return this._api.get<Tick[]>(`/connectors/${symbol}/history`);
+  public getSymbolHistory$(
+    connectorId: string,
+    symbol: string
+  ): Promise<Tick[]> {
+    return this._api.get<Tick[]>(
+      `/connectors/${connectorId}/${symbol}/history`
+    );
   }
 
   public getSymbolSimulations$(
+    connectorId: string,
     symbol: string
   ): Promise<{ simulations: any[] }> {
     return this._api.get<{ simulations: any[] }>(
-      `/connectors/${symbol}/simulations`
+      `/connectors/${connectorId}/${symbol}/simulations`
     );
   }
 

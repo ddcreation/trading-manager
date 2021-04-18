@@ -8,6 +8,7 @@ import {
 import { BinanceConnector } from './connectors/BinanceConnector';
 import { Symbol } from '@entities/Symbol';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
+import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 
 // TODO: set this list in user preferences
 const defaultFavoritesCrypto = ['ETHUSDT', 'BCHUSDT', 'BTCUSDT', 'LTCUSDT'];
@@ -20,12 +21,21 @@ export class TradingConnector {
   private _account: ConnectorAccount | undefined;
   private _provider: any;
 
-  constructor() {
-    this._provider = new BinanceConnector({
-      APIKEY: process.env.BINANCE_API_KEY,
-      APISECRET: process.env.BINANCE_API_SECRET,
-      test: process.env.BINANCE_API_TEST,
-    });
+  constructor(connectorId: string, userId: string) {
+    const configDao = new UserConnectorConfigDao();
+    const config = configDao.getConfigForUser$(connectorId, userId) as any;
+
+    switch (connectorId) {
+      case 'binance': {
+        this._provider = new BinanceConnector({
+          APIKEY: config.APIKEY,
+          APISECRET: config.API_SECRET,
+          test: config.TEST,
+        });
+
+        break;
+      }
+    }
   }
 
   public exchangeInfo$(
@@ -93,5 +103,3 @@ export class TradingConnector {
     return this._provider.symbolPrices$();
   }
 }
-
-export default new TradingConnector();

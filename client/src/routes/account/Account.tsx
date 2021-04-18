@@ -14,7 +14,7 @@ class AccountRoute extends React.Component<unknown, AccountState> {
   componentDidMount() {
     Promise.all([
       userService.me$(),
-      connectorsService.getAccount$(),
+      connectorsService.getAccount$('binance'),
     ]).then(([user, account]) => this.setState({ user, account }));
   }
 

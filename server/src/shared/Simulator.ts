@@ -6,8 +6,15 @@ import {
   SimulationTrade,
 } from '@entities/Simulation';
 import { Strategy } from '@entities/Strategies';
+import { TradingConnector } from './TradingConnector';
 
 export class Simulator {
+  public tradingConnector: TradingConnector;
+
+  constructor(tradingConnector: TradingConnector) {
+    this.tradingConnector = tradingConnector;
+  }
+
   public simulate$(params: {
     symbol: string;
     capital?: number;
@@ -20,6 +27,7 @@ export class Simulator {
     const simulations: Simulation[] = [];
     return new Promise((resolve, reject) => {
       strategies
+        .map((strategy) => new strategy(this.tradingConnector))
         .filter(
           (strategy) =>
             !params.strategies || params.strategies.includes(strategy.id)

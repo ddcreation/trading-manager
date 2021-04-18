@@ -20,7 +20,7 @@ class CryptoRatesRoute extends React.Component<
 
   loadCryptos() {
     connectorsService
-      .getPrices$()
+      .getPrices$('binance')
       .then((symbols) => this.setState({ symbols }));
 
     // this.socketHandler();

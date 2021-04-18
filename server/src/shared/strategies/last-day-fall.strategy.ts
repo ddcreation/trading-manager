@@ -6,18 +6,23 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import TradingConnector from '@shared/TradingConnector';
+import { TradingConnector } from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
 
 /**
  * Strategy LastDayFall
  * @description Simple strategy that buy if the price is higher than last day
  */
-class LastDayFallStrategy implements Strategy {
+export class LastDayFallStrategy implements Strategy {
   public id = 'last-day-fall';
   public interval = IntervalType['1h'];
   public name = 'Last day fall';
   public parameters = { percentGap: 0.02 };
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   // Buy when price is below average.
   public checkBuyOpportunity(args: any): boolean {
@@ -45,7 +50,7 @@ class LastDayFallStrategy implements Strategy {
   }
 
   public getHistory$(symbol: string): Promise<SymbolHistory[]> {
-    return TradingConnector.symbolHistory$(symbol, this.interval, {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 5000,
     });
   }
@@ -77,5 +82,3 @@ class LastDayFallStrategy implements Strategy {
     return args.entryPrice * 0.01;
   }
 }
-
-export default new LastDayFallStrategy();

@@ -73,9 +73,11 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
 
   updateGraph() {
     this.setState({ loading: true, history: [] });
-    connectorsService.getSymbolHistory$(this.props.symbol).then((response) => {
-      this.setState({ loading: false, history: response });
-    });
+    connectorsService
+      .getSymbolHistory$('binance', this.props.symbol)
+      .then((response) => {
+        this.setState({ loading: false, history: response });
+      });
   }
 }
 

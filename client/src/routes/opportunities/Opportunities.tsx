@@ -17,7 +17,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
 
   componentDidMount() {
     connectorsService
-      .getFavorites$()
+      .getFavorites$('binance')
       .then((symbols) => this.setState({ symbols }));
   }
 

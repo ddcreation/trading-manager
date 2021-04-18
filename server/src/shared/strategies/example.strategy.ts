@@ -6,7 +6,7 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import TradingConnector from '@shared/TradingConnector';
+import { TradingConnector } from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
 const talib = require('talib/build/Release/talib');
 
@@ -14,10 +14,15 @@ const talib = require('talib/build/Release/talib');
  * Example strategy
  * @description Strategy example
  */
-class ExampleStrategy implements Strategy {
+export class ExampleStrategy implements Strategy {
   public id = 'example';
   public interval = IntervalType['1d'];
   public name = 'Example';
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   // Rule to define if we should BUY
   public checkBuyOpportunity(args: any): boolean {
@@ -47,7 +52,7 @@ class ExampleStrategy implements Strategy {
 
   // Retrieve crypto history from external API
   public getHistory$(symbol: string): Promise<SymbolHistory[]> {
-    return TradingConnector.symbolHistory$(symbol, this.interval, {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 1000,
     });
   }
@@ -77,5 +82,3 @@ class ExampleStrategy implements Strategy {
     return args.entryPrice * 0.1;
   }
 }
-
-export default new ExampleStrategy();

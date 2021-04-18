@@ -13,9 +13,9 @@ interface DashboardState {
 class DashboardRoute extends React.Component<unknown, DashboardState> {
   componentDidMount() {
     Promise.all([
-      connectorsService.getFavorites$(),
-      connectorsService.getAccount$(),
-      connectorsService.getExchangeInfos$(),
+      connectorsService.getFavorites$('binance'),
+      connectorsService.getAccount$('binance'),
+      connectorsService.getExchangeInfos$('binance'),
     ]).then(([favoritesSymbols, account, exchangeInfos]) =>
       this.setState({ account, exchangeInfos, favoritesSymbols })
     );

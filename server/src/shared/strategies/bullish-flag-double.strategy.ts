@@ -6,18 +6,23 @@ import {
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import TradingConnector from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
-import { bullishFlagRecognition, chainedCandles } from './pattern-recognition';
+import { bullishFlagRecognition } from './pattern-recognition';
+import { TradingConnector } from '@shared/TradingConnector';
 
 /**
  * Strategy bullish flag double
  * @description Strategy based on make high profit when the price rises (inspired by https://www.warriortrading.com/momentum-day-trading-strategy/)
  */
-class BullishFlagDoubleStrategy implements Strategy {
+export class BullishFlagDoubleStrategy implements Strategy {
   public id = 'bullish-flag-double';
   public interval = IntervalType['1m'];
   public name = 'Bullish flag double';
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   public checkBuyOpportunity(args: any): boolean {
     return args.bar.flags.bullish;
@@ -40,7 +45,7 @@ class BullishFlagDoubleStrategy implements Strategy {
   }
 
   public getHistory$(symbol: string): Promise<SymbolHistory[]> {
-    return TradingConnector.symbolHistory$(symbol, this.interval, {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 1000,
     });
   }
@@ -71,5 +76,3 @@ class BullishFlagDoubleStrategy implements Strategy {
     return args.bar.stoploss;
   }
 }
-
-export default new BullishFlagDoubleStrategy();
