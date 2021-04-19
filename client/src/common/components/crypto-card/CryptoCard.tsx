@@ -6,6 +6,7 @@ import { Tick } from '../../models';
 import TmLoader from '../tm-loader/TmLoader';
 
 interface CryptoCardProps {
+  connectorId: string;
   symbol: string;
 }
 
@@ -74,7 +75,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
   updateGraph() {
     this.setState({ loading: true, history: [] });
     connectorsService
-      .getSymbolHistory$('binance', this.props.symbol)
+      .getSymbolHistory$(this.props.connectorId, this.props.symbol)
       .then((response) => {
         this.setState({ loading: false, history: response });
       });

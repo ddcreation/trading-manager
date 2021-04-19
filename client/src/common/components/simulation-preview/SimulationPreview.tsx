@@ -13,6 +13,7 @@ import OpportunityButton from '../opportunity-button/OpportunityButton';
 import { connectorsService } from '../../../services/connectors.service';
 
 interface SimulationPreviewProps {
+  connectorId: string;
   symbol: string;
 }
 
@@ -139,14 +140,16 @@ class SimulationPreview extends React.Component<
 
   loadSimulations() {
     this.setState({ loading: true, simulations: [] });
-    connectorsService.getSymbolSimulations$('binance', this.props.symbol).then(
-      (response) => {
-        this.setState({ loading: false, simulations: response.simulations });
-      },
-      (error) => {
-        this.setState({ loading: false, simulations: [] });
-      }
-    );
+    connectorsService
+      .getSymbolSimulations$(this.props.connectorId, this.props.symbol)
+      .then(
+        (response) => {
+          this.setState({ loading: false, simulations: response.simulations });
+        },
+        (error) => {
+          this.setState({ loading: false, simulations: [] });
+        }
+      );
   }
 
   render() {

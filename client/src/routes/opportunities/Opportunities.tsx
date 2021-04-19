@@ -76,10 +76,14 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
           </ListGroup>
           {connector.currentSymbol && (
             <div>
-              <CryptoCard symbol={connector.currentSymbol} />
+              <CryptoCard
+                connectorId={connector.config.id}
+                symbol={connector.currentSymbol}
+              />
               <h2 className='mt-5'>Simulations</h2>
               <hr />
               <SimulationPreview
+                connectorId={connector.config.id}
                 symbol={connector.currentSymbol}
               ></SimulationPreview>
             </div>
