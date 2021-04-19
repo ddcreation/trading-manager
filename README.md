@@ -53,13 +53,13 @@ You will need:
 
 ## Configure
 
-### Connection to Binance API
+### Environment vars
 
 - Create your dev environment file
 
       $ cp server/src/pre-start/env/example.env server/src/pre-start/env/development.env
 
-- Edit this new `server/src/pre-start/env/development.env` file to put your binance API params (replace `BINANCE_API_KEY` and `BINANCE_API_SECRET` by your real values)
+- You can edit and put your own environment value.
 
 ### Change your favorites crypto
 
@@ -76,6 +76,10 @@ For the moment they are harcoded at the top of this file `server/src/shared/Cryp
   - Add calculated extra datas inside `historicToDataframe` method
   - Create your own rules to enter a position (inside `checkBuyOpportunity` and `checkSellOpportunity` methods), to close it (`exitRule` method), and stop loss (`stopLoss` method)
 
+### Connection to connectors (Binance API only for the moment)
+
+- You can set your connector parameters (ex: `BINANCE_API_KEY`, `BINANCE_API_SECRET`...) after login inside the app in the Account menu / Connectors
+
 ## Features
 
 - Dashboard
@@ -91,11 +95,12 @@ For the moment they are harcoded at the top of this file `server/src/shared/Cryp
   - Show binance account parameters and trading manager user preferences
   - Database of users
   - User signin / login / logout
+  - Connectors parameters and configuration
 - API Cron to launch jobs (open and close orders automatically in the future)
 
 To come in the future
 
-- User preferences management
+- User preferences management improvements (favorites symbols)
 - Implement new connectors (robinhood?) and credentials for each
 - Connect with API for open/close positions
 - Automatically check tho opportunities and open positions and place orders / close
