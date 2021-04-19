@@ -1,28 +1,75 @@
 import React from 'react';
-import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap';
+import { Card, Row, Table } from 'react-bootstrap';
 import { CryptoCard, TmLoader } from '../../common/components';
+import MissingConnectorAlert from '../../common/components/missing-connector/MissingConnectorAlert';
 import { Account, ExchangeInfoResponse } from '../../common/models';
-import { cryptoService } from '../../services/crypto.service';
+import { ConnectorConfig } from '../../common/models/Connector';
+import { connectorsService } from '../../services/connectors.service';
 
-interface DashboardState {
+interface DashboardConnector {
   account: Account;
+  config: ConnectorConfig;
   favoritesSymbols: string[];
   exchangeInfos: ExchangeInfoResponse;
 }
 
+interface DashboardState {
+  connectors: {
+    [connectorId: string]: DashboardConnector;
+  };
+  loading: boolean;
+}
+
 class DashboardRoute extends React.Component<unknown, DashboardState> {
-  componentDidMount() {
-    Promise.all([
-      cryptoService.getFavorites$(),
-      cryptoService.getAccount$(),
-      cryptoService.getExchangeInfos$(),
-    ]).then(([favoritesSymbols, account, exchangeInfos]) =>
-      this.setState({ account, exchangeInfos, favoritesSymbols })
+  constructor(props: unknown) {
+    super(props);
+
+    this.state = {
+      connectors: {},
+      loading: true,
+    };
+  }
+
+  connectorDashboardPromises(
+    connectorConfig: ConnectorConfig
+  ): Promise<DashboardConnector> {
+    return new Promise((resolve, reject) => {
+      Promise.all([
+        connectorsService.getFavorites$(connectorConfig.id),
+        connectorsService.getAccount$(connectorConfig.id),
+        connectorsService.getExchangeInfos$(connectorConfig.id),
+      ]).then(([favoritesSymbols, account, exchangeInfos]) => {
+        const dashboardConnector = {
+          config: connectorConfig,
+          account,
+          exchangeInfos,
+          favoritesSymbols,
+        };
+
+        this.setState({
+          connectors: {
+            [connectorConfig.id]: dashboardConnector,
+          },
+        });
+
+        resolve(dashboardConnector);
+      });
+    });
+  }
+
+  async componentDidMount() {
+    const connectors = await connectorsService.listActiveConnectors$();
+    const connectorsPromises = connectors.map((connector) =>
+      this.connectorDashboardPromises(connector)
+    );
+
+    Promise.all(connectorsPromises).then(() =>
+      this.setState({ loading: false })
     );
   }
 
-  renderBalance() {
-    return this.state?.account?.balances?.length ? (
+  renderBalance(connector: DashboardConnector) {
+    return connector.account.balances?.length ? (
       <Table striped bordered>
         <thead>
           <tr>
@@ -31,7 +78,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
           </tr>
         </thead>
         <tbody>
-          {this.state.account.balances.map((balance, idx) => {
+          {connector.account?.balances.map((balance, idx) => {
             return (
               <tr key={'balance-' + idx}>
                 <td>balance asset</td>
@@ -46,56 +93,42 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
     );
   }
 
-  render() {
+  renderConnector(connector: DashboardConnector) {
     return (
-      <div>
-        <h2>My Balances</h2>
-        <Card className='my-3'>
-          <Card.Body>{this.renderBalance()}</Card.Body>
-        </Card>
-        <hr className='my-5' />
-        <h2>Buy crypto (WIP)</h2>
-        {this.state?.exchangeInfos && this.state.exchangeInfos.symbols ? (
-          <Row className='my-3'>
-            <Form className='col-12'>
-              <Form.Row>
-                <Form.Group as={Col} controlId='amount' className='col-6'>
-                  <Form.Control name='amount' placeholder='eg. 10' />
-                </Form.Group>
-
-                <Form.Group as={Col} controlId='symbol' className='col-4'>
-                  <Form.Control as='select' defaultValue='Choose...'>
-                    <option disabled>Choose...</option>
-                    {this.state.exchangeInfos.symbols.map((symbol) => (
-                      <option key={symbol.symbol}>{symbol.symbol}</option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-                <Col className='col-2'>
-                  <Button type='submit' disabled>
-                    Buy
-                  </Button>
-                </Col>
-              </Form.Row>
-            </Form>
-          </Row>
-        ) : (
-          <TmLoader />
-        )}
-        <hr className='my-5' />
-        <h2>My favorites</h2>
-        {this.state?.favoritesSymbols ? (
+      <Card key={`connector-${connector.config.id}`}>
+        <Card.Header>
+          <h2>{connector.config.name}</h2>
+        </Card.Header>
+        <Card.Body>
+          <h3>Balances</h3>
+          <Card className='my-3'>
+            <Card.Body>{this.renderBalance(connector)}</Card.Body>
+          </Card>
+          <hr className='my-3' />
+          <h3>Favorites</h3>
           <Row>
-            {this.state.favoritesSymbols.map((symbol) => (
+            {connector.favoritesSymbols.map((symbol) => (
               <div key={symbol} className='col-12 col-lg-6 mt-3'>
-                <CryptoCard symbol={symbol} />
+                <CryptoCard connectorId={connector.config.id} symbol={symbol} />
               </div>
             ))}
           </Row>
-        ) : (
-          <TmLoader />
-        )}
-      </div>
+        </Card.Body>
+      </Card>
+    );
+  }
+
+  render() {
+    return !this.state?.loading ? (
+      Object.keys(this.state?.connectors).length === 0 ? (
+        <MissingConnectorAlert />
+      ) : (
+        Object.keys(this.state?.connectors).map((connectorId) =>
+          this.renderConnector(this.state?.connectors[connectorId])
+        )
+      )
+    ) : (
+      <TmLoader />
     );
   }
 }

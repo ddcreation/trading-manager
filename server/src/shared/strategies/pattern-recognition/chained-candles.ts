@@ -1,9 +1,9 @@
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import { candleColor } from '../helpers';
 import { CandleColor } from '../types';
 
 export const chainedCandles = (
-  history: CryptoHistory[],
+  history: SymbolHistory[],
   currentIndex: number,
   minChainLength: number
 ): CandleColor | false => {

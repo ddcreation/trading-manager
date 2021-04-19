@@ -25,6 +25,9 @@ const UserNavigation = (props: UserNavigationProps) => {
           <Dropdown.Item as={NavLink} to='/account'>
             Account
           </Dropdown.Item>
+          <Dropdown.Item as={NavLink} to='/connectors'>
+            Connectors
+          </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item
             as={Button}

@@ -1,24 +1,29 @@
 import * as dataForge from 'data-forge';
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import { Strategy } from '@entities/Strategies';
 import {
   EnterPositionFn,
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
 import { IntervalType } from '@entities/CryptoApiParams';
+import { TradingConnector } from '@shared/TradingConnector';
 
 /**
  * Strategy AvgPrice
  * @description Simple strategy that sell if the price is higher than the Avg and buy if lower
  */
-class AvgPriceStrategy implements Strategy {
+export class AvgPriceStrategy implements Strategy {
   public id = 'avg-price';
   public interval = IntervalType['1d'];
   public name = 'Average price';
   public parameters = { startDate: '' };
   private _averageDays = 10;
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   // Buy when price is below average.
   public checkBuyOpportunity(args: any): boolean {
@@ -50,13 +55,13 @@ class AvgPriceStrategy implements Strategy {
     }
   }
 
-  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
-    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+  public getHistory$(symbol: string): Promise<SymbolHistory[]> {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 300,
     });
   }
 
-  public historicToDataframe(historic: CryptoHistory[]): any {
+  public historicToDataframe(historic: SymbolHistory[]): any {
     const formatedHistoric = historic.map((history) => {
       return {
         close: history.close,
@@ -98,5 +103,3 @@ class AvgPriceStrategy implements Strategy {
     return args.entryPrice * 0.05;
   }
 }
-
-export default new AvgPriceStrategy();

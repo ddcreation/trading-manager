@@ -1,23 +1,28 @@
 import * as dataForge from 'data-forge';
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import { Strategy } from '@entities/Strategies';
 import {
   EnterPositionFn,
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
 import { IntervalType } from '@entities/CryptoApiParams';
-import { bullishFlagRecognition, chainedCandles } from './pattern-recognition';
+import { bullishFlagRecognition } from './pattern-recognition';
+import { TradingConnector } from '@shared/TradingConnector';
 
 /**
  * Strategy bullish flag double
  * @description Strategy based on make high profit when the price rises (inspired by https://www.warriortrading.com/momentum-day-trading-strategy/)
  */
-class BullishFlagDoubleStrategy implements Strategy {
+export class BullishFlagDoubleStrategy implements Strategy {
   public id = 'bullish-flag-double';
   public interval = IntervalType['1m'];
   public name = 'Bullish flag double';
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   public checkBuyOpportunity(args: any): boolean {
     return args.bar.flags.bullish;
@@ -39,13 +44,13 @@ class BullishFlagDoubleStrategy implements Strategy {
     }
   }
 
-  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
-    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+  public getHistory$(symbol: string): Promise<SymbolHistory[]> {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 1000,
     });
   }
 
-  public historicToDataframe(historic: CryptoHistory[]): any {
+  public historicToDataframe(historic: SymbolHistory[]): any {
     const formatedHistoric = historic.map((history, index) => {
       return {
         close: history.close,
@@ -71,5 +76,3 @@ class BullishFlagDoubleStrategy implements Strategy {
     return args.bar.stoploss;
   }
 }
-
-export default new BullishFlagDoubleStrategy();

@@ -1,23 +1,28 @@
 import * as dataForge from 'data-forge';
-import { CryptoHistory } from '@entities/CryptoHistory';
+import { SymbolHistory } from '@entities/SymbolHistory';
 import { Strategy } from '@entities/Strategies';
 import {
   EnterPositionFn,
   ExitPositionFn,
   TradeDirection,
 } from 'grademark/build/lib/strategy';
-import CryptoProviderApi from '@shared/CryptoProviderApi';
+import { TradingConnector } from '@shared/TradingConnector';
 import { IntervalType } from '@entities/CryptoApiParams';
 
 /**
  * Strategy LastDayFall
  * @description Simple strategy that buy if the price is higher than last day
  */
-class LastDayFallStrategy implements Strategy {
+export class LastDayFallStrategy implements Strategy {
   public id = 'last-day-fall';
   public interval = IntervalType['1h'];
   public name = 'Last day fall';
   public parameters = { percentGap: 0.02 };
+  public connector: TradingConnector;
+
+  constructor(connector: TradingConnector) {
+    this.connector = connector;
+  }
 
   // Buy when price is below average.
   public checkBuyOpportunity(args: any): boolean {
@@ -44,13 +49,13 @@ class LastDayFallStrategy implements Strategy {
     }
   }
 
-  public getHistory$(symbol: string): Promise<CryptoHistory[]> {
-    return CryptoProviderApi.symbolHistory$(symbol, this.interval, {
+  public getHistory$(symbol: string): Promise<SymbolHistory[]> {
+    return this.connector.symbolHistory$(symbol, this.interval, {
       limit: 5000,
     });
   }
 
-  public historicToDataframe(historic: CryptoHistory[]): any {
+  public historicToDataframe(historic: SymbolHistory[]): any {
     const formatedHistoric = historic.map((history, index) => {
       const lastDayIndex = index - 24;
 
@@ -77,5 +82,3 @@ class LastDayFallStrategy implements Strategy {
     return args.entryPrice * 0.01;
   }
 }
-
-export default new LastDayFallStrategy();

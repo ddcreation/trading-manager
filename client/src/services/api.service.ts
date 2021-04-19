@@ -27,7 +27,7 @@ export class ApiService {
     });
   }
 
-  public post<T>(path: string, body: any): Promise<T> {
+  public post<T>(path: string, body: unknown): Promise<T> {
     return new Promise((resolve) => {
       axios
         .post<T>(`${this._apiUrl}${path}`, body, this._config)
@@ -36,8 +36,17 @@ export class ApiService {
     });
   }
 
+  public put<T>(path: string, body: unknown): Promise<T> {
+    return new Promise((resolve) => {
+      axios
+        .put<T>(`${this._apiUrl}${path}`, body, this._config)
+        .then((response) => resolve(response.data))
+        .catch(this.errorHandler);
+    });
+  }
+
   public errorHandler(error: any): void {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       store.dispatch(logoutAction());
     }
 
