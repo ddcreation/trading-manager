@@ -57,6 +57,14 @@ export class ConnectorsService {
     return this._api.get<ConnectorConfig[]>('/connectors');
   }
 
+  public listActiveConnectors$(): Promise<ConnectorConfig[]> {
+    return new Promise((resolve, reject) => {
+      this.listConnectors$().then((connectors) => {
+        resolve(connectors.filter((connector) => connector.config?.enabled));
+      });
+    });
+  }
+
   public saveConfig$(connectorId: string, config: unknown): Promise<void> {
     return this._api.put(
       `/connectors/${connectorId}/user-connector-config`,

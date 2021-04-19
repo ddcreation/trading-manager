@@ -12,8 +12,19 @@ const router = Router();
 
 const userConnectorConfigDao = new UserConnectorConfigDao();
 
-router.get('/', (req: Request, res: Response) => {
-  res.json(connectors);
+router.get('/', async (req: AuthRequest, res: Response) => {
+  const { user } = req;
+  const connectorsWithConfig = await Promise.all(
+    connectors.map((connector) =>
+      userConnectorConfigDao
+        .getConfigForUser$(connector.id, user._id)
+        .then((config) => {
+          return { ...connector, config };
+        })
+    )
+  );
+
+  res.json(connectorsWithConfig);
 });
 
 router.get(
