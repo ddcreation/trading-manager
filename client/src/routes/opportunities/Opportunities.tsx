@@ -1,64 +1,107 @@
 import React from 'react';
-import { ListGroup } from 'react-bootstrap';
-import { CryptoCard, SimulationPreview } from '../../common/components';
+import { Card, ListGroup } from 'react-bootstrap';
+import {
+  CryptoCard,
+  SimulationPreview,
+  TmLoader,
+} from '../../common/components';
+import { ConnectorConfig } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 
-interface OpportunitiesState {
-  currentSymbol: string;
+interface OpportunitiesConnector {
+  config: ConnectorConfig;
+  currentSymbol?: string;
   symbols: string[];
+}
+
+interface OpportunitiesState {
+  connectors: {
+    [connectorId: string]: OpportunitiesConnector;
+  };
+  loading: boolean;
 }
 
 class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   constructor(props: null) {
     super(props);
 
-    this.setState({ symbols: [] });
+    this.state = { connectors: {}, loading: true };
   }
 
-  componentDidMount() {
-    connectorsService
-      .getFavorites$('binance')
-      .then((symbols) => this.setState({ symbols }));
-  }
+  async componentDidMount() {
+    const connectorsWithConfig = await connectorsService.listActiveConnectors$();
 
-  render() {
-    return (
-      this.state && (
-        <div>
-          <ListGroup
-            className='mb-5'
-            horizontal
-            onSelect={(evtKey) => this.symbolSelection(evtKey as string)}
-          >
-            {this.state &&
-              this.state.symbols &&
-              this.state.symbols.map((symbol) => (
-                <ListGroup.Item
-                  action
-                  eventKey={symbol}
-                  key={`tab-${symbol.toLowerCase()}`}
-                >
-                  {symbol}
-                </ListGroup.Item>
-              ))}
-          </ListGroup>
-          {this.state.currentSymbol && (
-            <div>
-              <CryptoCard symbol={this.state.currentSymbol} />
-              <h2 className='mt-5'>Simulations</h2>
-              <hr />
-              <SimulationPreview
-                symbol={this.state.currentSymbol}
-              ></SimulationPreview>
-            </div>
-          )}
-        </div>
+    const opportunitiesConnector: {
+      [connectorId: string]: OpportunitiesConnector;
+    } = {};
+    Promise.all(
+      connectorsWithConfig.map((connectorWithConfig) =>
+        connectorsService.getFavorites$(connectorWithConfig.id).then(
+          (symbols) =>
+            (opportunitiesConnector[connectorWithConfig.id] = {
+              config: connectorWithConfig,
+              symbols,
+            })
+        )
       )
+    ).then(() =>
+      this.setState({ loading: false, connectors: opportunitiesConnector })
     );
   }
 
-  symbolSelection(key: string): void {
-    this.setState({ currentSymbol: key });
+  renderConnector(connector: OpportunitiesConnector) {
+    return (
+      <Card key={`connector-${connector.config.id}`}>
+        <Card.Header>
+          <h2>{connector.config.name}</h2>
+        </Card.Header>
+        <Card.Body>
+          <ListGroup
+            className='mb-5'
+            horizontal
+            onSelect={(evtKey) =>
+              this.symbolSelection(connector.config.id, evtKey as string)
+            }
+          >
+            {connector.symbols.map((symbol) => (
+              <ListGroup.Item
+                action
+                eventKey={symbol}
+                key={`tab-${symbol.toLowerCase()}`}
+              >
+                {symbol}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+          {connector.currentSymbol && (
+            <div>
+              <CryptoCard symbol={connector.currentSymbol} />
+              <h2 className='mt-5'>Simulations</h2>
+              <hr />
+              <SimulationPreview
+                symbol={connector.currentSymbol}
+              ></SimulationPreview>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
+    );
+  }
+
+  render() {
+    return !this.state?.loading ? (
+      Object.keys(this.state?.connectors).map((connectorId) =>
+        this.renderConnector(this.state?.connectors[connectorId])
+      )
+    ) : (
+      <TmLoader />
+    );
+  }
+
+  symbolSelection(connectorId: string, key: string): void {
+    const newState = this.state;
+    newState.connectors[connectorId].currentSymbol = key;
+    this.setState(newState);
   }
 }
 
