@@ -2,20 +2,15 @@ import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { TmLoader } from '../../common/components';
 import { Account } from '../../common/models';
-import { connectorsService } from '../../services/connectors.service';
 import { userService } from '../../services/user.service';
 
 interface AccountState {
-  account: Account;
   user: { [k: string]: unknown };
 }
 
 class AccountRoute extends React.Component<unknown, AccountState> {
   componentDidMount() {
-    Promise.all([
-      userService.me$(),
-      connectorsService.getAccount$('binance'),
-    ]).then(([user, account]) => this.setState({ user, account }));
+    userService.me$().then((user) => this.setState({ user }));
   }
 
   render() {
