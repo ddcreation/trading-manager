@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
-import { TradingConnector } from '@shared/TradingConnector';
+import { initConnector } from '@shared/TradingConnector';
 import { CryptoFilterType } from '@entities/CryptoApiParams';
 import { Simulator } from '@shared/Simulator';
 import { connectors } from '@shared/connectors';
@@ -59,10 +59,11 @@ router.put(
 );
 
 router.get('/:connectorId/account', async (req: Request, res: Response) => {
-  const tradingConnector = new TradingConnector(
+  const tradingConnector = await initConnector(
     req.params.connectorId,
     req.user._id
   );
+
   const account = await tradingConnector.getAccount$();
 
   res.json(account);
@@ -71,7 +72,7 @@ router.get('/:connectorId/account', async (req: Request, res: Response) => {
 router.get(
   '/:connectorId/exchange-info',
   async (req: Request, res: Response) => {
-    const tradingConnector = new TradingConnector(
+    const tradingConnector = await initConnector(
       req.params.connectorId,
       req.user._id
     );
@@ -84,7 +85,7 @@ router.get(
 );
 
 router.get('/:connectorId/favorites', async (req: Request, res: Response) => {
-  const tradingConnector = new TradingConnector(
+  const tradingConnector = await initConnector(
     req.params.connectorId,
     req.user._id
   );
@@ -94,7 +95,7 @@ router.get('/:connectorId/favorites', async (req: Request, res: Response) => {
 });
 
 router.get('/:connectorId/prices', async (req: Request, res: Response) => {
-  const tradingConnector = new TradingConnector(
+  const tradingConnector = await initConnector(
     req.params.connectorId,
     req.user._id
   );
@@ -107,7 +108,7 @@ router.get('/:connectorId/prices', async (req: Request, res: Response) => {
 router.get(
   '/:connectorId/:symbol/history',
   async (req: Request, res: Response) => {
-    const tradingConnector = new TradingConnector(
+    const tradingConnector = await initConnector(
       req.params.connectorId,
       req.user._id
     );
@@ -120,7 +121,7 @@ router.get(
 router.get(
   '/:connectorId/:symbol/simulations',
   async (req: Request, res: Response) => {
-    const tradingConnector = new TradingConnector(
+    const tradingConnector = await initConnector(
       req.params.connectorId,
       req.user._id
     );

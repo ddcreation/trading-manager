@@ -1,4 +1,8 @@
-import { Connector, ConnectorConfig } from '@entities/Connector';
+import {
+  Connector,
+  ConnectorConfig,
+  UserConnectorConfig,
+} from '@entities/Connector';
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
 import { SymbolHistory } from '@entities/SymbolHistory';
 
@@ -29,10 +33,14 @@ export class BinanceConnector implements Connector {
 
   private _binanceApi: any;
 
-  constructor(connectorConfigValues: any) {
+  constructor(connectorConfigValues: UserConnectorConfig) {
     this.config = BinanceConfig;
 
-    this._binanceApi = new Binance().options(connectorConfigValues);
+    this._binanceApi = new Binance().options({
+      APIKEY: connectorConfigValues.APIKEY,
+      APISECRET: connectorConfigValues.APISECRET,
+      test: connectorConfigValues.test,
+    });
   }
 
   public account$() {
