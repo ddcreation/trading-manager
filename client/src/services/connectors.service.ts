@@ -35,21 +35,16 @@ export class ConnectorsService {
     );
   }
 
-  public getSymbolHistory$(
-    connectorId: string,
-    symbol: string
-  ): Promise<Tick[]> {
-    return this._api.get<Tick[]>(
-      `/connectors/${connectorId}/${symbol}/history`
-    );
+  public getAssetHistory$(connectorId: string, asset: string): Promise<Tick[]> {
+    return this._api.get<Tick[]>(`/connectors/${connectorId}/${asset}/history`);
   }
 
-  public getSymbolSimulations$(
+  public getAssetSimulations$(
     connectorId: string,
-    symbol: string
+    asset: string
   ): Promise<{ simulations: any[] }> {
     return this._api.get<{ simulations: any[] }>(
-      `/connectors/${connectorId}/${symbol}/simulations`
+      `/connectors/${connectorId}/${asset}/simulations`
     );
   }
 
@@ -63,6 +58,10 @@ export class ConnectorsService {
         resolve(connectors.filter((connector) => connector.config?.enabled));
       });
     });
+  }
+
+  public listConnectorAssets$(connectorId: string): Promise<string[]> {
+    return this._api.get<string[]>(`/connectors/${connectorId}/assets`);
   }
 
   public saveConfig$(connectorId: string, config: unknown): Promise<void> {

@@ -5,7 +5,7 @@ import { TransactionDirection } from '../../models';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 interface OpportunityButtonProperties {
-  symbol: string;
+  asset: string;
   direction: TransactionDirection;
 }
 

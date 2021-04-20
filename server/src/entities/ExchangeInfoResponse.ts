@@ -1,10 +1,10 @@
-import { Symbol } from './Symbol';
+import { Asset } from './Asset';
 
 export interface ExchangeInfoResponse {
   exchangeFilters: any[];
   rateLimits: RateLimit[];
   serverTime: number;
-  symbols: Symbol[];
+  symbols: Asset[];
   timezone: string;
 }
 

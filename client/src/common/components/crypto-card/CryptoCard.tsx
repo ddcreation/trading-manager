@@ -7,7 +7,7 @@ import TmLoader from '../tm-loader/TmLoader';
 
 interface CryptoCardProps {
   connectorId: string;
-  symbol: string;
+  asset: string;
 }
 
 interface CryptoCardState {
@@ -32,7 +32,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
   }
 
   componentDidUpdate(prevProps: CryptoCardProps) {
-    if (prevProps.symbol !== this.props.symbol) {
+    if (prevProps.asset !== this.props.asset) {
       this.updateGraph();
     }
   }
@@ -57,7 +57,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
     return (
       <Card>
         <Card.Header>
-          <Card.Title>{this.props.symbol}</Card.Title>
+          <Card.Title>{this.props.asset}</Card.Title>
         </Card.Header>
         <Card.Body>
           {this.state.loading ? (
@@ -75,7 +75,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
   updateGraph() {
     this.setState({ loading: true, history: [] });
     connectorsService
-      .getSymbolHistory$(this.props.connectorId, this.props.symbol)
+      .getAssetHistory$(this.props.connectorId, this.props.asset)
       .then((response) => {
         this.setState({ loading: false, history: response });
       });

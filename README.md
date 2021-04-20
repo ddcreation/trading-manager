@@ -19,7 +19,7 @@ The trading manager project allow you to have an overview of your trading accoun
 
 ## General info
 
-The purpose of this project is to allow any developer to quickly start in the big trading world. The dashboard gives you an overview of your current balance and the evolution of your favorite crypto. You can create your own trading strategies and make simulations (visible in the Opportunities tab) to find the best approach start investing in trading.
+The purpose of this project is to allow any developer to quickly start in the big trading world. The dashboard gives you an overview of your current balance and the evolution of your favorites assets. You can create your own trading strategies and make simulations (visible in the Opportunities tab) to find the best approach start investing in trading.
 
 ## Technologies
 
@@ -61,9 +61,9 @@ You will need:
 
 - You can edit and put your own environment value.
 
-### Change your favorites crypto
+### Connectors
 
-For the moment they are harcoded at the top of this file `server/src/shared/CryptoProviderApi.ts`. In the future the favorites cryptos will be set inside the user preferences.
+After register and login in the app, you have to set up the connectors you wanna use. For the moment we only support Binance API but more will come soon. To configure them you should access the connectors configuration inside the user menu. Here you can set all the necessary informations (api keys, enable / disable, test mode, favorites assets...).
 
 ### Create a new strategy for simulations
 
@@ -76,35 +76,28 @@ For the moment they are harcoded at the top of this file `server/src/shared/Cryp
   - Add calculated extra datas inside `historicToDataframe` method
   - Create your own rules to enter a position (inside `checkBuyOpportunity` and `checkSellOpportunity` methods), to close it (`exitRule` method), and stop loss (`stopLoss` method)
 
-### Connection to connectors (Binance API only for the moment)
-
-- You can set your connector parameters (ex: `BINANCE_API_KEY`, `BINANCE_API_SECRET`...) after login inside the app in the Account menu / Connectors
-
 ## Features
 
 - Dashboard
   - Account balances
-  - Shortcut to buy favorite crypto (WIP)
-  - Graphs of favorites cryptos evolution
-- Opportunities: for each favorites crypto:
+  - Graphs of favorites assets evolution
+- Opportunities: for each favorites assets:
   - Graphs of the evolution
   - Simulation of each trading strategy with Buy/sell alert
-- Crypto
-  - List of all existing crypto in binance with current price
+- Rates
+  - List of all existing assets with current price
 - Account
-  - Show binance account parameters and trading manager user preferences
-  - Database of users
   - User signin / login / logout
-  - Connectors parameters and configuration
+  - Show user parameters
+  - Connectors parameters and configuration for the user (api keys, enable / disable, favorites assets)
 - API Cron to launch jobs (open and close orders automatically in the future)
 
 To come in the future
 
-- User preferences management improvements (favorites symbols)
-- Implement new connectors (robinhood?) and credentials for each
+- Implement new connectors (robinhood?)
+- Connect with APIs for open/close positions
+- Automatically check the opportunities and open positions and place orders / close
 - On each screens, replace the loop on each connector to see aggregated datas in a single place (remove connector cards)
-- Connect with API for open/close positions
-- Automatically check tho opportunities and open positions and place orders / close
 - More trading strategies
 - ... (_waiting for your ideas_)
 

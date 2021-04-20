@@ -5,7 +5,8 @@ export interface ConnectorConfig {
     [propName: string]: { label: string; type: string };
   };
   config?: {
-    [propName: string]: string | boolean;
+    [propName: string]: unknown;
     enabled: boolean;
+    favoritesAssets: string[];
   };
 }

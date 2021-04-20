@@ -1,18 +1,14 @@
 import { ConnectorAccount } from '@entities/ConnectorAccount';
-import { SymbolHistory } from '@entities/SymbolHistory';
+import { AssetHistory } from '@entities/AssetHistory';
 import {
-  CryptoFilterType,
   IntervalType,
   HistoryParams,
+  CryptoFilterType,
 } from '@entities/CryptoApiParams';
 import { BinanceConnector } from './connectors/BinanceConnector';
-import { Symbol } from '@entities/Symbol';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { UserConnectorConfig } from '@entities/Connector';
-
-// TODO: set this list in user preferences
-const defaultFavoritesCrypto = ['ETHUSDT', 'BCHUSDT', 'BTCUSDT', 'LTCUSDT'];
 
 export class TradingConnector {
   public defaultHistoryParams: HistoryParams = {
@@ -20,43 +16,40 @@ export class TradingConnector {
   };
 
   private _account: ConnectorAccount | undefined;
+  private _config: UserConnectorConfig;
   private _provider: any;
 
   constructor(connectorConfig: UserConnectorConfig) {
-    switch (connectorConfig.connector_id) {
+    this._config = connectorConfig;
+    switch (this._config.connector_id) {
       case 'binance': {
-        this._provider = new BinanceConnector(connectorConfig);
+        this._provider = new BinanceConnector(this._config);
 
         break;
       }
     }
   }
 
+  public async listAssets$(): Promise<string[]> {
+    return await this._provider.listAssets$();
+  }
+
   public exchangeInfo$(
-    cryptoFilter: CryptoFilterType = CryptoFilterType.all
+    assetFilter: CryptoFilterType = CryptoFilterType.all
   ): Promise<ExchangeInfoResponse> {
-    if (cryptoFilter === CryptoFilterType.favorites) {
-      return new Promise((resolve, reject) => {
-        Promise.all([this.getAccount$(), this._provider.exchangeInfo$()]).then(
-          ([account, exchangeInfos]) => {
-            const filteredSymbols = exchangeInfos.symbols
-              .filter((symbol: Symbol) =>
-                account.favoritesSymbols.includes(symbol.symbol)
-              )
-              .sort(
-                (symbolA: Symbol, symbolB: Symbol) =>
-                  account.favoritesSymbols.indexOf(symbolA.symbol) -
-                  account.favoritesSymbols.indexOf(symbolB.symbol)
-              );
-
-            resolve({ ...exchangeInfos, symbols: filteredSymbols });
-          },
-          (err) => reject(err)
-        );
+    return this._provider
+      .exchangeInfo$()
+      .then((infos: ExchangeInfoResponse) => {
+        return {
+          ...infos,
+          symbols: infos.symbols.filter(
+            (asset) =>
+              assetFilter === CryptoFilterType.all ||
+              (assetFilter === CryptoFilterType.favorites &&
+                this._config.favoritesAssets?.includes(asset.symbol))
+          ),
+        };
       });
-    }
-
-    return this._provider.exchangeInfo$();
   }
 
   public getAccount$(): Promise<ConnectorAccount> {
@@ -66,10 +59,9 @@ export class TradingConnector {
       }
 
       this._provider.account$().then(
-        (providerAccount: unknown) => {
+        (providerAccount: any) => {
           resolve({
-            favoritesSymbols: defaultFavoritesCrypto,
-            connectorDatas: providerAccount as any,
+            connectorDatas: providerAccount,
           });
         },
         (error: unknown) => reject(error)
@@ -80,30 +72,27 @@ export class TradingConnector {
     });
   }
 
-  public symbolHistory$(
-    symbol: string,
+  public assetHistory$(
+    asset: string,
     interval: IntervalType = IntervalType['5m'],
     params?: HistoryParams
-  ): Promise<SymbolHistory[]> {
+  ): Promise<AssetHistory[]> {
     const requestParams: HistoryParams = {
       ...this.defaultHistoryParams,
       ...params,
     };
 
-    return this._provider.symbolHistory$(symbol, interval, requestParams);
+    return this._provider.assetHistory$(asset, interval, requestParams);
   }
 
-  public symbolPrices$(): Promise<unknown> {
-    return this._provider.symbolPrices$();
+  public assetPrices$(): Promise<unknown> {
+    return this._provider.assetPrices$();
   }
 }
 
 export const initConnector = async (connectorId: string, userId: string) => {
   const configDao = new UserConnectorConfigDao();
-  const config = (await configDao.getConfigForUser$(
-    connectorId,
-    userId
-  )) as any;
+  const config = await configDao.getConfigForUser$(connectorId, userId);
 
   return new TradingConnector(config);
 };

@@ -1,5 +1,5 @@
 import { IntervalType } from './CryptoApiParams';
-import { SymbolHistory } from './SymbolHistory';
+import { AssetHistory } from './AssetHistory';
 
 export interface SimulationTrade {
   entryPrice: number;
@@ -36,7 +36,7 @@ export interface SimulationAnalysis {
 
 export interface Simulation {
   analysis: SimulationAnalysis;
-  history: SymbolHistory[];
+  history: AssetHistory[];
   id: string;
   interval: IntervalType;
   name: string;

@@ -4,7 +4,8 @@ import {
   UserConnectorConfig,
 } from '@entities/Connector';
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
-import { SymbolHistory } from '@entities/SymbolHistory';
+import { AssetHistory } from '@entities/AssetHistory';
+import { Asset } from '@entities/Asset';
 
 const Binance = require('node-binance-api');
 
@@ -51,17 +52,22 @@ export class BinanceConnector implements Connector {
     return this._binanceApi.exchangeInfo();
   }
 
-  public async symbolHistory$(
-    symbol: string,
+  public listAssets$(): Promise<string[]> {
+    return this.exchangeInfo$().then((exchangeInfo: { symbols: Asset[] }) => {
+      return exchangeInfo.symbols.map((asset) => asset.symbol);
+    });
+  }
+
+  public async assetHistory$(
+    asset: string,
     interval: IntervalType = IntervalType['5m'],
     requestParams: HistoryParams
-  ): Promise<SymbolHistory[]> {
+  ): Promise<AssetHistory[]> {
     return new Promise((resolve, reject) => {
       this._binanceApi.candlesticks(
-        symbol,
+        asset,
         interval,
-        (error: unknown, ticks: Array<string[]>, symbol: string) => {
-          console.log('CandleStick', error, symbol);
+        (error: unknown, ticks: Array<string[]>, asset: string) => {
           if (error) {
             reject(error);
           }
@@ -74,11 +80,11 @@ export class BinanceConnector implements Connector {
     });
   }
 
-  public symbolPrices$(): Promise<unknown> {
+  public assetPrices$(): Promise<unknown> {
     return this._binanceApi.prices();
   }
 
-  private _formatTicksResponse(ticks: Array<string[]>): SymbolHistory[] {
+  private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
     return ticks.map((tick) => {
       const [
         time,

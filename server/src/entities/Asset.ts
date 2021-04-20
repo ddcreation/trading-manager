@@ -1,4 +1,4 @@
-export interface Symbol {
+export interface Asset {
   baseAsset: string;
   baseAssetPrecision: number;
   filters: any[];
