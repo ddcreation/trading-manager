@@ -53,8 +53,8 @@ export class BinanceConnector implements Connector {
   }
 
   public listAssets$(): Promise<string[]> {
-    return this.exchangeInfo$().then((exchangeInfo: { assets: Asset[] }) => {
-      return exchangeInfo.assets.map((asset) => asset.symbol);
+    return this.exchangeInfo$().then((exchangeInfo: { symbols: Asset[] }) => {
+      return exchangeInfo.symbols.map((asset) => asset.symbol);
     });
   }
 
