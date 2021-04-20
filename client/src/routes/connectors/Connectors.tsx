@@ -9,6 +9,9 @@ interface ConnectorsRouteState {
   favorites: {
     [connectorId: string]: string[];
   };
+  filters: {
+    [connectorId: string]: string;
+  };
 }
 
 class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
@@ -76,7 +79,9 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
       []
     );
 
-    connectorsService.saveConfig$(connectorId, { favoritesAssets });
+    connectorsService
+      .saveConfig$(connectorId, { favoritesAssets })
+      .then(() => this.setState({ filters: { [connectorId]: '' } }));
   };
 
   renderFavorites = (connectorId: string) => {
@@ -85,35 +90,59 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
     ) as ConnectorConfig;
 
     return this.state.favorites && this.state.favorites[connector.id] ? (
-      <Form onSubmit={(e) => this.submitConnectorFavorites(e, connector.id)}>
-        <Form.Row>
-          {this.state.favorites[connector.id].map((assetName) => (
-            <Col
-              className='col-xs-6 col-sm-4 col-md-2'
-              key={`asset-${assetName}`}
-            >
-              <Form.Group
-                controlId={`formFavorites${connector.id}.${assetName}`}
+      <React.Fragment>
+        <Form.Group controlId='assetsFilter'>
+          <Form.Control
+            type='text'
+            placeholder='Filter...'
+            onChange={(e: any) =>
+              this.setState({ filters: { [connectorId]: e.target.value } })
+            }
+            value={
+              this.state.filters && this.state.filters[connectorId]
+                ? this.state.filters[connectorId]
+                : ''
+            }
+          />
+        </Form.Group>
+        <Form onSubmit={(e) => this.submitConnectorFavorites(e, connector.id)}>
+          <Form.Row>
+            {this.state.favorites[connector.id].map((assetName) => (
+              <Col
+                className={
+                  this.state.filters &&
+                  this.state.filters[connectorId] &&
+                  !assetName.match(
+                    new RegExp(this.state.filters[connectorId], 'i')
+                  )
+                    ? 'd-none'
+                    : 'col-xs-6 col-sm-4 col-md-2'
+                }
+                key={`${assetName}-asset-${assetName}`}
               >
-                <Form.Check
-                  inline
-                  name={assetName}
-                  label={assetName}
-                  defaultChecked={
-                    connector.config?.favoritesAssets &&
-                    connector.config.favoritesAssets.includes(assetName)
-                  }
-                  type='checkbox'
-                  className='mb-2'
-                />
-              </Form.Group>
-            </Col>
-          ))}
-        </Form.Row>
-        <Button variant='primary' type='submit'>
-          Save
-        </Button>
-      </Form>
+                <Form.Group
+                  controlId={`formFavorites${connector.id}.${assetName}`}
+                >
+                  <Form.Check
+                    inline
+                    name={assetName}
+                    label={assetName}
+                    defaultChecked={
+                      connector.config?.favoritesAssets &&
+                      connector.config.favoritesAssets.includes(assetName)
+                    }
+                    type='checkbox'
+                    className='mb-2'
+                  />
+                </Form.Group>
+              </Col>
+            ))}
+          </Form.Row>
+          <Button variant='primary' type='submit'>
+            Save
+          </Button>
+        </Form>
+      </React.Fragment>
     ) : (
       <TmLoader />
     );
