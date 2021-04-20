@@ -60,6 +60,10 @@ export class ConnectorsService {
     });
   }
 
+  public listConnectorAssets$(connectorId: string): Promise<string[]> {
+    return this._api.get<string[]>(`/connectors/${connectorId}/assets`);
+  }
+
   public saveConfig$(connectorId: string, config: unknown): Promise<void> {
     return this._api.put(
       `/connectors/${connectorId}/user-connector-config`,
