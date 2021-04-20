@@ -101,13 +101,19 @@ router.get(
 );
 
 router.get('/:connectorId/favorites', async (req: Request, res: Response) => {
-  const tradingConnector = await initConnector(
-    req.params.connectorId,
-    req.user._id
-  );
-  const account = await tradingConnector.getAccount$();
+  const { user } = req;
+  const { connectorId } = req.params;
 
-  res.json(account.favoritesAssets);
+  const config = await userConnectorConfigDao.getConfigForUser$(
+    connectorId,
+    user._id
+  );
+
+  if (config) {
+    return res.status(StatusCodes.OK).send(config.favoritesAssets || []);
+  }
+
+  return res.sendStatus(StatusCodes.NOT_FOUND);
 });
 
 router.get('/:connectorId/prices', async (req: Request, res: Response) => {

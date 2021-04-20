@@ -1,18 +1,14 @@
 import { ConnectorAccount } from '@entities/ConnectorAccount';
 import { AssetHistory } from '@entities/AssetHistory';
 import {
-  CryptoFilterType,
   IntervalType,
   HistoryParams,
+  CryptoFilterType,
 } from '@entities/CryptoApiParams';
 import { BinanceConnector } from './connectors/BinanceConnector';
-import { Asset } from '@entities/Asset';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { UserConnectorConfig } from '@entities/Connector';
-
-// TODO: set this list in user preferences
-const defaultFavoritesCrypto = ['ETHUSDT', 'BCHUSDT', 'BTCUSDT', 'LTCUSDT'];
 
 export class TradingConnector {
   public defaultHistoryParams: HistoryParams = {
@@ -20,12 +16,14 @@ export class TradingConnector {
   };
 
   private _account: ConnectorAccount | undefined;
+  private _config: UserConnectorConfig;
   private _provider: any;
 
   constructor(connectorConfig: UserConnectorConfig) {
-    switch (connectorConfig.connector_id) {
+    this._config = connectorConfig;
+    switch (this._config.connector_id) {
       case 'binance': {
-        this._provider = new BinanceConnector(connectorConfig);
+        this._provider = new BinanceConnector(this._config);
 
         break;
       }
@@ -37,30 +35,21 @@ export class TradingConnector {
   }
 
   public exchangeInfo$(
-    cryptoFilter: CryptoFilterType = CryptoFilterType.all
+    assetFilter: CryptoFilterType = CryptoFilterType.all
   ): Promise<ExchangeInfoResponse> {
-    if (cryptoFilter === CryptoFilterType.favorites) {
-      return new Promise((resolve, reject) => {
-        Promise.all([this.getAccount$(), this._provider.exchangeInfo$()]).then(
-          ([account, exchangeInfos]) => {
-            const filteredAssets = exchangeInfos.symbols
-              .filter((asset: Asset) =>
-                account.favoritesAssets.includes(asset.symbol)
-              )
-              .sort(
-                (assetA: Asset, assetB: Asset) =>
-                  account.favoritesAssets.indexOf(assetA.symbol) -
-                  account.favoritesAssets.indexOf(assetB.symbol)
-              );
-
-            resolve({ ...exchangeInfos, assets: filteredAssets });
-          },
-          (err) => reject(err)
-        );
+    return this._provider
+      .exchangeInfo$()
+      .then((infos: ExchangeInfoResponse) => {
+        return {
+          ...infos,
+          symbols: infos.symbols.filter(
+            (asset) =>
+              assetFilter === CryptoFilterType.all ||
+              (assetFilter === CryptoFilterType.favorites &&
+                this._config.favoritesAssets?.includes(asset.symbol))
+          ),
+        };
       });
-    }
-
-    return this._provider.exchangeInfo$();
   }
 
   public getAccount$(): Promise<ConnectorAccount> {
@@ -70,10 +59,9 @@ export class TradingConnector {
       }
 
       this._provider.account$().then(
-        (providerAccount: unknown) => {
+        (providerAccount: any) => {
           resolve({
-            favoritesAssets: defaultFavoritesCrypto,
-            connectorDatas: providerAccount as any,
+            connectorDatas: providerAccount,
           });
         },
         (error: unknown) => reject(error)
@@ -104,10 +92,7 @@ export class TradingConnector {
 
 export const initConnector = async (connectorId: string, userId: string) => {
   const configDao = new UserConnectorConfigDao();
-  const config = (await configDao.getConfigForUser$(
-    connectorId,
-    userId
-  )) as any;
+  const config = await configDao.getConfigForUser$(connectorId, userId);
 
   return new TradingConnector(config);
 };

@@ -4,7 +4,7 @@ export interface ExchangeInfoResponse {
   exchangeFilters: any[];
   rateLimits: RateLimit[];
   serverTime: number;
-  assets: Asset[];
+  symbols: Asset[];
   timezone: string;
 }
 
