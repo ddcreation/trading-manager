@@ -102,6 +102,7 @@ To come in the future
 
 - User preferences management improvements (favorites symbols)
 - Implement new connectors (robinhood?) and credentials for each
+- On each screens, replace the loop on each connector to see aggregated datas in a single place (remove connector cards)
 - Connect with API for open/close positions
 - Automatically check tho opportunities and open positions and place orders / close
 - More trading strategies
