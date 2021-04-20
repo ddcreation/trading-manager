@@ -30,7 +30,6 @@ export class DatabaseConnector<T extends DbEntity> {
   public async delete$(params: FilterQuery<T>): Promise<void> {
     const { client, collection } = await this._connect$();
 
-    console.log(params);
     await collection.deleteMany(params);
     await client.close();
 

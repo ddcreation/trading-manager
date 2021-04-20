@@ -84,10 +84,6 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
       (connector) => connector.id === connectorId
     ) as ConnectorConfig;
 
-    if (this.state.favorites && this.state.favorites[connector.id]) {
-      console.log(this.state.favorites[connector.id]);
-    }
-
     return this.state.favorites && this.state.favorites[connector.id] ? (
       <Form onSubmit={(e) => this.submitConnectorFavorites(e, connector.id)}>
         <Form.Row>
