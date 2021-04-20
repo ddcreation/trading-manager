@@ -5,7 +5,7 @@ import {
   SimulationPreview,
   TmLoader,
 } from '../../common/components';
-import MissingConnectorAlert from '../../common/components/missing-connector/MissingConnectorAlert';
+import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
 import { ConnectorConfig } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 
@@ -96,7 +96,7 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
   render() {
     return !this.state?.loading ? (
       Object.keys(this.state?.connectors).length === 0 ? (
-        <MissingConnectorAlert />
+        <MissingConfigAlert config='connector' />
       ) : (
         Object.keys(this.state?.connectors).map((connectorId) =>
           this.renderConnector(this.state?.connectors[connectorId])

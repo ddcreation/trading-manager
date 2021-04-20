@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Row, Table } from 'react-bootstrap';
 import { CryptoCard, TmLoader } from '../../common/components';
-import MissingConnectorAlert from '../../common/components/missing-connector/MissingConnectorAlert';
+import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
 import { Account, ExchangeInfoResponse } from '../../common/models';
 import { ConnectorConfig } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
@@ -107,11 +107,15 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
           <hr className='my-3' />
           <h3>Favorites</h3>
           <Row>
-            {connector.favoritesAssets.map((asset) => (
-              <div key={asset} className='col-12 col-lg-6 mt-3'>
-                <CryptoCard connectorId={connector.config.id} asset={asset} />
-              </div>
-            ))}
+            {connector.favoritesAssets.length ? (
+              connector.favoritesAssets.map((asset) => (
+                <div key={asset} className='col-12 col-lg-6 mt-3'>
+                  <CryptoCard connectorId={connector.config.id} asset={asset} />
+                </div>
+              ))
+            ) : (
+              <MissingConfigAlert config='favorites' />
+            )}
           </Row>
         </Card.Body>
       </Card>
@@ -121,7 +125,7 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
   render() {
     return !this.state?.loading ? (
       Object.keys(this.state?.connectors).length === 0 ? (
-        <MissingConnectorAlert />
+        <MissingConfigAlert config='connector' />
       ) : (
         Object.keys(this.state?.connectors).map((connectorId) =>
           this.renderConnector(this.state?.connectors[connectorId])
