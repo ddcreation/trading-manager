@@ -68,7 +68,6 @@ export class BinanceConnector implements Connector {
         asset,
         interval,
         (error: unknown, ticks: Array<string[]>, asset: string) => {
-          console.log('CandleStick', error, asset);
           if (error) {
             reject(error);
           }
