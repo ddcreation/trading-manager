@@ -6,6 +6,7 @@ export interface UserConnectorConfig extends DbEntity {
   user_id: string;
   connector_id: string;
   enabled: boolean;
+  favoritesAssets: string[];
   [prop: string]: unknown;
 }
 
