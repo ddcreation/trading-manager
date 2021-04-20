@@ -19,6 +19,13 @@ export class UserConnectorConfigDao {
     return await this._connector.add$(config);
   }
 
+  public async update$(
+    filters: FilterQuery<UserConnectorConfig>,
+    config: Partial<UserConnectorConfig>
+  ): Promise<UserConnectorConfig> {
+    return await this._connector.updateOne$(filters, config);
+  }
+
   public async replace$(
     filters: FilterQuery<UserConnectorConfig>,
     config: UserConnectorConfig

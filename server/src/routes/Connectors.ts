@@ -52,15 +52,9 @@ router.put(
     const { user } = req;
     const { connectorId } = req.params;
 
-    const config = {
-      ...req.body,
-      user_id: user._id,
-      connector_id: connectorId,
-    };
-
-    const replace = await userConnectorConfigDao.replace$(
+    const replace = await userConnectorConfigDao.update$(
       { connector_id: connectorId, user_id: user._id },
-      config
+      req.body
     );
 
     return res.sendStatus(

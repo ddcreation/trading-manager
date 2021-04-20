@@ -78,10 +78,13 @@ export class DatabaseConnector<T extends DbEntity> {
     return (replace as any) as T;
   }
 
-  public async update$(filter: FilterQuery<T>, entity: T): Promise<T> {
+  public async updateOne$(
+    filter: FilterQuery<T>,
+    values: Partial<T>
+  ): Promise<T> {
     const { client, collection } = await this._connect$();
 
-    const update = await collection.updateOne(filter, entity);
+    const update = await collection.updateOne(filter, { $set: values });
     await client.close();
 
     return (update as any) as T;
