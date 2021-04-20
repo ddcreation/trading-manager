@@ -61,8 +61,8 @@ class AssetsRatesRoute extends React.Component<unknown, AssetsRatesState> {
           <h2>{connector.config.name}</h2>
         </Card.Header>
         <Card.Body>
-          {assets.map((asset, idx) => (
-            <TradingCard asset={asset} key={asset.name + idx} />
+          {assets.map((assetPrice, idx) => (
+            <TradingCard assetPrice={assetPrice} key={assetPrice.name + idx} />
           ))}
         </Card.Body>
       </Card>

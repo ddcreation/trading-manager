@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { Asset } from '../../models/Asset';
+import { AssetPrice } from '../../models/Asset';
 
 interface TradingCardProps {
-  asset: Asset;
+  assetPrice: AssetPrice;
 }
 
 interface TradingCardState {}
@@ -12,7 +12,7 @@ class TradingCard extends React.Component<TradingCardProps, TradingCardState> {
   render() {
     return (
       <Card>
-        {this.props.asset.name} = {this.props.asset.price}
+        {this.props.assetPrice.name} = {this.props.assetPrice.price}
       </Card>
     );
   }
