@@ -1,7 +1,7 @@
 import { TradingConnector } from '@shared/TradingConnector';
 import { IStrategy } from 'grademark';
 import { IntervalType } from './CryptoApiParams';
-import { SymbolHistory } from './SymbolHistory';
+import { AssetHistory } from './AssetHistory';
 
 export interface IBar {
   time: Date;
@@ -22,7 +22,7 @@ export interface Strategy extends IStrategy {
   checkSellOpportunity: (args: any) => boolean;
   entryRule: (enterPosition: any, args: any) => void;
   exitRule: (exitPosition: any, args: any) => void;
-  getHistory$: (symbol: string) => Promise<SymbolHistory[]>;
-  historicToDataframe: (history: SymbolHistory[]) => any;
+  getHistory$: (asset: string) => Promise<AssetHistory[]>;
+  historicToDataframe: (history: AssetHistory[]) => any;
   stopLoss?: (args: any) => number;
 }

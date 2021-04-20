@@ -1,5 +1,5 @@
 import * as dataForge from 'data-forge';
-import { SymbolHistory } from '@entities/SymbolHistory';
+import { AssetHistory } from '@entities/AssetHistory';
 import { Strategy } from '@entities/Strategies';
 import {
   EnterPositionFn,
@@ -49,13 +49,13 @@ export class LastDayFallStrategy implements Strategy {
     }
   }
 
-  public getHistory$(symbol: string): Promise<SymbolHistory[]> {
-    return this.connector.symbolHistory$(symbol, this.interval, {
+  public getHistory$(asset: string): Promise<AssetHistory[]> {
+    return this.connector.assetHistory$(asset, this.interval, {
       limit: 5000,
     });
   }
 
-  public historicToDataframe(historic: SymbolHistory[]): any {
+  public historicToDataframe(historic: AssetHistory[]): any {
     const formatedHistoric = historic.map((history, index) => {
       const lastDayIndex = index - 24;
 

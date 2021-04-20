@@ -11,8 +11,8 @@ import { connectorsService } from '../../services/connectors.service';
 
 interface OpportunitiesConnector {
   config: ConnectorConfig;
-  currentSymbol?: string;
-  symbols: string[];
+  currentAsset?: string;
+  assets: string[];
 }
 
 interface OpportunitiesState {
@@ -38,10 +38,10 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
     Promise.all(
       connectorsWithConfig.map((connectorWithConfig) =>
         connectorsService.getFavorites$(connectorWithConfig.id).then(
-          (symbols) =>
+          (assets) =>
             (opportunitiesConnector[connectorWithConfig.id] = {
               config: connectorWithConfig,
-              symbols,
+              assets,
             })
         )
       )
@@ -61,30 +61,30 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
             className='mb-5'
             horizontal
             onSelect={(evtKey) =>
-              this.symbolSelection(connector.config.id, evtKey as string)
+              this.assetSelection(connector.config.id, evtKey as string)
             }
           >
-            {connector.symbols.map((symbol) => (
+            {connector.assets.map((asset) => (
               <ListGroup.Item
                 action
-                eventKey={symbol}
-                key={`tab-${symbol.toLowerCase()}`}
+                eventKey={asset}
+                key={`tab-${asset.toLowerCase()}`}
               >
-                {symbol}
+                {asset}
               </ListGroup.Item>
             ))}
           </ListGroup>
-          {connector.currentSymbol && (
+          {connector.currentAsset && (
             <div>
               <CryptoCard
                 connectorId={connector.config.id}
-                symbol={connector.currentSymbol}
+                asset={connector.currentAsset}
               />
               <h2 className='mt-5'>Simulations</h2>
               <hr />
               <SimulationPreview
                 connectorId={connector.config.id}
-                symbol={connector.currentSymbol}
+                asset={connector.currentAsset}
               ></SimulationPreview>
             </div>
           )}
@@ -107,9 +107,9 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
     );
   }
 
-  symbolSelection(connectorId: string, key: string): void {
+  assetSelection(connectorId: string, key: string): void {
     const newState = this.state;
-    newState.connectors[connectorId].currentSymbol = key;
+    newState.connectors[connectorId].currentAsset = key;
     this.setState(newState);
   }
 }

@@ -90,11 +90,11 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
               </Card.Body>
             </Accordion.Collapse>
             {/* <Accordion.Toggle as={Card.Header} eventKey='1'>
-              Favorites symbols
+              Favorites assets
             </Accordion.Toggle>
             <Accordion.Collapse eventKey='1'>
               <Card.Body>
-                TODO: List symbols
+                TODO: List assets
                 <Button variant='primary' type='submit'>
                   Save
                 </Button>

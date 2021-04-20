@@ -1,10 +1,10 @@
-import { SymbolHistory } from '@entities/SymbolHistory';
+import { AssetHistory } from '@entities/AssetHistory';
 import { candleColor } from '../helpers';
 import { CandleColor } from '../types';
 import { chainedCandles } from './chained-candles';
 
 export const bullishFlagRecognition = (
-  history: SymbolHistory[],
+  history: AssetHistory[],
   currentIndex: number,
   minPullbackLength: number = 3
 ): boolean => {

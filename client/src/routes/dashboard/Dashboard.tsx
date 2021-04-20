@@ -9,7 +9,7 @@ import { connectorsService } from '../../services/connectors.service';
 interface DashboardConnector {
   account: Account;
   config: ConnectorConfig;
-  favoritesSymbols: string[];
+  favoritesAssets: string[];
   exchangeInfos: ExchangeInfoResponse;
 }
 
@@ -38,12 +38,12 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
         connectorsService.getFavorites$(connectorConfig.id),
         connectorsService.getAccount$(connectorConfig.id),
         connectorsService.getExchangeInfos$(connectorConfig.id),
-      ]).then(([favoritesSymbols, account, exchangeInfos]) => {
+      ]).then(([favoritesAssets, account, exchangeInfos]) => {
         const dashboardConnector = {
           config: connectorConfig,
           account,
           exchangeInfos,
-          favoritesSymbols,
+          favoritesAssets,
         };
 
         this.setState({
@@ -107,9 +107,9 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
           <hr className='my-3' />
           <h3>Favorites</h3>
           <Row>
-            {connector.favoritesSymbols.map((symbol) => (
-              <div key={symbol} className='col-12 col-lg-6 mt-3'>
-                <CryptoCard connectorId={connector.config.id} symbol={symbol} />
+            {connector.favoritesAssets.map((asset) => (
+              <div key={asset} className='col-12 col-lg-6 mt-3'>
+                <CryptoCard connectorId={connector.config.id} asset={asset} />
               </div>
             ))}
           </Row>

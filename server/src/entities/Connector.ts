@@ -1,5 +1,5 @@
 import { HistoryParams, IntervalType } from './CryptoApiParams';
-import { SymbolHistory } from './SymbolHistory';
+import { AssetHistory } from './AssetHistory';
 import { DbEntity } from './DbEntity';
 
 export interface UserConnectorConfig extends DbEntity {
@@ -23,10 +23,10 @@ export interface Connector {
 
   account$: () => Promise<any>;
   exchangeInfo$: () => Promise<any>;
-  symbolHistory$: (
-    symbol: string,
+  assetHistory$: (
+    asset: string,
     interval: IntervalType,
     requestParams: HistoryParams
-  ) => Promise<SymbolHistory[]>;
-  symbolPrices$: () => Promise<unknown>;
+  ) => Promise<AssetHistory[]>;
+  assetPrices$: () => Promise<unknown>;
 }

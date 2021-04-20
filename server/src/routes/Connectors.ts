@@ -46,6 +46,17 @@ router.get(
   }
 );
 
+router.get('/:connectorId/assets', async (req: AuthRequest, res: Response) => {
+  const tradingConnector = await initConnector(
+    req.params.connectorId,
+    req.user._id
+  );
+
+  const assets = await tradingConnector.listAssets$();
+
+  return res.send(assets);
+});
+
 router.put(
   '/:connectorId/user-connector-config',
   async (req: AuthRequest, res: Response) => {
@@ -96,7 +107,7 @@ router.get('/:connectorId/favorites', async (req: Request, res: Response) => {
   );
   const account = await tradingConnector.getAccount$();
 
-  res.json(account.favoritesSymbols);
+  res.json(account.favoritesAssets);
 });
 
 router.get('/:connectorId/prices', async (req: Request, res: Response) => {
@@ -105,26 +116,26 @@ router.get('/:connectorId/prices', async (req: Request, res: Response) => {
     req.user._id
   );
 
-  const prices = await tradingConnector.symbolPrices$();
+  const prices = await tradingConnector.assetPrices$();
 
   res.json(prices);
 });
 
 router.get(
-  '/:connectorId/:symbol/history',
+  '/:connectorId/:asset/history',
   async (req: Request, res: Response) => {
     const tradingConnector = await initConnector(
       req.params.connectorId,
       req.user._id
     );
-    const history = await tradingConnector.symbolHistory$(req.params.symbol);
+    const history = await tradingConnector.assetHistory$(req.params.asset);
 
     res.json(history);
   }
 );
 
 router.get(
-  '/:connectorId/:symbol/simulations',
+  '/:connectorId/:asset/simulations',
   async (req: Request, res: Response) => {
     const tradingConnector = await initConnector(
       req.params.connectorId,
@@ -134,11 +145,11 @@ router.get(
     // Generate simulations:
     const simulator = new Simulator(tradingConnector);
     const simulations = await simulator.simulate$({
-      symbol: req.params.symbol,
+      asset: req.params.asset,
     });
 
     res.json({
-      symbol: req.params.symbol,
+      asset: req.params.asset,
       simulations,
     });
   }

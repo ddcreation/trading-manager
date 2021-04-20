@@ -1,6 +1,6 @@
 import AccountRoute from './account/Account';
 import ConnectorsRoute from './connectors/Connectors';
-import SymbolsRatesRoute from './symbols-rates/SymbolsRates';
+import AssetsRatesRoute from './assets-rates/AssetsRates';
 import DashboardRoute from './dashboard/Dashboard';
 import OpportunitiesRoute from './opportunities/Opportunities';
 
@@ -21,7 +21,7 @@ const AppRoutes: RouteProps[] = [
     title: 'Opportunities',
   },
   {
-    component: SymbolsRatesRoute,
+    component: AssetsRatesRoute,
     nav: { label: 'Rates', visible: true, sort: 2 },
     path: '/rates',
     title: 'Current rates',

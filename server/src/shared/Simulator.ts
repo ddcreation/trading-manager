@@ -16,7 +16,7 @@ export class Simulator {
   }
 
   public simulate$(params: {
-    symbol: string;
+    asset: string;
     capital?: number;
     leverage?: number;
     strategies?: string[];
@@ -33,7 +33,7 @@ export class Simulator {
             !params.strategies || params.strategies.includes(strategy.id)
         )
         .forEach((strategy: Strategy, index: number) => {
-          strategy.getHistory$(params.symbol).then((datas) => {
+          strategy.getHistory$(params.asset).then((datas) => {
             const dataFrame = strategy.historicToDataframe(datas);
 
             // Backtest each strategy

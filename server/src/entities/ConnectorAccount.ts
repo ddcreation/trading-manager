@@ -1,5 +1,5 @@
 export interface ConnectorAccount {
-  favoritesSymbols: string[];
+  favoritesAssets: string[];
   connectorDatas: {
     [key: string]: unknown;
   };

@@ -5,19 +5,19 @@ import MissingConnectorAlert from '../../common/components/missing-connector/Mis
 import { ConnectorConfig } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 
-interface SymbolsRatesConnector {
+interface AssetsRatesConnector {
   config: ConnectorConfig;
-  symbols: { [key: string]: string };
+  assets: { [key: string]: string };
 }
 
-interface SymbolsRatesState {
+interface AssetsRatesState {
   connectors: {
-    [connectorId: string]: SymbolsRatesConnector;
+    [connectorId: string]: AssetsRatesConnector;
   };
   loading: boolean;
 }
 
-class SymbolsRatesRoute extends React.Component<unknown, SymbolsRatesState> {
+class AssetsRatesRoute extends React.Component<unknown, AssetsRatesState> {
   constructor(props: unknown) {
     super(props);
 
@@ -32,15 +32,15 @@ class SymbolsRatesRoute extends React.Component<unknown, SymbolsRatesState> {
     const connectorsWithConfig = await connectorsService.listActiveConnectors$();
 
     const ratesConnectors: {
-      [connectorId: string]: SymbolsRatesConnector;
+      [connectorId: string]: AssetsRatesConnector;
     } = {};
     Promise.all(
       connectorsWithConfig.map((connectorWithConfig) =>
         connectorsService.getPrices$(connectorWithConfig.id).then(
-          (symbols) =>
+          (assets) =>
             (ratesConnectors[connectorWithConfig.id] = {
               config: connectorWithConfig,
-              symbols,
+              assets,
             })
         )
       )
@@ -49,10 +49,10 @@ class SymbolsRatesRoute extends React.Component<unknown, SymbolsRatesState> {
     );
   }
 
-  renderConnector(connector: SymbolsRatesConnector) {
-    const assets = Object.keys(connector.symbols || []).map((symbol) => ({
-      name: symbol,
-      price: Number(connector.symbols[symbol]),
+  renderConnector(connector: AssetsRatesConnector) {
+    const assets = Object.keys(connector.assets || []).map((asset) => ({
+      name: asset,
+      price: Number(connector.assets[asset]),
     }));
 
     return (
@@ -84,4 +84,4 @@ class SymbolsRatesRoute extends React.Component<unknown, SymbolsRatesState> {
   }
 }
 
-export default SymbolsRatesRoute;
+export default AssetsRatesRoute;

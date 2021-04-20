@@ -1,12 +1,12 @@
 import { ConnectorAccount } from '@entities/ConnectorAccount';
-import { SymbolHistory } from '@entities/SymbolHistory';
+import { AssetHistory } from '@entities/AssetHistory';
 import {
   CryptoFilterType,
   IntervalType,
   HistoryParams,
 } from '@entities/CryptoApiParams';
 import { BinanceConnector } from './connectors/BinanceConnector';
-import { Symbol } from '@entities/Symbol';
+import { Asset } from '@entities/Asset';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { UserConnectorConfig } from '@entities/Connector';
@@ -32,6 +32,10 @@ export class TradingConnector {
     }
   }
 
+  public async listAssets$(): Promise<string[]> {
+    return await this._provider.listAssets$();
+  }
+
   public exchangeInfo$(
     cryptoFilter: CryptoFilterType = CryptoFilterType.all
   ): Promise<ExchangeInfoResponse> {
@@ -39,17 +43,17 @@ export class TradingConnector {
       return new Promise((resolve, reject) => {
         Promise.all([this.getAccount$(), this._provider.exchangeInfo$()]).then(
           ([account, exchangeInfos]) => {
-            const filteredSymbols = exchangeInfos.symbols
-              .filter((symbol: Symbol) =>
-                account.favoritesSymbols.includes(symbol.symbol)
+            const filteredAssets = exchangeInfos.symbols
+              .filter((asset: Asset) =>
+                account.favoritesAssets.includes(asset.symbol)
               )
               .sort(
-                (symbolA: Symbol, symbolB: Symbol) =>
-                  account.favoritesSymbols.indexOf(symbolA.symbol) -
-                  account.favoritesSymbols.indexOf(symbolB.symbol)
+                (assetA: Asset, assetB: Asset) =>
+                  account.favoritesAssets.indexOf(assetA.symbol) -
+                  account.favoritesAssets.indexOf(assetB.symbol)
               );
 
-            resolve({ ...exchangeInfos, symbols: filteredSymbols });
+            resolve({ ...exchangeInfos, assets: filteredAssets });
           },
           (err) => reject(err)
         );
@@ -68,7 +72,7 @@ export class TradingConnector {
       this._provider.account$().then(
         (providerAccount: unknown) => {
           resolve({
-            favoritesSymbols: defaultFavoritesCrypto,
+            favoritesAssets: defaultFavoritesCrypto,
             connectorDatas: providerAccount as any,
           });
         },
@@ -80,21 +84,21 @@ export class TradingConnector {
     });
   }
 
-  public symbolHistory$(
-    symbol: string,
+  public assetHistory$(
+    asset: string,
     interval: IntervalType = IntervalType['5m'],
     params?: HistoryParams
-  ): Promise<SymbolHistory[]> {
+  ): Promise<AssetHistory[]> {
     const requestParams: HistoryParams = {
       ...this.defaultHistoryParams,
       ...params,
     };
 
-    return this._provider.symbolHistory$(symbol, interval, requestParams);
+    return this._provider.assetHistory$(asset, interval, requestParams);
   }
 
-  public symbolPrices$(): Promise<unknown> {
-    return this._provider.symbolPrices$();
+  public assetPrices$(): Promise<unknown> {
+    return this._provider.assetPrices$();
   }
 }
 

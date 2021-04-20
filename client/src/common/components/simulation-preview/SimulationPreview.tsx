@@ -14,7 +14,7 @@ import { connectorsService } from '../../../services/connectors.service';
 
 interface SimulationPreviewProps {
   connectorId: string;
-  symbol: string;
+  asset: string;
 }
 
 interface SimulationPreviewState {
@@ -62,7 +62,7 @@ class SimulationPreview extends React.Component<
   }
 
   componentDidUpdate(prevProps: SimulationPreviewProps) {
-    if (prevProps.symbol !== this.props.symbol) {
+    if (prevProps.asset !== this.props.asset) {
       this.loadSimulations();
     }
   }
@@ -141,7 +141,7 @@ class SimulationPreview extends React.Component<
   loadSimulations() {
     this.setState({ loading: true, simulations: [] });
     connectorsService
-      .getSymbolSimulations$(this.props.connectorId, this.props.symbol)
+      .getAssetSimulations$(this.props.connectorId, this.props.asset)
       .then(
         (response) => {
           this.setState({ loading: false, simulations: response.simulations });
@@ -179,7 +179,7 @@ class SimulationPreview extends React.Component<
                                       <OpportunityButton
                                         key={opportunityIndex}
                                         direction={opportunityKey}
-                                        symbol={this.props.symbol}
+                                        asset={this.props.asset}
                                       ></OpportunityButton>
                                     )
                                   );

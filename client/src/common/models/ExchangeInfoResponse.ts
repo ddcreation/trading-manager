@@ -2,13 +2,13 @@ export interface ExchangeInfoResponse {
   exchangeFilters: any[];
   rateLimits: RateLimit[];
   serverTime: number;
-  symbols: Symbol[];
+  assets: Asset[];
   timezone: string;
 }
 
 export interface RateLimit {}
 
-export interface Symbol {
+export interface Asset {
   baseAsset: string;
   baseAssetPrecision: number;
   filters: any[];
@@ -22,5 +22,5 @@ export interface Symbol {
   quoteAssetPrecision: number;
   quotePrecision: number;
   status: string;
-  symbol: string;
+  asset: string;
 }

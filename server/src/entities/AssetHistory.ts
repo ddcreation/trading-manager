@@ -1,4 +1,4 @@
-export interface SymbolHistory {
+export interface AssetHistory {
   assetVolume: number;
   buyAssetVolume: number;
   buyBaseVolume: number;
