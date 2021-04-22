@@ -3,11 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Accordion, Button, Card, Col, Form, Row } from 'react-bootstrap';
 import { TmLoader } from '../../common/components';
-import { ConnectorConfig } from '../../common/models/Connector';
+import {
+  ConnectorConfig,
+  ConnectorUserConfig,
+} from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 
 interface ConnectorsRouteState {
   connectors: ConnectorConfig[];
+  connectorsUserConfigs: { [connectorId: string]: ConnectorUserConfig };
   favorites: {
     [connectorId: string]: string[];
   };
@@ -25,25 +29,41 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
     this._addConnectorRef = React.createRef();
   }
 
-  addConnector = (event: any) => {
+  addConnector = (event: React.FormEvent) => {
     event.preventDefault();
 
-    console.log(this._addConnectorRef.current?.value);
+    const connector = this.state.connectors.find(
+      (connector) => connector.id === this._addConnectorRef.current?.value
+    ) as ConnectorConfig;
+
+    const emptyConfig: ConnectorUserConfig = {
+      enabled: false,
+      favoritesAssets: [],
+    };
+    Object.keys(connector.properties).forEach(
+      (prop) => (emptyConfig[prop] = null)
+    );
+
+    this.setState({ connectorsUserConfigs: { [connector.id]: emptyConfig } });
   };
 
   async componentDidMount() {
     const connectors = await connectorsService.listConnectors$();
 
-    const getConfigs = connectors.map((connector) => {
-      return new Promise((resolve, reject) => {
-        connectorsService.getConfig$(connector.id).then((config) => {
-          connector.config = config as any;
-          resolve(connector);
-        });
-      });
-    });
+    const getConfigs = connectors.map((connector) =>
+      connectorsService.getConfig$(connector.id)
+    );
 
-    Promise.all(getConfigs).then(() => this.setState({ connectors }));
+    Promise.all(getConfigs).then((connectorsUserConfigsArray) => {
+      const connectorsUserConfigs = connectorsUserConfigsArray.reduce(
+        (confs, current) => ({
+          ...confs,
+          [current.connector_id as string]: current,
+        }),
+        {}
+      );
+      this.setState({ connectors, connectorsUserConfigs: {} });
+    });
   }
 
   connectorAccordionSelect = (event: any, connectorId: string) => {
@@ -105,6 +125,8 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
       (connector) => connector.id === connectorId
     ) as ConnectorConfig;
 
+    const userConfig = this.state.connectorsUserConfigs[connectorId];
+
     return this.state.favorites && this.state.favorites[connector.id] ? (
       <React.Fragment>
         <Form.Group controlId='assetsFilter'>
@@ -144,8 +166,8 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                     name={assetName}
                     label={assetName}
                     defaultChecked={
-                      connector.config?.favoritesAssets &&
-                      connector.config.favoritesAssets.includes(assetName)
+                      userConfig.favoritesAssets &&
+                      userConfig.favoritesAssets.includes(assetName)
                     }
                     type='checkbox'
                     className='mb-2'
@@ -194,61 +216,69 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
             </Col>
           </Row>
         </Form>
-        {this.state.connectors.map((connector) => (
-          <Accordion
-            key={connector.id}
-            defaultActiveKey='config'
-            onSelect={(e) => this.connectorAccordionSelect(e, connector.id)}
-          >
-            <Card className='my-5'>
-              <Card.Header>
-                <Card.Title>
-                  <h2>{connector.name}</h2>
-                </Card.Title>
-              </Card.Header>
-              <Accordion.Toggle as={Card.Header} eventKey='config'>
-                Connector parameters
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey='config'>
-                <Card.Body>
-                  <Form
-                    onSubmit={(e) =>
-                      this.submitConnectorConfig(e, connector.id)
-                    }
-                  >
-                    {Object.keys(connector.properties).map((property) => (
-                      <Form.Group
-                        key={`formConnector${connector.id}.${property}`}
-                        controlId={`formConnector${connector.id}.${property}`}
-                      >
-                        {this.renderConnectorProperty(connector, property)}
-                      </Form.Group>
-                    ))}
-                    <Form.Group
-                      controlId={`formConnector${connector.id}.enabled`}
+        {this.state.connectors
+          .filter((connector) =>
+            Object.keys(this.state.connectorsUserConfigs).includes(connector.id)
+          )
+          .map((connector) => (
+            <Accordion
+              key={connector.id}
+              defaultActiveKey='config'
+              onSelect={(e) => this.connectorAccordionSelect(e, connector.id)}
+            >
+              <Card className='my-5'>
+                <Card.Header>
+                  <Card.Title>
+                    <h2>{connector.name}</h2>
+                  </Card.Title>
+                </Card.Header>
+                <Accordion.Toggle as={Card.Header} eventKey='config'>
+                  Connector parameters
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey='config'>
+                  <Card.Body>
+                    <Form
+                      onSubmit={(e) =>
+                        this.submitConnectorConfig(e, connector.id)
+                      }
                     >
-                      <Form.Check
-                        type='checkbox'
-                        name='enabled'
-                        label='Activate connector'
-                        defaultChecked={(connector.config as any).enabled}
-                      />
-                    </Form.Group>
-                    <Button variant='primary' type='submit'>
-                      Save
-                    </Button>
-                  </Form>
-                </Card.Body>
-              </Accordion.Collapse>
-              <Accordion.Toggle as={Card.Header} eventKey='favorites'>
-                Favorites assets
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey='favorites'>
-                <Card.Body>{this.renderFavorites(connector.id)}</Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-        ))}
+                      {Object.keys(connector.properties).map((property) => (
+                        <Form.Group
+                          key={`formConnector${connector.id}.${property}`}
+                          controlId={`formConnector${connector.id}.${property}`}
+                        >
+                          {this.renderConnectorProperty(connector, property)}
+                        </Form.Group>
+                      ))}
+                      <Form.Group
+                        controlId={`formConnector${connector.id}.enabled`}
+                      >
+                        <Form.Check
+                          type='checkbox'
+                          name='enabled'
+                          label='Activate connector'
+                          defaultChecked={
+                            (this.state.connectorsUserConfigs[
+                              connector.id
+                            ] as any).enabled
+                          }
+                        />
+                      </Form.Group>
+                      <Button variant='primary' type='submit'>
+                        Save
+                      </Button>
+                    </Form>
+                  </Card.Body>
+                </Accordion.Collapse>
+                <Accordion.Toggle as={Card.Header} eventKey='favorites'>
+                  Favorites assets
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey='favorites'>
+                  <Card.Body>{this.renderFavorites(connector.id)}</Card.Body>
+                </Accordion.Collapse>
+              </Card>
+            </Accordion>
+          ))}
       </React.Fragment>
     ) : (
       <TmLoader />
@@ -258,13 +288,17 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
   renderConnectorProperty = (connector: ConnectorConfig, property: string) => {
     const connectorProperty = connector.properties[property];
     let field;
+
+    const userConfig = this.state.connectorsUserConfigs[
+      connector.id
+    ] as ConnectorUserConfig;
     if (connectorProperty.type === 'boolean') {
       field = (
         <Form.Check
           type='checkbox'
           name={property}
           label={connectorProperty.label}
-          defaultChecked={(connector.config as any)[property]}
+          defaultChecked={(userConfig as any)[property]}
         />
       );
     } else {
@@ -278,7 +312,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
                 : connectorProperty.type
             }
             name={property}
-            defaultValue={(connector.config as any)[property]}
+            defaultValue={(userConfig as any)[property]}
             required
           />
         </React.Fragment>
