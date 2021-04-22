@@ -68,57 +68,80 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
     );
   }
 
-  renderBalance(connector: DashboardConnector) {
-    return connector.account.balances?.length ? (
-      <Table striped bordered>
-        <thead>
-          <tr>
-            <th>Asset</th>
-            <th>Free</th>
-          </tr>
-        </thead>
-        <tbody>
-          {connector.account?.balances.map((balance, idx) => {
-            return (
-              <tr key={'balance-' + idx}>
-                <td>balance asset</td>
-                <td>balance free {JSON.stringify(balance)}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-    ) : (
-      <i>You haven't any balance.</i>
+  renderBalances() {
+    const aggregatedBalances = Object.keys(this.state.connectors).reduce(
+      (balances, connectorId) => {
+        return [
+          ...balances,
+          ...(this.state.connectors[connectorId].account.balances || []),
+        ];
+      },
+      [] as string[]
+    );
+
+    return (
+      <React.Fragment>
+        <h3>Balances</h3>
+        <Card className='my-3'>
+          <Card.Body>
+            {aggregatedBalances.length ? (
+              <Table striped bordered>
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Free</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aggregatedBalances.map((balance, idx) => {
+                    return (
+                      <tr key={'balance-' + idx}>
+                        <td>balance asset</td>
+                        <td>balance free {JSON.stringify(balance)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            ) : (
+              <i>You haven't any balance.</i>
+            )}
+          </Card.Body>
+        </Card>
+      </React.Fragment>
     );
   }
 
-  renderConnector(connector: DashboardConnector) {
+  renderFavorites() {
+    const aggregatedFavorites = Object.keys(this.state.connectors).reduce(
+      (favorites, connectorId) => ({
+        ...favorites,
+        ...(this.state.connectors[connectorId].favoritesAssets
+          ? {
+              [connectorId]: this.state.connectors[connectorId].favoritesAssets,
+            }
+          : {}),
+      }),
+      {} as { [connectorId: string]: string[] }
+    );
+
     return (
-      <Card key={`connector-${connector.config.id}`}>
-        <Card.Header>
-          <h2>{connector.config.name}</h2>
-        </Card.Header>
-        <Card.Body>
-          <h3>Balances</h3>
-          <Card className='my-3'>
-            <Card.Body>{this.renderBalance(connector)}</Card.Body>
-          </Card>
-          <hr className='my-3' />
-          <h3>Favorites</h3>
-          <Row>
-            {connector.favoritesAssets.length ? (
-              connector.favoritesAssets.map((asset) => (
+      <React.Fragment>
+        <h3>Favorites</h3>
+        <Row>
+          {Object.keys(aggregatedFavorites).length !== 0 ? (
+            Object.keys(aggregatedFavorites).map((connectorId) =>
+              aggregatedFavorites[connectorId].map((asset) => (
                 <div key={asset} className='col-12 col-lg-6 mt-3'>
-                  <CryptoCard connectorId={connector.config.id} asset={asset} />
+                  <CryptoCard connectorId={connectorId} asset={asset} />
                 </div>
               ))
-            ) : (
-              <MissingConfigAlert config='favorites' />
-            )}
-          </Row>
-        </Card.Body>
-      </Card>
+            )
+          ) : (
+            <MissingConfigAlert config='favorites' />
+          )}
+        </Row>
+      </React.Fragment>
     );
   }
 
@@ -127,9 +150,11 @@ class DashboardRoute extends React.Component<unknown, DashboardState> {
       Object.keys(this.state?.connectors).length === 0 ? (
         <MissingConfigAlert config='connector' />
       ) : (
-        Object.keys(this.state?.connectors).map((connectorId) =>
-          this.renderConnector(this.state?.connectors[connectorId])
-        )
+        <React.Fragment>
+          {this.renderBalances()}
+          <div className='py-4'></div>
+          {this.renderFavorites()}
+        </React.Fragment>
       )
     ) : (
       <TmLoader />
