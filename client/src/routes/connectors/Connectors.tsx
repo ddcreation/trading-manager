@@ -165,38 +165,6 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
           onChange={this.addConnector}
           placeholder='Add connector...'
         ></Select>
-
-        {/* <Form onSubmit={this.addConnector}>
-          <Row>
-            <Col>
-              <Form.Group controlId='addConnector'>
-                <Form.Control
-                  as={Select}
-                  ref={this._addConnectorRef}
-                  size='lg'
-                  custom
-                >
-                  {Object.keys(this.state.connectors).map((connectorId) => {
-                    return (
-                      <option
-                        value={connectorId}
-                        disabled={this.connectorHasUserConfig(connectorId)}
-                      >
-                        {this.state.connectors[connectorId].config.name}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </Form.Group>
-            </Col>
-            <Col xs='auto'>
-              <Button size='lg' type='submit'>
-                <FontAwesomeIcon icon={faPlusCircle} className='mr-2' />
-                Add connector
-              </Button>
-            </Col>
-          </Row>
-        </Form> */}
         {connectorsWithConfigs.map((connector) => (
           <Accordion
             key={connector.id}
