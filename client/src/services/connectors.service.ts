@@ -1,5 +1,8 @@
 import { Account, ExchangeInfoResponse, Tick } from '../common/models';
-import { ConnectorConfig } from '../common/models/Connector';
+import {
+  ConnectorConfig,
+  ConnectorUserConfig,
+} from '../common/models/Connector';
 import { ApiService } from './api.service';
 
 export class ConnectorsService {
@@ -13,9 +16,7 @@ export class ConnectorsService {
     return this._api.get<Account>(`/connectors/${connectorId}/account`);
   }
 
-  public getConfig$(
-    connectorId: string
-  ): Promise<{ [k: string]: string | boolean }> {
+  public getConfig$(connectorId: string): Promise<ConnectorUserConfig> {
     return this._api.get(`/connectors/${connectorId}/user-connector-config`);
   }
 

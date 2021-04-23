@@ -36,7 +36,7 @@ const AppRoutes: RouteProps[] = [
     component: ConnectorsRoute,
     nav: { label: 'Connectors', visible: false, sort: 99 },
     path: '/connectors',
-    title: 'Account',
+    title: 'Connectors',
   },
   {
     component: DashboardRoute,

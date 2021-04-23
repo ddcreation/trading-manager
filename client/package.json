@@ -26,6 +26,7 @@
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-select": "^4.3.0",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "typescript": "^4.0.3",
@@ -54,5 +55,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-select": "^4.0.15"
   }
 }

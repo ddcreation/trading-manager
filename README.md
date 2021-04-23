@@ -94,11 +94,14 @@ After register and login in the app, you have to set up the connectors you wanna
 
 To come in the future
 
-- Implement new connectors (robinhood?)
 - Connect with APIs for open/close positions
-- Automatically check the opportunities and open positions and place orders / close
-- On each screens, replace the loop on each connector to see aggregated datas in a single place (remove connector cards)
+- User preferences:
+  - Configure bots by strategy
+    - Activate / desactivate
+    - List of assets on which the strategy will be applied
+- Launch CRON with users bots configurations to check the opportunities and open positions / close orders
 - More trading strategies
+- Implement new connectors (ideas for european API are welcome!!!)
 - ... (_waiting for your ideas_)
 
 ## Status

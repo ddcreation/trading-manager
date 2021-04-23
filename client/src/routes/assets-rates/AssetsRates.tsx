@@ -1,19 +1,15 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
 import { TmLoader, TradingCard } from '../../common/components';
 import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
-import { ConnectorConfig } from '../../common/models/Connector';
+import { AssetPrice } from '../../common/models';
 import { connectorsService } from '../../services/connectors.service';
 
-interface AssetsRatesConnector {
-  config: ConnectorConfig;
-  assets: { [key: string]: string };
+interface AssetsRatesAsset {
+  [key: string]: string;
 }
 
 interface AssetsRatesState {
-  connectors: {
-    [connectorId: string]: AssetsRatesConnector;
-  };
+  assets: AssetsRatesAsset;
   loading: boolean;
 }
 
@@ -21,7 +17,7 @@ class AssetsRatesRoute extends React.Component<unknown, AssetsRatesState> {
   constructor(props: unknown) {
     super(props);
 
-    this.state = { connectors: {}, loading: true };
+    this.state = { assets: {}, loading: true };
   }
 
   componentDidMount() {
@@ -31,52 +27,37 @@ class AssetsRatesRoute extends React.Component<unknown, AssetsRatesState> {
   async loadCryptos() {
     const connectorsWithConfig = await connectorsService.listActiveConnectors$();
 
-    const ratesConnectors: {
-      [connectorId: string]: AssetsRatesConnector;
-    } = {};
-    Promise.all(
+    let assets: AssetsRatesAsset = {};
+    await Promise.all(
       connectorsWithConfig.map((connectorWithConfig) =>
-        connectorsService.getPrices$(connectorWithConfig.id).then(
-          (assets) =>
-            (ratesConnectors[connectorWithConfig.id] = {
-              config: connectorWithConfig,
-              assets,
-            })
-        )
+        connectorsService
+          .getPrices$(connectorWithConfig.id)
+          .then((connectorAssets) => {
+            assets = { ...assets, ...connectorAssets };
+          })
       )
-    ).then(() =>
-      this.setState({ loading: false, connectors: ratesConnectors })
     );
+
+    this.setState({ loading: false, assets });
   }
 
-  renderConnector(connector: AssetsRatesConnector) {
-    const assets = Object.keys(connector.assets || []).map((asset) => ({
+  renderAssets() {
+    const assets = Object.keys(this.state.assets || []).map((asset) => ({
       name: asset,
-      price: Number(connector.assets[asset]),
+      price: Number(this.state.assets[asset]),
     }));
 
-    return (
-      <Card key={`connector-${connector.config.id}`}>
-        <Card.Header>
-          <h2>{connector.config.name}</h2>
-        </Card.Header>
-        <Card.Body>
-          {assets.map((assetPrice, idx) => (
-            <TradingCard assetPrice={assetPrice} key={assetPrice.name + idx} />
-          ))}
-        </Card.Body>
-      </Card>
-    );
+    return assets.map((asset: AssetPrice, idx: number) => (
+      <TradingCard assetPrice={asset} key={asset.name + idx} />
+    ));
   }
 
   render() {
     return !this.state?.loading ? (
-      Object.keys(this.state?.connectors).length === 0 ? (
+      Object.keys(this.state.assets).length === 0 ? (
         <MissingConfigAlert config='connector' />
       ) : (
-        Object.keys(this.state?.connectors).map((connectorId) =>
-          this.renderConnector(this.state?.connectors[connectorId])
-        )
+        this.renderAssets()
       )
     ) : (
       <TmLoader />
