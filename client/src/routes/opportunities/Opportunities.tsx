@@ -1,12 +1,11 @@
 import React from 'react';
-import { Card, ListGroup } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import {
   CryptoCard,
   SimulationPreview,
   TmLoader,
 } from '../../common/components';
 import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
-import { ConnectorConfig } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 
 interface OpportunitiesState {
@@ -60,32 +59,6 @@ class OpportunitiesRoute extends React.Component<null, OpportunitiesState> {
       )
     );
   }
-
-  // renderConnector(connector: OpportunitiesConnector) {
-  //   return (
-  //     <Card key={`connector-${connector.config.id}`}>
-  //       <Card.Header>
-  //         <h2>{connector.config.name}</h2>
-  //       </Card.Header>
-  //       <Card.Body>
-  //         {connector.currentAsset && (
-  //           <div>
-  //             <CryptoCard
-  //               connectorId={connector.config.id}
-  //               asset={connector.currentAsset}
-  //             />
-  //             <h2 className='mt-5'>Simulations</h2>
-  //             <hr />
-  //             <SimulationPreview
-  //               connectorId={connector.config.id}
-  //               asset={connector.currentAsset}
-  //             ></SimulationPreview>
-  //           </div>
-  //         )}
-  //       </Card.Body>
-  //     </Card>
-  //   );
-  // }
 
   renderSymbolChooser() {
     return (
