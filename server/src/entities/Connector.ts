@@ -1,6 +1,7 @@
 import { HistoryParams, IntervalType } from './CryptoApiParams';
 import { AssetHistory } from './AssetHistory';
 import { DbEntity } from './DbEntity';
+import { OrderParameters } from './Order';
 
 export interface UserConnectorConfig extends DbEntity {
   user_id: string;
@@ -30,4 +31,5 @@ export interface Connector {
     requestParams: HistoryParams
   ) => Promise<AssetHistory[]>;
   assetPrices$: () => Promise<unknown>;
+  placeOrder$: (params: OrderParameters) => Promise<unknown>;
 }

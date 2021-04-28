@@ -9,6 +9,7 @@ import { BinanceConnector } from './connectors/BinanceConnector';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { UserConnectorConfig } from '@entities/Connector';
+import { OrderParameters } from '@entities/Order';
 
 export class TradingConnector {
   public defaultHistoryParams: HistoryParams = {
@@ -87,6 +88,18 @@ export class TradingConnector {
 
   public assetPrices$(): Promise<unknown> {
     return this._provider.assetPrices$();
+  }
+
+  public placeOrder$(params: OrderParameters): Promise<unknown> {
+    // TODO:
+    // - Save order pending in DB
+    // - Get order ID
+    // - Buy asset
+    // - place OCO order if set in params
+    // - place take profit order if set in params
+    // - Update DB order (status, transactionID for cancel...)
+
+    return this._provider.placeOrder$(params);
   }
 }
 

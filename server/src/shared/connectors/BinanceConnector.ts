@@ -6,6 +6,7 @@ import {
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
 import { AssetHistory } from '@entities/AssetHistory';
 import { Asset } from '@entities/Asset';
+import { OrderParameters } from '@entities/Order';
 
 const Binance = require('node-binance-api');
 
@@ -82,6 +83,10 @@ export class BinanceConnector implements Connector {
 
   public assetPrices$(): Promise<unknown> {
     return this._binanceApi.prices();
+  }
+
+  public placeOrder$(params: OrderParameters): Promise<unknown> {
+    return new Promise((resolve, reject) => resolve(''));
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
