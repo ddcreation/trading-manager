@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Button, Card, Col, Container, Modal, Row } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { connectorsService } from '../../../services/connectors.service';
 import { Tick } from '../../models';
+import OrderForm from '../order-form/OrderForm';
 import TmLoader from '../tm-loader/TmLoader';
 
 interface CryptoCardProps {
@@ -13,6 +14,7 @@ interface CryptoCardProps {
 interface CryptoCardState {
   history: Tick[];
   loading: boolean;
+  modalShow: boolean;
 }
 
 const graphOptions = {
@@ -25,7 +27,7 @@ const graphOptions = {
 };
 
 class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
-  state = { loading: true, history: [] };
+  state = { loading: true, modalShow: false, history: [] };
 
   componentDidMount() {
     this.updateGraph();
@@ -55,20 +57,51 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
 
   render() {
     return (
-      <Card>
-        <Card.Header>
-          <Card.Title>{this.props.asset}</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          {this.state.loading ? (
-            <TmLoader />
-          ) : (
-            this.state.history.length && (
-              <Line data={this.graphDatas()} options={graphOptions} />
-            )
-          )}
-        </Card.Body>
-      </Card>
+      <React.Fragment>
+        <Card>
+          <Card.Header>
+            <Container className='px-0'>
+              <Row>
+                <Col md='auto'>
+                  <Card.Title>{this.props.asset}</Card.Title>
+                </Col>
+                <Col>
+                  <div className='float-right'>
+                    <Button onClick={() => this.setState({ modalShow: true })}>
+                      Buy
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Container>
+          </Card.Header>
+          <Card.Body>
+            {this.state.loading ? (
+              <TmLoader />
+            ) : (
+              this.state.history.length && (
+                <Line data={this.graphDatas()} options={graphOptions} />
+              )
+            )}
+          </Card.Body>
+        </Card>
+        <Modal
+          show={this.state.modalShow}
+          onHide={() => this.setState({ modalShow: false })}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Order {this.props.asset}</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <OrderForm
+              symbol={this.props.asset}
+              connectorId={this.props.connectorId}
+            ></OrderForm>
+          </Modal.Body>
+        </Modal>
+      </React.Fragment>
     );
   }
 
@@ -79,6 +112,12 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
       .then((response) => {
         this.setState({ loading: false, history: response });
       });
+  }
+
+  updateModalVisibility(bool: boolean): void {
+    if (bool !== this.state.modalShow) {
+      this.setState({ modalShow: bool });
+    }
   }
 }
 
