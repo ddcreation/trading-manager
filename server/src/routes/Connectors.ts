@@ -161,4 +161,13 @@ router.get(
   }
 );
 
+router.post('/:connectorId/order', async (req: AuthRequest, res: Response) => {
+  const tradingConnector = await initConnector(
+    req.params.connectorId,
+    req.user._id
+  );
+
+  return tradingConnector.placeOrder$(req.body);
+});
+
 export default router;
