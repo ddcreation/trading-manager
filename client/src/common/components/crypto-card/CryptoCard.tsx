@@ -98,6 +98,7 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
             <OrderForm
               symbol={this.props.asset}
               connectorId={this.props.connectorId}
+              onSubmit={() => this.setState({ modalShow: false })}
             ></OrderForm>
           </Modal.Body>
         </Modal>

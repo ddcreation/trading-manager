@@ -4,6 +4,7 @@ import { Button, Form } from 'react-bootstrap';
 interface OrderFormProps {
   connectorId: string;
   symbol: string;
+  onSubmit?: () => unknown;
 }
 
 interface OrderFormState {
@@ -75,6 +76,9 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
         ) {
           // TODO Call place order endpoint
           console.log('Call place order endpoint');
+          if (this.props.onSubmit) {
+            this.props.onSubmit();
+          }
         }
       }
     );
