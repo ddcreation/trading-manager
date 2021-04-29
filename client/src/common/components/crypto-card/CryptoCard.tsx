@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Card, Col, Container, Modal, Row } from 'react-bootstrap';
+import { Card, Col, Container, Row } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { connectorsService } from '../../../services/connectors.service';
 import { Tick } from '../../models';
-import OrderForm from '../order-form/OrderForm';
+import BuyAssetButton from '../buy-asset-button/BuyAssetButton';
 import TmLoader from '../tm-loader/TmLoader';
 
 interface CryptoCardProps {
@@ -67,9 +67,10 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
                 </Col>
                 <Col>
                   <div className='float-right'>
-                    <Button onClick={() => this.setState({ modalShow: true })}>
-                      Buy
-                    </Button>
+                    <BuyAssetButton
+                      connectorId={this.props.connectorId}
+                      symbol={this.props.asset}
+                    ></BuyAssetButton>
                   </div>
                 </Col>
               </Row>
@@ -85,23 +86,6 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
             )}
           </Card.Body>
         </Card>
-        <Modal
-          show={this.state.modalShow}
-          onHide={() => this.setState({ modalShow: false })}
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Order {this.props.asset}</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            <OrderForm
-              symbol={this.props.asset}
-              connectorId={this.props.connectorId}
-              onSubmit={() => this.setState({ modalShow: false })}
-            ></OrderForm>
-          </Modal.Body>
-        </Modal>
       </React.Fragment>
     );
   }
@@ -113,12 +97,6 @@ class CryptoCard extends React.Component<CryptoCardProps, CryptoCardState> {
       .then((response) => {
         this.setState({ loading: false, history: response });
       });
-  }
-
-  updateModalVisibility(bool: boolean): void {
-    if (bool !== this.state.modalShow) {
-      this.setState({ modalShow: bool });
-    }
   }
 }
 
