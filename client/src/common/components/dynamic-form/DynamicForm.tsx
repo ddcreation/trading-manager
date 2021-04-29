@@ -37,7 +37,7 @@ class DynamicFormComponent extends Component<
       }),
       {} as DynamicForm
     );
-    console.log(initForm);
+
     this.state = {
       form: initForm,
       errors: {},
@@ -69,7 +69,15 @@ class DynamicFormComponent extends Component<
       default: {
         fieldView = (
           <React.Fragment>
-            <Form.Label>{fieldConfig.label}</Form.Label>
+            <Form.Label>{`${fieldConfig.label}${
+              fieldConfig.validators &&
+              fieldConfig.validators.find(
+                (validator) =>
+                  validator.type === FormFieldValidatorType.required
+              )
+                ? '*'
+                : ''
+            }`}</Form.Label>
             <Form.Control
               type='text'
               onChange={(e) =>

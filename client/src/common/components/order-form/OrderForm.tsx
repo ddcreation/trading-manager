@@ -42,7 +42,7 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
   render() {
     const form: FormFieldConfig[] = [
       {
-        label: 'Price',
+        label: 'Amount',
         name: 'price',
         type: FormFieldType.numeric,
         validators: [
