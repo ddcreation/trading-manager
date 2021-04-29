@@ -1,8 +1,10 @@
 import { Component } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { OrderDirectionType } from '../../models/Order';
 
 interface OrderFormProps {
   connectorId: string;
+  direction: OrderDirectionType;
   symbol: string;
   onSubmit?: () => unknown;
 }
@@ -40,7 +42,7 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
             type='text'
             placeholder='price'
             onChange={(e) => this.updateField('price', e.target.value)}
-            isInvalid={!!this.state.errors.username}
+            isInvalid={!!this.state.errors.price}
           />
           <Form.Control.Feedback type='invalid'>
             {this.state.errors.price}

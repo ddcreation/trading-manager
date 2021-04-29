@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import { OrderDirection } from '../../models/Order';
 import OrderForm from '../order-form/OrderForm';
 
 interface BuyAssetButtonProps {
@@ -36,6 +37,7 @@ class BuyAssetButton extends React.Component<
           <Modal.Body>
             <OrderForm
               symbol={this.props.symbol}
+              direction={OrderDirection.BUY}
               connectorId={this.props.connectorId}
               onSubmit={() => this.setState({ modalShow: false })}
             ></OrderForm>
