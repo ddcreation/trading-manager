@@ -30,19 +30,39 @@ class DynamicFormComponent extends Component<
 > {
   constructor(props: DynamicFormProps) {
     super(props);
-    const initForm = this.props.fields.reduce(
-      (form, fieldConfig) => ({
-        ...form,
-        [fieldConfig.name]: fieldConfig.value || null,
-      }),
-      {} as DynamicForm
-    );
+
+    const initForm = this.initForm();
 
     this.state = {
       form: initForm,
       errors: {},
       loading: false,
     };
+  }
+
+  initForm() {
+    return this.props.fields.reduce((form, fieldConfig) => {
+      // Numeric pattern
+      if (fieldConfig.type === FormFieldType.numeric) {
+        fieldConfig.validators = fieldConfig.validators || [];
+
+        const existingPatternValidator = fieldConfig.validators.find(
+          (validator) => validator.type === FormFieldValidatorType.pattern
+        );
+
+        if (!existingPatternValidator) {
+          fieldConfig.validators.push({
+            type: FormFieldValidatorType.pattern,
+            value: '^\\d+(\\.\\d{1,2})?$',
+          });
+        }
+      }
+
+      return {
+        ...form,
+        [fieldConfig.name]: fieldConfig.value || null,
+      };
+    }, {} as DynamicForm);
   }
 
   updateField(fieldName: string, value: any) {
@@ -62,47 +82,41 @@ class DynamicFormComponent extends Component<
     );
   }
 
+  renderField(fieldConfig: FormFieldConfig) {
+    return (
+      <Form.Control
+        type='text'
+        onChange={(e) => this.updateField(fieldConfig.name, e.target.value)}
+        isInvalid={!!this.state.errors[fieldConfig.name]}
+        defaultValue={fieldConfig.value || ''}
+        disabled={
+          fieldConfig.options &&
+          typeof fieldConfig.options.disabled !== 'undefined'
+            ? fieldConfig.options.disabled
+            : false
+        }
+      />
+    );
+  }
+
   renderControl(fieldConfig: FormFieldConfig) {
-    let fieldView;
-
-    switch (fieldConfig.type) {
-      default: {
-        fieldView = (
-          <React.Fragment>
-            <Form.Label>{`${fieldConfig.label}${
-              fieldConfig.validators &&
-              fieldConfig.validators.find(
-                (validator) =>
-                  validator.type === FormFieldValidatorType.required
-              )
-                ? '*'
-                : ''
-            }`}</Form.Label>
-            <Form.Control
-              type='text'
-              onChange={(e) =>
-                this.updateField(fieldConfig.name, e.target.value)
-              }
-              isInvalid={!!this.state.errors[fieldConfig.name]}
-              defaultValue={fieldConfig.value || ''}
-              disabled={
-                fieldConfig.options &&
-                typeof fieldConfig.options.disabled !== 'undefined'
-                  ? fieldConfig.options.disabled
-                  : false
-              }
-            />
-          </React.Fragment>
-        );
-        break;
-      }
-
-      case FormFieldType.hidden: {
-        fieldView = null;
-      }
+    if (fieldConfig.type === FormFieldType.hidden) {
+      return;
     }
 
-    return fieldView;
+    return (
+      <React.Fragment>
+        <Form.Label>{`${fieldConfig.label}${
+          fieldConfig.validators &&
+          fieldConfig.validators.find(
+            (validator) => validator.type === FormFieldValidatorType.required
+          )
+            ? '*'
+            : ''
+        }`}</Form.Label>
+        {this.renderField(fieldConfig)}
+      </React.Fragment>
+    );
   }
 
   renderGroup(fieldConfig: FormFieldConfig) {
@@ -165,6 +179,15 @@ class DynamicFormComponent extends Component<
       case FormFieldValidatorType.min: {
         if (validator.value && +value < validator.value) {
           error = `Minimum value: ${validator.value}`;
+        }
+        break;
+      }
+      case FormFieldValidatorType.pattern: {
+        if (value) {
+          const pattern = new RegExp(validator.value as string);
+          if (!pattern.test(value as string)) {
+            error = `Invalid format`;
+          }
         }
         break;
       }

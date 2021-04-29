@@ -1,6 +1,7 @@
 export const FormFieldValidatorType = {
   min: 'min' as const,
   max: 'max' as const,
+  pattern: 'pattern' as const,
   required: 'required' as const,
 };
 
