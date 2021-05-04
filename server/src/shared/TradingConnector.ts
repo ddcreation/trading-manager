@@ -100,7 +100,7 @@ export class TradingConnector {
       user_id: this._config.user_id,
       connector_id: this._config.connector_id,
       asset: params.symbol,
-      type: OrderType.DIRECT,
+      type: OrderType.MARKET,
       status: OrderStatus.PENDING,
       amount: +params.amount,
       source: params.source,

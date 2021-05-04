@@ -23,8 +23,8 @@ export const OrderSource = {
 export type OrderSource = keyof typeof OrderSource;
 
 export const OrderType = {
-  DIRECT: 'DIRECT' as const,
-  POSITION: 'POSITION' as const,
+  MARKET: 'MARKET' as const,
+  LIMIT: 'LIMIT' as const,
 };
 
 export type OrderType = keyof typeof OrderType;
