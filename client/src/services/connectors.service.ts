@@ -65,6 +65,10 @@ export class ConnectorsService {
     return this._api.get<string[]>(`/connectors/${connectorId}/assets`);
   }
 
+  public placeOrder$(connectorId: string, orderRequest: unknown) {
+    return this._api.post(`/connectors/${connectorId}/order`, orderRequest);
+  }
+
   public saveConfig$(connectorId: string, config: unknown): Promise<void> {
     return this._api.put(
       `/connectors/${connectorId}/user-connector-config`,

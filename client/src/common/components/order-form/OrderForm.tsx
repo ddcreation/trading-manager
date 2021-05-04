@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { connectorsService } from '../../../services/connectors.service';
 import {
   FormFieldConfig,
   FormFieldType,
@@ -43,7 +44,7 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
     const form: FormFieldConfig[] = [
       {
         label: 'Amount',
-        name: 'price',
+        name: 'amount',
         type: FormFieldType.numeric,
         validators: [
           { type: FormFieldValidatorType.required },
@@ -84,9 +85,9 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
     );
   }
 
-  public submitForm = (form: any) => {
-    // TODO Call place order endpoint
-    console.log('Call place order endpoint', form);
+  public submitForm = async (form: any) => {
+    await connectorsService.placeOrder$(this.props.connectorId, form);
+
     if (this.props.onSubmit) {
       this.props.onSubmit();
     }
