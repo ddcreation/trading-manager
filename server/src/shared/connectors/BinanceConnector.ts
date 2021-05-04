@@ -86,7 +86,9 @@ export class BinanceConnector implements Connector {
   }
 
   public placeOrder$(params: OrderParameters): Promise<unknown> {
-    return new Promise((resolve, reject) => resolve(''));
+    return new Promise((resolve, reject) => {
+      resolve({ id: 'orderId' });
+    });
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {

@@ -91,11 +91,12 @@ export class TradingConnector {
   }
 
   public placeOrder$(params: OrderParameters): Promise<unknown> {
+    console.log('Place order', params);
     // TODO:
     // - Save order pending in DB
     // - Get order ID
     // - Buy asset
-    // - place OCO order if set in params
+    // - place stoploss order if set in params
     // - place take profit order if set in params
     // - Update DB order (status, transactionID for cancel...)
 

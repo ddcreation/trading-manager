@@ -171,7 +171,9 @@ router.post(
       req.user._id
     );
 
-    return tradingConnector.placeOrder$(req.body);
+    const order = tradingConnector.placeOrder$(req.body);
+
+    return res.json(order);
   }
 );
 
