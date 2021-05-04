@@ -24,7 +24,7 @@ export class DatabaseConnector<T extends DbEntity> {
     const insert = await collection.insertOne(entity as any);
     await client.close();
 
-    return (insert as any) as T;
+    return (insert.ops[0] || null) as T;
   }
 
   public async delete$(params: FilterQuery<T>): Promise<void> {
