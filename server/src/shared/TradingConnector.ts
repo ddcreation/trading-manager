@@ -95,7 +95,7 @@ export class TradingConnector {
 
   public async placeOrder$(params: OrderParameters): Promise<unknown> {
     console.log('Place order', params);
-    // - Save order pending in DB
+    // Save order pending in DB
     const order = await orderDao.add$({
       user_id: this._config.user_id,
       connector_id: this._config.connector_id,
@@ -112,12 +112,11 @@ export class TradingConnector {
 
     // TODO:
     // - Buy asset
+    // - place stoploss order
     if (params.stopLoss) {
-      // - place stoploss order
     }
-
+    // - place take profit order
     if (params.takeProfit) {
-      // - place take profit order
     }
     // - Update DB order (status, transactionID for cancel...)
 
