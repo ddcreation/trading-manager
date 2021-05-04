@@ -7,6 +7,7 @@ import { connectors } from '@shared/connectors';
 import { StatusCodes } from 'http-status-codes';
 import { AuthRequest } from '@entities/User';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
+import { validateOrderRequest } from '@middlewares/Orders';
 
 const router = Router();
 
@@ -161,13 +162,17 @@ router.get(
   }
 );
 
-router.post('/:connectorId/order', async (req: AuthRequest, res: Response) => {
-  const tradingConnector = await initConnector(
-    req.params.connectorId,
-    req.user._id
-  );
+router.post(
+  '/:connectorId/order',
+  validateOrderRequest,
+  async (req: AuthRequest, res: Response) => {
+    const tradingConnector = await initConnector(
+      req.params.connectorId,
+      req.user._id
+    );
 
-  return tradingConnector.placeOrder$(req.body);
-});
+    return tradingConnector.placeOrder$(req.body);
+  }
+);
 
 export default router;
