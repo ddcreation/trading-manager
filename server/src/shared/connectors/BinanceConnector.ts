@@ -6,7 +6,7 @@ import {
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
 import { AssetHistory } from '@entities/AssetHistory';
 import { Asset } from '@entities/Asset';
-import { OrderParameters } from '@entities/Order';
+import { Order, OrderSide, OrderType } from '@entities/Order';
 
 const Binance = require('node-binance-api');
 
@@ -85,10 +85,20 @@ export class BinanceConnector implements Connector {
     return this._binanceApi.prices();
   }
 
-  public placeOrder$(params: OrderParameters): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      resolve({ id: 'orderId' });
-    });
+  public placeOrder$(params: Order): Promise<unknown> {
+    let promise;
+
+    if (params.type === OrderType.MARKET) {
+      promise = this._binanceApi[
+        params.direction === OrderSide.BUY ? 'marketBuy' : 'marketSell'
+      ](params.asset, params.quantity);
+    } else if (params.type === OrderType.LIMIT) {
+      promise = this._binanceApi[
+        params.direction === OrderSide.BUY ? 'buy' : 'sell'
+      ](params.asset, params.quantity, params.price);
+    }
+
+    return promise;
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {

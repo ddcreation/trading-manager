@@ -1,8 +1,8 @@
 import { DbEntity } from './DbEntity';
 
 export const OrderSide = {
-  buy: 'BUY' as const,
-  sell: 'SELL' as const,
+  BUY: 'BUY' as const,
+  SELL: 'SELL' as const,
 };
 
 export type OrderSide = keyof typeof OrderSide;
@@ -50,4 +50,6 @@ export interface Order extends DbEntity {
   created_at: string;
   closed_at?: string;
   transaction_id?: string;
+  quantity?: number;
+  price?: number;
 }

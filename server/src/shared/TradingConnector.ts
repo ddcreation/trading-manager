@@ -111,12 +111,18 @@ export class TradingConnector {
     console.log('DB order', order);
 
     // TODO:
+    // - Get current price
+    // - Determine quantity for the amount
     // - Buy asset
     // - place stoploss order
     if (params.stopLoss) {
+      // - Determine the matching price for the quantity regarding the stoploss value
+      // - place stoploss limit order
     }
     // - place take profit order
     if (params.takeProfit) {
+      // - Determine the matching price for the quantity regarding the profit value
+      // - place take profit limit order
     }
     // - Update DB order (status, transactionID for cancel...)
 
