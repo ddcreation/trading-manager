@@ -1,1 +1,3 @@
-export * from './SignUp';
+export * from './Auth';
+export * from './Login';
+export * from './Orders';
