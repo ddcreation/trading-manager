@@ -59,6 +59,13 @@ class OrderForm extends Component<OrderFormProps, OrderFormState> {
         value: this.props.symbol,
       },
       {
+        label: 'Source',
+        name: 'source',
+        type: FormFieldType.hidden,
+        options: { disabled: true },
+        value: 'MANUAL',
+      },
+      {
         label: 'Direction',
         name: 'direction',
         type: FormFieldType.text,

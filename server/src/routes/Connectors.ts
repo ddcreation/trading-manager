@@ -6,8 +6,8 @@ import { Simulator } from '@shared/Simulator';
 import { connectors } from '@shared/connectors';
 import { StatusCodes } from 'http-status-codes';
 import { AuthRequest } from '@entities/User';
-import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { validateOrderRequest } from '@middlewares/Orders';
+import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 
 const router = Router();
 

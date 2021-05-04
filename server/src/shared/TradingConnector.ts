@@ -9,7 +9,10 @@ import { BinanceConnector } from './connectors/BinanceConnector';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
 import { UserConnectorConfig } from '@entities/Connector';
-import { OrderParameters } from '@entities/Order';
+import { OrderParameters, OrderStatus, OrderType } from '@entities/Order';
+import { OrderDao } from '@daos/Order/Order';
+
+const orderDao = new OrderDao();
 
 export class TradingConnector {
   public defaultHistoryParams: HistoryParams = {
@@ -90,14 +93,32 @@ export class TradingConnector {
     return this._provider.assetPrices$();
   }
 
-  public placeOrder$(params: OrderParameters): Promise<unknown> {
+  public async placeOrder$(params: OrderParameters): Promise<unknown> {
     console.log('Place order', params);
-    // TODO:
     // - Save order pending in DB
-    // - Get order ID
+    const order = await orderDao.add$({
+      user_id: this._config.user_id,
+      connector_id: this._config.connector_id,
+      asset: params.symbol,
+      type: OrderType.DIRECT,
+      status: OrderStatus.PENDING,
+      amount: +params.amount,
+      source: params.source,
+      direction: params.direction,
+      created_at: new Date().toISOString(),
+    });
+
+    console.log('DB order', order);
+
+    // TODO:
     // - Buy asset
-    // - place stoploss order if set in params
-    // - place take profit order if set in params
+    if (params.stopLoss) {
+      // - place stoploss order
+    }
+
+    if (params.takeProfit) {
+      // - place take profit order
+    }
     // - Update DB order (status, transactionID for cancel...)
 
     return this._provider.placeOrder$(params);
