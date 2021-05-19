@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { logoutAction } from '../redux';
+import {
+  NotificationConfig,
+  NotificationConfigType,
+} from '../common/models/Notification';
+import { logoutAction, notifyAction } from '../redux';
 import { store } from '../redux/store';
 
 const { REACT_APP_API_URL } = process.env;
@@ -51,7 +55,14 @@ export class ApiService {
     }
 
     // TODO send UI redux action to show toaster
-    console.error(error.response.data);
+    store.dispatch(
+      notifyAction({
+        type: NotificationConfigType.ERROR,
+        title: error.response.data.code || 'ERROR',
+        body: error.response.data.message || 'ERROR',
+        persistent: false,
+      } as NotificationConfig)
+    );
   }
 
   private _setHeaders = () => {
