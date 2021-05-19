@@ -8,7 +8,7 @@ import {
 import { BinanceConnector } from './connectors/BinanceConnector';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
-import { UserConnectorConfig } from '@entities/Connector';
+import { Connector, UserConnectorConfig } from '@entities/Connector';
 import { OrderParameters, OrderStatus, OrderType } from '@entities/Order';
 import { OrderDao } from '@daos/Order/Order';
 
@@ -21,7 +21,7 @@ export class TradingConnector {
 
   private _account: ConnectorAccount | undefined;
   private _config: UserConnectorConfig;
-  private _provider: any;
+  private _provider!: Connector;
 
   constructor(connectorConfig: UserConnectorConfig) {
     this._config = connectorConfig;
@@ -38,25 +38,23 @@ export class TradingConnector {
     return await this._provider.listAssets$();
   }
 
-  public exchangeInfo$(
+  public async exchangeInfo$(
     assetFilter: CryptoFilterType = CryptoFilterType.all
   ): Promise<ExchangeInfoResponse> {
-    return this._provider
-      .exchangeInfo$()
-      .then((infos: ExchangeInfoResponse) => {
-        return {
-          ...infos,
-          symbols: infos.symbols.filter(
-            (asset) =>
-              assetFilter === CryptoFilterType.all ||
-              (assetFilter === CryptoFilterType.favorites &&
-                this._config.favoritesAssets?.includes(asset.symbol))
-          ),
-        };
-      });
+    const infos: ExchangeInfoResponse = await this._provider.exchangeInfo$();
+
+    return {
+      ...infos,
+      symbols: infos.symbols.filter(
+        (asset) =>
+          assetFilter === CryptoFilterType.all ||
+          (assetFilter === CryptoFilterType.favorites &&
+            this._config.favoritesAssets?.includes(asset.symbol))
+      ),
+    };
   }
 
-  public getAccount$(): Promise<ConnectorAccount> {
+  public async getAccount$(): Promise<ConnectorAccount> {
     return new Promise<ConnectorAccount>((resolve, reject) => {
       if (this._account) {
         resolve(this._account);
@@ -76,7 +74,7 @@ export class TradingConnector {
     });
   }
 
-  public assetHistory$(
+  public async assetHistory$(
     asset: string,
     interval: IntervalType = IntervalType['5m'],
     params?: HistoryParams
@@ -89,31 +87,40 @@ export class TradingConnector {
     return this._provider.assetHistory$(asset, interval, requestParams);
   }
 
-  public assetPrices$(): Promise<unknown> {
+  public async assetPrices$(): Promise<unknown> {
     return this._provider.assetPrices$();
   }
 
   public async placeOrder$(params: OrderParameters): Promise<unknown> {
     console.log('Place order', params);
+
+    // - Determine quantity for the amount
+    const { price, quantity } = await this.calculatePriceAndQuantityForOrder(
+      params.symbol,
+      params.amount
+    );
+
     // Save order pending in DB
-    const order = await orderDao.add$({
+    const dbOrder = await orderDao.add$({
       user_id: this._config.user_id,
       connector_id: this._config.connector_id,
       asset: params.symbol,
       type: OrderType.MARKET,
       status: OrderStatus.PENDING,
       amount: +params.amount,
+      price,
+      quantity,
       source: params.source,
       direction: params.direction,
       created_at: new Date().toISOString(),
     });
 
-    console.log('DB order', order);
+    console.log('DB order', dbOrder);
 
-    // TODO:
-    // - Get current price
-    // - Determine quantity for the amount
     // - Buy asset
+    const order = await this._provider.placeOrder$(dbOrder);
+    console.log(order);
+
     // - place stoploss order
     if (params.stopLoss) {
       // - Determine the matching price for the quantity regarding the stoploss value
@@ -126,7 +133,16 @@ export class TradingConnector {
     }
     // - Update DB order (status, transactionID for cancel...)
 
-    return this._provider.placeOrder$(params);
+    return dbOrder;
+  }
+
+  public async calculatePriceAndQuantityForOrder(
+    asset: string,
+    amount: number
+  ): Promise<{ price: number; quantity: number }> {
+    const currentPrice = await this._provider.assetPrice$(asset);
+
+    return { price: currentPrice, quantity: amount / currentPrice };
   }
 }
 

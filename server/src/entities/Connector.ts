@@ -24,12 +24,19 @@ export interface Connector {
   config: ConnectorConfig;
 
   account$: () => Promise<any>;
-  exchangeInfo$: () => Promise<any>;
   assetHistory$: (
     asset: string,
     interval: IntervalType,
     requestParams: HistoryParams
   ) => Promise<AssetHistory[]>;
-  assetPrices$: () => Promise<unknown>;
+  assetPrice$: (asset: string) => Promise<number>;
+  assetPrices$: () => Promise<{ [asset: string]: number }>;
+  exchangeInfo$: () => Promise<any>;
+  listAssets$: () => Promise<string[]>;
   placeOrder$: (params: Order) => Promise<unknown>;
+}
+
+export interface ConnectorError {
+  code: string;
+  message: string;
 }

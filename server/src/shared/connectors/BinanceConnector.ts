@@ -1,6 +1,7 @@
 import {
   Connector,
   ConnectorConfig,
+  ConnectorError,
   UserConnectorConfig,
 } from '@entities/Connector';
 import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
@@ -9,6 +10,10 @@ import { Asset } from '@entities/Asset';
 import { Order, OrderSide, OrderType } from '@entities/Order';
 
 const Binance = require('node-binance-api');
+
+interface BinanceError {
+  body: string;
+}
 
 export const BinanceConfig: ConnectorConfig = {
   id: 'binance',
@@ -46,17 +51,19 @@ export class BinanceConnector implements Connector {
   }
 
   public account$() {
-    return this._binanceApi.account();
+    return this._binanceApi.account().catch(this._errorHandler);
   }
 
   public exchangeInfo$() {
-    return this._binanceApi.exchangeInfo();
+    return this._binanceApi.exchangeInfo().catch(this._errorHandler);
   }
 
   public listAssets$(): Promise<string[]> {
-    return this.exchangeInfo$().then((exchangeInfo: { symbols: Asset[] }) => {
-      return exchangeInfo.symbols.map((asset) => asset.symbol);
-    });
+    return this.exchangeInfo$()
+      .then((exchangeInfo: { symbols: Asset[] }) => {
+        return exchangeInfo.symbols.map((asset) => asset.symbol);
+      })
+      .catch(this._errorHandler);
   }
 
   public async assetHistory$(
@@ -70,7 +77,7 @@ export class BinanceConnector implements Connector {
         interval,
         (error: unknown, ticks: Array<string[]>, asset: string) => {
           if (error) {
-            reject(error);
+            reject(this._errorHandler);
           }
 
           const formatedTicks = this._formatTicksResponse(ticks);
@@ -81,8 +88,15 @@ export class BinanceConnector implements Connector {
     });
   }
 
-  public assetPrices$(): Promise<unknown> {
-    return this._binanceApi.prices();
+  public assetPrice$(asset: string): Promise<number> {
+    return this._binanceApi
+      .prices(asset)
+      .then((prices: { [asset: string]: number }) => prices[asset])
+      .catch(this._errorHandler);
+  }
+
+  public assetPrices$(): Promise<{ [asset: string]: number }> {
+    return this._binanceApi.prices().catch(this._errorHandler);
   }
 
   public placeOrder$(params: Order): Promise<unknown> {
@@ -98,7 +112,7 @@ export class BinanceConnector implements Connector {
       ](params.asset, params.quantity, params.price);
     }
 
-    return promise;
+    return promise.catch((error: BinanceError) => this._errorHandler(error));
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
@@ -132,5 +146,16 @@ export class BinanceConnector implements Connector {
         volume,
       };
     });
+  }
+
+  private _errorHandler(binanceError: BinanceError): { error: ConnectorError } {
+    const error = JSON.parse(binanceError.body);
+
+    const connectorError = {
+      code: `${this.config.id.toUpperCase()}${error.code}`,
+      message: `${this.config.id.toUpperCase()} API ERROR: ${error.msg}`,
+    };
+
+    throw new Error(JSON.stringify(connectorError));
   }
 }

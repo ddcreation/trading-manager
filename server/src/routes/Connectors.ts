@@ -171,9 +171,13 @@ router.post(
       req.user._id
     );
 
-    const order = tradingConnector.placeOrder$(req.body);
+    try {
+      const order = tradingConnector.placeOrder$(req.body);
 
-    return res.json(order);
+      return res.json(order);
+    } catch (error: unknown) {
+      return res.sendStatus(500).json(error);
+    }
   }
 );
 
