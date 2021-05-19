@@ -51,7 +51,7 @@ export class ApiService {
     }
 
     // TODO send UI redux action to show toaster
-    console.log(error.response);
+    console.error(error.response.data);
   }
 
   private _setHeaders = () => {

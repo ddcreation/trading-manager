@@ -54,8 +54,12 @@ export class BinanceConnector implements Connector {
     return this._binanceApi.account().catch(this._errorHandler);
   }
 
-  public exchangeInfo$() {
-    return this._binanceApi.exchangeInfo().catch(this._errorHandler);
+  public exchangeInfo$(asset: string | null = null) {
+    const infosFiltered = asset
+      ? this._binanceApi.exchangeInfo(asset)
+      : this._binanceApi.exchangeInfo();
+
+    return infosFiltered.catch(this._errorHandler);
   }
 
   public listAssets$(): Promise<string[]> {
@@ -156,6 +160,6 @@ export class BinanceConnector implements Connector {
       message: `${this.config.id.toUpperCase()} API ERROR: ${error.msg}`,
     };
 
-    throw new Error(JSON.stringify(connectorError));
+    throw connectorError;
   }
 }

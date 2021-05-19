@@ -26,4 +26,8 @@ export class OrderDao {
   ): Promise<Order> {
     return await this._connector.replace$(filters, order);
   }
+
+  public async delete$(filters: FilterQuery<Order>): Promise<void> {
+    return await this._connector.delete$(filters);
+  }
 }

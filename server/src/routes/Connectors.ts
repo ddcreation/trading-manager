@@ -93,9 +93,8 @@ router.get(
       req.params.connectorId,
       req.user._id
     );
-    const exchangeInfos: ExchangeInfoResponse = await tradingConnector.exchangeInfo$(
-      CryptoFilterType.favorites
-    );
+    const exchangeInfos: ExchangeInfoResponse =
+      await tradingConnector.exchangeInfo$(CryptoFilterType.favorites);
 
     res.json(exchangeInfos);
   }
@@ -166,17 +165,17 @@ router.post(
   '/:connectorId/order',
   validateOrderRequest,
   async (req: AuthRequest, res: Response) => {
-    const tradingConnector = await initConnector(
-      req.params.connectorId,
-      req.user._id
-    );
-
     try {
-      const order = tradingConnector.placeOrder$(req.body);
+      const tradingConnector = await initConnector(
+        req.params.connectorId,
+        req.user._id
+      );
+
+      const order = await tradingConnector.placeOrder$(req.body);
 
       return res.json(order);
-    } catch (error: unknown) {
-      return res.sendStatus(500).json(error);
+    } catch (error) {
+      return res.status(500).json(error);
     }
   }
 );
