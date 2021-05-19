@@ -1,4 +1,4 @@
-import { UI_NOTIFY } from './ui.types';
+import { NOTIFICATION_CLOSE, UI_NOTIFY } from './ui.types';
 
 interface UIState {
   notifications: unknown[];
@@ -13,7 +13,13 @@ const uiReducer = (state = initialState, action: any): UIState => {
 
   switch (action.type) {
     case UI_NOTIFY: {
-      newState.notifications.push(action.payload);
+      newState.notifications = [...newState.notifications, action.payload];
+      break;
+    }
+    case NOTIFICATION_CLOSE: {
+      newState.notifications = [...newState.notifications].filter(
+        (notification) => notification !== action.payload
+      );
       break;
     }
   }

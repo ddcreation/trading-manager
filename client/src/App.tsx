@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { AppNavigation, Page } from './common/components';
+import NotificationsWrapper from './common/components/notifications/NotificationsWrapper';
 import AppRoutes from './routes/AppRoutes';
 import LoginRoute from './routes/login/Login';
 import RegisterRoute from './routes/register/Register';
@@ -39,6 +40,7 @@ class App extends Component<AppProps, unknown> {
             )}
           </Switch>
         </BrowserRouter>
+        <NotificationsWrapper />
       </React.Fragment>
     );
   }

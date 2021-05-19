@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
   NotificationConfig,
-  NotificationConfigType,
+  NotificationType,
 } from '../common/models/Notification';
 import { logoutAction, notifyAction } from '../redux';
 import { store } from '../redux/store';
@@ -54,13 +54,13 @@ export class ApiService {
       store.dispatch(logoutAction());
     }
 
-    // TODO send UI redux action to show toaster
     store.dispatch(
       notifyAction({
-        type: NotificationConfigType.ERROR,
+        type: NotificationType.ERROR,
         title: error.response.data.code || 'ERROR',
         body: error.response.data.message || 'ERROR',
         persistent: false,
+        dismissable: true,
       } as NotificationConfig)
     );
   }
