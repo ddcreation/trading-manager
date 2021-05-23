@@ -14,10 +14,14 @@ class NotificationsWrapper extends React.Component<
 > {
   render() {
     return (
-      <Container fluid className='position-fixed fixed-bottom'>
+      <Container
+        fluid
+        className='position-fixed fixed-bottom'
+        style={{ zIndex: 11000 }}
+      >
         {this.props.notifications && (
           <Row className='justify-content-end'>
-            <Col sm={{ offset: 6 }} md={{ offset: 8 }} lg={{ offset: 10 }}>
+            <Col sm={{ offset: 4 }} md={{ offset: 6 }} lg={{ offset: 8 }}>
               {this.props.notifications.map((notification, index) => (
                 <NotificationComponent
                   key={'notification-' + index}
