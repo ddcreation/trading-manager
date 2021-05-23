@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 export const validateOrderRequest = async (
   req: Request,
@@ -19,7 +20,7 @@ export const validateOrderRequest = async (
     source === null ||
     +amount === 0
   ) {
-    res.status(400).send({ message: 'Missing parameter' });
+    res.status(StatusCodes.BAD_REQUEST).send({ message: 'Missing parameter' });
     return;
   }
 
