@@ -7,6 +7,7 @@ import {
   ConnectorUserConfig,
 } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
+import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
 
 interface ConnectorsRouteStateConnector {
   config: ConnectorConfig;
@@ -60,16 +61,19 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
         'config',
         connector
       );
+
       return connectorsService.getConfig$(connector.id);
     });
 
     Promise.all(getConfigs).then((userConfigsArray) => {
       userConfigsArray.forEach((uconf) => {
-        this._updateStateConnectorProp(
-          uconf.connector_id as string,
-          'userConfig',
-          uconf
-        );
+        if (uconf) {
+          this._updateStateConnectorProp(
+            uconf.connector_id as string,
+            'userConfig',
+            uconf
+          );
+        }
       });
     });
   }
@@ -77,7 +81,8 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
   connectorAccordionSelect = (event: any, connectorId: string) => {
     if (
       event === 'favorites' &&
-      !this.state.connectors[connectorId].favorites
+      !this.state.connectors[connectorId].favorites &&
+      this.state.connectors[connectorId].userConfig.enabled
     ) {
       connectorsService.listConnectorAssets$(connectorId).then((assets) => {
         this._updateStateConnectorProp(connectorId, 'favorites', assets);
@@ -232,58 +237,64 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
     const connectorAssets = this.state.connectors[connectorId].favorites;
     const filter = this.state.connectors[connectorId].favoritesFilter;
 
-    return connectorAssets ? (
-      <React.Fragment>
-        <Form.Group controlId='assetsFilter'>
-          <Form.Control
-            type='text'
-            placeholder='Filter...'
-            onChange={(e: any) =>
-              this._updateStateConnectorProp(
-                connectorId,
-                'favoritesFilter',
-                e.target.value
-              )
-            }
-            value={filter || ''}
-          />
-        </Form.Group>
-        <Form onSubmit={(e) => this.submitConnectorFavorites(e, connector.id)}>
-          <Form.Row>
-            {connectorAssets.map((assetName) => (
-              <Col
-                className={
-                  filter && !assetName.match(new RegExp(filter, 'i'))
-                    ? 'd-none'
-                    : 'col-xs-6 col-sm-4 col-md-2'
-                }
-                key={`${assetName}-asset-${assetName}`}
-              >
-                <Form.Group
-                  controlId={`formFavorites${connector.id}.${assetName}`}
+    return userConfig && userConfig.enabled ? (
+      connectorAssets ? (
+        <React.Fragment>
+          <Form.Group controlId='assetsFilter'>
+            <Form.Control
+              type='text'
+              placeholder='Filter...'
+              onChange={(e: any) =>
+                this._updateStateConnectorProp(
+                  connectorId,
+                  'favoritesFilter',
+                  e.target.value
+                )
+              }
+              value={filter || ''}
+            />
+          </Form.Group>
+          <Form
+            onSubmit={(e) => this.submitConnectorFavorites(e, connector.id)}
+          >
+            <Form.Row>
+              {connectorAssets.map((assetName) => (
+                <Col
+                  className={
+                    filter && !assetName.match(new RegExp(filter, 'i'))
+                      ? 'd-none'
+                      : 'col-xs-6 col-sm-4 col-md-2'
+                  }
+                  key={`${assetName}-asset-${assetName}`}
                 >
-                  <Form.Check
-                    inline
-                    name={assetName}
-                    label={assetName}
-                    defaultChecked={
-                      userConfig.favoritesAssets &&
-                      userConfig.favoritesAssets.includes(assetName)
-                    }
-                    type='checkbox'
-                    className='mb-2'
-                  />
-                </Form.Group>
-              </Col>
-            ))}
-          </Form.Row>
-          <Button variant='primary' type='submit'>
-            Save
-          </Button>
-        </Form>
-      </React.Fragment>
+                  <Form.Group
+                    controlId={`formFavorites${connector.id}.${assetName}`}
+                  >
+                    <Form.Check
+                      inline
+                      name={assetName}
+                      label={assetName}
+                      defaultChecked={
+                        userConfig.favoritesAssets &&
+                        userConfig.favoritesAssets.includes(assetName)
+                      }
+                      type='checkbox'
+                      className='mb-2'
+                    />
+                  </Form.Group>
+                </Col>
+              ))}
+            </Form.Row>
+            <Button variant='primary' type='submit'>
+              Save
+            </Button>
+          </Form>
+        </React.Fragment>
+      ) : (
+        <TmLoader />
+      )
     ) : (
-      <TmLoader />
+      <MissingConfigAlert config='connector-config'></MissingConfigAlert>
     );
   };
 
@@ -328,6 +339,7 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
   ) => {
     this.setState({
       connectors: {
+        ...this.state.connectors,
         [connectorId]: {
           ...this.state.connectors[connectorId],
           [prop]: propValue,
