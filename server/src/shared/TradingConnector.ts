@@ -12,6 +12,7 @@ import {
   OrderType,
 } from '@entities/Order';
 import { OrderDao } from '@daos/Order/Order';
+import { BinanceFuturesConnector } from './connectors';
 
 const orderDao = new OrderDao();
 
@@ -29,6 +30,11 @@ export class TradingConnector {
     switch (this._config.connector_id) {
       case 'binance': {
         this._provider = new BinanceConnector(this._config);
+
+        break;
+      }
+      case 'binance-futures': {
+        this._provider = new BinanceFuturesConnector(this._config);
 
         break;
       }
