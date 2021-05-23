@@ -36,5 +36,5 @@ services:
     env_file:
       - ./db/.docker/.env.development
     ports:
-      - '27017'
+      - '27017:27017'
     command: ['-f', '/etc/mongod.conf']
