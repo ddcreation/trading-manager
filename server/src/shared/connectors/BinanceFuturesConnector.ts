@@ -28,6 +28,10 @@ export const BinanceFuturesConfig: ConnectorConfig = {
       label: 'API secret',
       type: 'password',
     },
+    test: {
+      label: 'Test api',
+      type: 'boolean',
+    },
   },
   class: 'BinanceFuturesConnector',
 };
@@ -43,6 +47,7 @@ export class BinanceFuturesConnector implements Connector {
     this._binanceFutureApi = new Binance().options({
       APIKEY: connectorConfigValues.APIKEY,
       APISECRET: connectorConfigValues.APISECRET,
+      test: connectorConfigValues.test,
     });
   }
 
