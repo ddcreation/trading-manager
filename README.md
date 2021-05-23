@@ -26,7 +26,9 @@ The purpose of this project is to allow any developer to quickly start in the bi
 - Server side: Node.js with express.js
 - Client side: React
 - Trading API connectors:
-  -- Crypto currencies: [binance API](https://binance-docs.github.io/apidocs/spot/en/)
+  -- Crypto currencies:
+  --- [binance API](https://binance-docs.github.io/apidocs/spot/en/)
+  --- [binance futures API](https://binance-docs.github.io/apidocs/futures/en/)
 
 ## Requirements
 
