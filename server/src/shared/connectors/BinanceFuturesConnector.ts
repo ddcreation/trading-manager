@@ -104,13 +104,13 @@ export class BinanceFuturesConnector implements Connector {
 
   public assetPrice$(asset: string): Promise<number> {
     return this._binanceFutureApi
-      .futurePrices(asset)
+      .futuresPrices(asset)
       .then((prices: { [asset: string]: number }) => prices[asset])
       .catch(this._errorHandler);
   }
 
   public assetPrices$(): Promise<{ [asset: string]: number }> {
-    return this._binanceFutureApi.futurePrices().catch(this._errorHandler);
+    return this._binanceFutureApi.futuresPrices().catch(this._errorHandler);
   }
 
   public placeOrder$(params: Order): Promise<unknown> {
