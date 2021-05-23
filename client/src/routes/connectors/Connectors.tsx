@@ -8,6 +8,8 @@ import {
 } from '../../common/models/Connector';
 import { connectorsService } from '../../services/connectors.service';
 import MissingConfigAlert from '../../common/components/missing-config/MissingConfigAlert';
+import { notifyAction, store } from '../../redux';
+import { NotificationType } from '../../common/models/Notification';
 
 interface ConnectorsRouteStateConnector {
   config: ConnectorConfig;
@@ -23,12 +25,8 @@ interface ConnectorsRouteState {
 }
 
 class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
-  private _addConnectorRef: React.RefObject<HTMLSelectElement>;
-
   constructor(props: unknown) {
     super(props);
-
-    this._addConnectorRef = React.createRef();
 
     this.state = { connectors: {} };
   }
@@ -55,26 +53,14 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
   async componentDidMount() {
     const connectors = await connectorsService.listConnectors$();
 
-    const getConfigs = connectors.map((connector) => {
+    connectors.forEach((connector) => {
       this._updateStateConnectorProp(
         connector.id as string,
         'config',
         connector
       );
 
-      return connectorsService.getConfig$(connector.id);
-    });
-
-    Promise.all(getConfigs).then((userConfigsArray) => {
-      userConfigsArray.forEach((uconf) => {
-        if (uconf) {
-          this._updateStateConnectorProp(
-            uconf.connector_id as string,
-            'userConfig',
-            uconf
-          );
-        }
-      });
+      this.refreshConnectorConfig(connector.id);
     });
   }
 
@@ -99,46 +85,15 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
     );
   };
 
-  submitConnectorConfig = (event: any, connectorId: string) => {
-    event.preventDefault();
-
-    const connector = this.state.connectors[connectorId].config;
-
-    const formElements = event.target.elements;
-    const form: { [popertyKey: string]: string | boolean } = Object.keys(
-      connector.properties
-    ).reduce((acc: any, property: string) => {
-      const value =
-        connector.properties[property].type === 'boolean'
-          ? !!formElements[property].checked
-          : formElements[property].value;
-      return { ...acc, [property]: value };
-    }, {});
-
-    form.enabled = formElements.enabled.checked;
-
-    connectorsService.saveConfig$(connectorId, form);
-  };
-
-  submitConnectorFavorites = (event: any, connectorId: string) => {
-    event.preventDefault();
-
-    const favoritesAssets = [...event.target.elements].reduce(
-      (selectedAssets, current) => {
-        if (current.checked) {
-          selectedAssets.push(current.name);
-        }
-        return selectedAssets;
-      },
-      []
-    );
-
-    connectorsService
-      .saveConfig$(connectorId, { favoritesAssets })
-      .then(() =>
-        this._updateStateConnectorProp(connectorId, 'favoritesFilter', '')
+  refreshConnectorConfig(connectorId: string): void {
+    connectorsService.getConfig$(connectorId).then((uconf) => {
+      this._updateStateConnectorProp(
+        uconf.connector_id as string,
+        'userConfig',
+        uconf
       );
-  };
+    });
+  }
 
   render() {
     if (
@@ -330,6 +285,64 @@ class ConnectorsRoute extends React.Component<unknown, ConnectorsRouteState> {
       );
     }
     return field;
+  };
+
+  submitConnectorConfig = (event: any, connectorId: string) => {
+    event.preventDefault();
+
+    const connector = this.state.connectors[connectorId].config;
+
+    const formElements = event.target.elements;
+    const form: { [popertyKey: string]: string | boolean } = Object.keys(
+      connector.properties
+    ).reduce((acc: any, property: string) => {
+      const value =
+        connector.properties[property].type === 'boolean'
+          ? !!formElements[property].checked
+          : formElements[property].value;
+      return { ...acc, [property]: value };
+    }, {});
+
+    form.enabled = formElements.enabled.checked;
+
+    connectorsService.saveConfig$(connectorId, form).then((response) => {
+      store.dispatch(
+        notifyAction({
+          type: NotificationType.SUCCESS,
+          body: "Connector's configuration saved!",
+          persistent: false,
+          dismissable: true,
+        })
+      );
+
+      this.refreshConnectorConfig(connectorId);
+    });
+  };
+
+  submitConnectorFavorites = (event: any, connectorId: string) => {
+    event.preventDefault();
+
+    const favoritesAssets = [...event.target.elements].reduce(
+      (selectedAssets, current) => {
+        if (current.checked) {
+          selectedAssets.push(current.name);
+        }
+        return selectedAssets;
+      },
+      []
+    );
+
+    connectorsService.saveConfig$(connectorId, { favoritesAssets }).then(() => {
+      store.dispatch(
+        notifyAction({
+          type: NotificationType.SUCCESS,
+          body: "Connector's favorites saved!",
+          persistent: false,
+          dismissable: true,
+        })
+      );
+      this._updateStateConnectorProp(connectorId, 'favoritesFilter', '');
+    });
   };
 
   private _updateStateConnectorProp = (

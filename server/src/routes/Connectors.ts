@@ -7,7 +7,6 @@ import { StatusCodes } from 'http-status-codes';
 import { AuthRequest } from '@entities/User';
 import { validateOrderRequest } from '@middlewares/Orders';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
-import { validateConnectorRequest } from '@middlewares/ConnectorRequest';
 
 const router = Router();
 
@@ -64,10 +63,12 @@ router.put(
     const { user } = req;
     const { connectorId } = req.params;
 
-    const replace = await userConnectorConfigDao.update$(
-      { connector_id: connectorId, user_id: user._id },
-      req.body
-    );
+    const filters = { connector_id: connectorId, user_id: user._id };
+
+    const replace = await userConnectorConfigDao.replace$(filters, {
+      ...req.body,
+      ...filters,
+    });
 
     return res.sendStatus(
       replace ? StatusCodes.OK : StatusCodes.INTERNAL_SERVER_ERROR
@@ -163,7 +164,7 @@ router.get(
 
 router.post(
   '/:connectorId/order',
-  [validateConnectorRequest, validateOrderRequest],
+  validateOrderRequest,
   async (req: AuthRequest, res: Response) => {
     try {
       const tradingConnector = await initConnector(

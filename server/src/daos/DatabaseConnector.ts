@@ -67,14 +67,14 @@ export class DatabaseConnector<T extends DbEntity> {
   }
 
   public async replace$(filter: FilterQuery<T>, entity: T): Promise<T> {
-    const { client, collection } = await this._connect$();
+    const existing = await this.find$(filter);
 
-    const replace = await collection.replaceOne(filter, entity, {
-      upsert: true,
-    });
-    await client.close();
+    const addOrUpdate =
+      existing && existing.length
+        ? this.updateOne$(filter, entity)
+        : this.add$(entity);
 
-    return (replace as any) as T;
+    return addOrUpdate;
   }
 
   public async updateOne$(
@@ -86,7 +86,7 @@ export class DatabaseConnector<T extends DbEntity> {
     const update = await collection.updateOne(filter, { $set: values });
     await client.close();
 
-    return (update as any) as T;
+    return update as any as T;
   }
 
   private async _connect$(): Promise<{
