@@ -121,7 +121,10 @@ class DynamicFormComponent extends Component<
 
   renderGroup(fieldConfig: FormFieldConfig) {
     return (
-      <Form.Group controlId={fieldConfig.name}>
+      <Form.Group
+        controlId={fieldConfig.name}
+        key={`formgroup-${fieldConfig.name}`}
+      >
         {this.renderControl(fieldConfig)}
         <Form.Control.Feedback type='invalid'>
           {this.state.errors[fieldConfig.name]}
