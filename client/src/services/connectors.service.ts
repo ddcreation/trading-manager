@@ -17,7 +17,9 @@ export class ConnectorsService {
   }
 
   public getConfig$(connectorId: string): Promise<ConnectorUserConfig> {
-    return this._api.get(`/connectors/${connectorId}/user-connector-config`);
+    return this._api.get(`/connectors/${connectorId}/user-connector-config`, {
+      validateStatus: (status: number) => status === 200 || status === 404,
+    });
   }
 
   public getExchangeInfos$(connectorId: string): Promise<ExchangeInfoResponse> {
