@@ -2,6 +2,7 @@ import { HistoryParams, IntervalType } from './CryptoApiParams';
 import { AssetHistory } from './AssetHistory';
 import { DbEntity } from './DbEntity';
 import { Order } from './Order';
+import { ExchangeInfoResponse } from './ExchangeInfoResponse';
 
 export interface UserConnectorConfig extends DbEntity {
   user_id: string;
@@ -31,7 +32,7 @@ export interface Connector {
   ) => Promise<AssetHistory[]>;
   assetPrice$: (asset: string) => Promise<number>;
   assetPrices$: () => Promise<{ [asset: string]: number }>;
-  exchangeInfo$: () => Promise<any>;
+  exchangeInfo$: (asset?: string[]) => Promise<ExchangeInfoResponse>;
   listAssets$: () => Promise<string[]>;
   placeOrder$: (params: Order) => Promise<unknown>;
 }

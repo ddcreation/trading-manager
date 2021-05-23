@@ -1,10 +1,6 @@
 import { ConnectorAccount } from '@entities/ConnectorAccount';
 import { AssetHistory } from '@entities/AssetHistory';
-import {
-  IntervalType,
-  HistoryParams,
-  CryptoFilterType,
-} from '@entities/CryptoApiParams';
+import { IntervalType, HistoryParams } from '@entities/CryptoApiParams';
 import { BinanceConnector } from './connectors/BinanceConnector';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
@@ -16,7 +12,6 @@ import {
   OrderType,
 } from '@entities/Order';
 import { OrderDao } from '@daos/Order/Order';
-import { ObjectId } from 'bson';
 
 const orderDao = new OrderDao();
 
@@ -44,21 +39,8 @@ export class TradingConnector {
     return await this._provider.listAssets$();
   }
 
-  public async exchangeInfo$(
-    assetFilter: CryptoFilterType | string = CryptoFilterType.all
-  ): Promise<ExchangeInfoResponse> {
-    const infos: ExchangeInfoResponse = await this._provider.exchangeInfo$();
-
-    return {
-      ...infos,
-      symbols: infos.symbols.filter(
-        (asset) =>
-          asset.symbol === assetFilter ||
-          assetFilter === CryptoFilterType.all ||
-          (assetFilter === CryptoFilterType.favorites &&
-            this._config.favoritesAssets?.includes(asset.symbol))
-      ),
-    };
+  public async exchangeInfo$(assets?: string[]): Promise<ExchangeInfoResponse> {
+    return this._provider.exchangeInfo$(assets);
   }
 
   public async getAccount$(): Promise<ConnectorAccount> {
@@ -157,8 +139,30 @@ export class TradingConnector {
     amount: number
   ): Promise<{ price: number; quantity: number }> {
     const currentPrice = await this._provider.assetPrice$(asset);
+    const calculatedPriceAndQuantity = {
+      price: currentPrice,
+      quantity: amount / currentPrice,
+    };
 
-    return { price: currentPrice, quantity: amount / currentPrice };
+    const exchangeInfos = await this._provider
+      .exchangeInfo$([asset])
+      .then((exchangeInfos) => exchangeInfos.symbols[0]);
+
+    const lotSize = exchangeInfos.filters.find(
+      (filter) => filter.filterType === 'LOT_SIZE'
+    );
+    if (lotSize) {
+      calculatedPriceAndQuantity.quantity =
+        Math.floor(calculatedPriceAndQuantity.quantity / lotSize.stepSize) *
+        lotSize.stepSize;
+    } else {
+      const precision = Math.pow(10, +exchangeInfos.quotePrecision);
+
+      calculatedPriceAndQuantity.quantity =
+        Math.floor(calculatedPriceAndQuantity.quantity * precision) / precision;
+    }
+
+    return calculatedPriceAndQuantity;
   }
 }
 

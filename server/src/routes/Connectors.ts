@@ -1,13 +1,13 @@
 import { Request, Response, Router } from 'express';
 import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 import { initConnector } from '@shared/TradingConnector';
-import { CryptoFilterType } from '@entities/CryptoApiParams';
 import { Simulator } from '@shared/Simulator';
 import { connectors } from '@shared/connectors';
 import { StatusCodes } from 'http-status-codes';
 import { AuthRequest } from '@entities/User';
 import { validateOrderRequest } from '@middlewares/Orders';
 import { UserConnectorConfigDao } from '@daos/UserConnectorConfig/UserConnectorConfigDao';
+import { validateConnectorRequest } from '@middlewares/ConnectorRequest';
 
 const router = Router();
 
@@ -94,7 +94,7 @@ router.get(
       req.user._id
     );
     const exchangeInfos: ExchangeInfoResponse =
-      await tradingConnector.exchangeInfo$(CryptoFilterType.favorites);
+      await tradingConnector.exchangeInfo$();
 
     res.json(exchangeInfos);
   }
@@ -163,7 +163,7 @@ router.get(
 
 router.post(
   '/:connectorId/order',
-  validateOrderRequest,
+  [validateConnectorRequest, validateOrderRequest],
   async (req: AuthRequest, res: Response) => {
     try {
       const tradingConnector = await initConnector(

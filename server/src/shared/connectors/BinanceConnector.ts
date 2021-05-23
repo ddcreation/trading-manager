@@ -8,6 +8,7 @@ import { HistoryParams, IntervalType } from '@entities/CryptoApiParams';
 import { AssetHistory } from '@entities/AssetHistory';
 import { Asset } from '@entities/Asset';
 import { Order, OrderSide, OrderType } from '@entities/Order';
+import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
 const Binance = require('node-binance-api');
 
@@ -54,12 +55,21 @@ export class BinanceConnector implements Connector {
     return this._binanceApi.account().catch(this._errorHandler);
   }
 
-  public exchangeInfo$(asset: string | null = null) {
-    const infosFiltered = asset
-      ? this._binanceApi.exchangeInfo(asset)
-      : this._binanceApi.exchangeInfo();
-
-    return infosFiltered.catch(this._errorHandler);
+  public exchangeInfo$(assetsFilter?: string[]) {
+    return this._binanceApi
+      .exchangeInfo()
+      .then((exchangeInfos: ExchangeInfoResponse) => {
+        return {
+          ...exchangeInfos,
+          symbols: exchangeInfos.symbols.filter(
+            (symbol) =>
+              !assetsFilter ||
+              !assetsFilter.length ||
+              assetsFilter.includes(symbol.symbol)
+          ),
+        };
+      })
+      .catch(this._errorHandler);
   }
 
   public listAssets$(): Promise<string[]> {
