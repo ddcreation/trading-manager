@@ -85,21 +85,11 @@ export class BinanceFuturesConnector implements Connector {
     interval: IntervalType = IntervalType['5m'],
     requestParams: HistoryParams
   ): Promise<AssetHistory[]> {
-    return new Promise((resolve, reject) => {
-      this._binanceFutureApi.futuresCandles(
-        asset,
-        interval,
-        (error: unknown, ticks: Array<string[]>, asset: string) => {
-          if (error) {
-            reject(this._errorHandler);
-          }
-
-          const formatedTicks = this._formatTicksResponse(ticks);
-          resolve(formatedTicks);
-        },
-        requestParams
-      );
-    });
+    return this._binanceFutureApi
+      .futuresCandles(asset, interval, requestParams)
+      .then((ticks: any) => {
+        return this._formatTicksResponse(ticks);
+      });
   }
 
   public assetPrice$(asset: string): Promise<number> {
