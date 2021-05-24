@@ -34,6 +34,9 @@ export const BinanceFuturesConfig: ConnectorConfig = {
     },
   },
   class: 'BinanceFuturesConnector',
+  limits: {
+    history: 1500,
+  },
 };
 
 export class BinanceFuturesConnector implements Connector {
@@ -83,8 +86,16 @@ export class BinanceFuturesConnector implements Connector {
   public async assetHistory$(
     asset: string,
     interval: IntervalType = IntervalType['5m'],
-    requestParams: HistoryParams
+    requestParams?: HistoryParams
   ): Promise<AssetHistory[]> {
+    if (requestParams?.limit) {
+      requestParams.limit =
+        this.config.limits?.history &&
+        this.config.limits.history < requestParams.limit
+          ? this.config.limits.history
+          : requestParams.limit;
+    }
+
     return this._binanceFutureApi
       .futuresCandles(asset, interval, requestParams)
       .then((ticks: any) => {

@@ -19,6 +19,9 @@ export interface ConnectorConfig {
     [propName: string]: { label: string; type: string };
   };
   class: string;
+  limits?: {
+    history?: number;
+  };
 }
 
 export interface Connector {
@@ -28,7 +31,7 @@ export interface Connector {
   assetHistory$: (
     asset: string,
     interval: IntervalType,
-    requestParams: HistoryParams
+    requestParams?: HistoryParams
   ) => Promise<AssetHistory[]>;
   assetPrice$: (asset: string) => Promise<number>;
   assetPrices$: () => Promise<{ [asset: string]: number }>;

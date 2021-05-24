@@ -34,6 +34,9 @@ export const BinanceConfig: ConnectorConfig = {
     },
   },
   class: 'BinanceConnector',
+  limits: {
+    history: 5000,
+  },
 };
 
 export class BinanceConnector implements Connector {
@@ -83,8 +86,16 @@ export class BinanceConnector implements Connector {
   public async assetHistory$(
     asset: string,
     interval: IntervalType = IntervalType['5m'],
-    requestParams: HistoryParams
+    requestParams?: HistoryParams
   ): Promise<AssetHistory[]> {
+    if (requestParams?.limit) {
+      requestParams.limit =
+        this.config.limits?.history &&
+        this.config.limits.history < requestParams.limit
+          ? this.config.limits.history
+          : requestParams.limit;
+    }
+
     return new Promise((resolve, reject) => {
       this._binanceApi.candlesticks(
         asset,
