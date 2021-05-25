@@ -69,7 +69,7 @@ router.put(
     );
 
     return res.sendStatus(
-      replace ? StatusCodes.OK : StatusCodes.INTERNAL_SERVER_ERROR
+      replace.modifiedCount ? StatusCodes.OK : StatusCodes.INTERNAL_SERVER_ERROR
     );
   }
 );
