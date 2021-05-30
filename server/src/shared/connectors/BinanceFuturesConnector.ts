@@ -105,7 +105,7 @@ export class BinanceFuturesConnector implements Connector {
 
   public assetPrice$(asset: string): Promise<number> {
     return this._binanceFutureApi
-      .futuresPrices(asset)
+      .futuresPrices()
       .then((prices: { [asset: string]: number }) => prices[asset])
       .catch(this._errorHandler);
   }
