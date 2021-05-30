@@ -1,6 +1,7 @@
 import { UserDao } from '@daos/User/UserDao';
 import { TokenUser } from '@entities/User';
 import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
 
 export const authenticate = (
@@ -26,7 +27,7 @@ export const authenticate = (
       }
     );
   } else {
-    res.sendStatus(401);
+    res.sendStatus(StatusCodes.UNAUTHORIZED);
   }
 };
 
@@ -40,13 +41,15 @@ export const checkDuplicateUser = async (
   const { username } = req.body;
 
   if (!username) {
-    res.status(400).send({ message: 'Username required' });
+    res.status(StatusCodes.BAD_REQUEST).send({ message: 'Username required' });
   }
 
   const existingUser = await userDao.find$({ username });
 
   if (existingUser.length) {
-    res.status(400).send({ message: 'User already exists' });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ message: 'User already exists' });
     return;
   }
 
