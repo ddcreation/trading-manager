@@ -13,6 +13,8 @@ import {
 } from '@entities/Order';
 import { OrderDao } from '@daos/Order/Order';
 import { BinanceFuturesConnector } from './connectors';
+import { StatusCodes } from 'http-status-codes';
+import { ApiError } from '@entities/Api';
 
 const orderDao = new OrderDao();
 
@@ -119,6 +121,8 @@ export class TradingConnector {
       const placedOrder = await this._provider.placeOrder$(dbOrder);
       console.log(placedOrder);
 
+      // - Update DB order (status, transactionID for cancel...)
+
       // - place stoploss order
       if (params.stopLoss) {
         // - Determine the matching price for the quantity regarding the stoploss value
@@ -129,7 +133,6 @@ export class TradingConnector {
         // - Determine the matching price for the quantity regarding the profit value
         // - place take profit limit order
       }
-      // - Update DB order (status, transactionID for cancel...)
     } catch (error) {
       // Delete uncomplete order
       await orderDao.delete$({ _id: dbOrder._id });
@@ -161,6 +164,16 @@ export class TradingConnector {
       calculatedPriceAndQuantity.quantity =
         Math.floor(calculatedPriceAndQuantity.quantity / lotSize.stepSize) *
         lotSize.stepSize;
+
+      if (calculatedPriceAndQuantity.quantity <= 0) {
+        throw new ApiError({
+          code: 'ORDER-MIN-AMOUNT',
+          message: `The minimum amount for this asset is ${
+            Math.ceil(currentPrice * lotSize.stepSize * 100) / 100
+          }`,
+          statusCode: StatusCodes.BAD_REQUEST,
+        });
+      }
     } else {
       const precision = Math.pow(10, +exchangeInfos.quotePrecision);
 
