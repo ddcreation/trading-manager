@@ -41,6 +41,6 @@ export interface Connector {
 }
 
 export interface ConnectorError {
-  code: string;
-  message: string;
+  errorCode: string;
+  errorMessage: string;
 }

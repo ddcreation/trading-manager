@@ -12,8 +12,13 @@ import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
 const Binance = require('node-binance-api');
 
-interface BinanceFuturesError {
+interface BinanceFuturesApiError {
   body: string;
+}
+
+interface BinanceFuturesError {
+  code: number;
+  msg: string;
 }
 
 export const BinanceFuturesConfig: ConnectorConfig = {
@@ -115,7 +120,12 @@ export class BinanceFuturesConnector implements Connector {
   }
 
   public placeOrder$(params: Order): Promise<unknown> {
-    let promise;
+    let promise: Promise<any>;
+
+    const options = {
+      newClientOrderId: params._id,
+      newOrderRespType: 'RESULT',
+    };
 
     if (params.type === OrderType.MARKET) {
       promise = this._binanceFutureApi[
@@ -129,9 +139,18 @@ export class BinanceFuturesConnector implements Connector {
       ](params.asset, params.quantity, params.price);
     }
 
-    return promise.catch((error: BinanceFuturesError) =>
-      this._errorHandler(error)
-    );
+    return new Promise<unknown>((resolve, reject) => {
+      promise
+        .then((response: any) => {
+          if (response.code < 0) {
+            reject(response);
+          }
+          resolve(response);
+        })
+        .catch((error: BinanceFuturesApiError) =>
+          reject(JSON.parse(error.body))
+        );
+    }).catch((error: BinanceFuturesError) => this._errorHandler(error));
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
@@ -167,14 +186,10 @@ export class BinanceFuturesConnector implements Connector {
     });
   }
 
-  private _errorHandler(binanceError: BinanceFuturesError): {
-    error: ConnectorError;
-  } {
-    const error = JSON.parse(binanceError.body);
-
-    const connectorError = {
-      code: `${this.config.id.toUpperCase()}${error.code}`,
-      message: `${this.config.id.toUpperCase()} API ERROR: ${error.msg}`,
+  private _errorHandler(binanceError: BinanceFuturesError): void {
+    const connectorError: ConnectorError = {
+      errorCode: `${this.config.id.toUpperCase()}${binanceError.code}`,
+      errorMessage: binanceError.msg,
     };
 
     throw connectorError;

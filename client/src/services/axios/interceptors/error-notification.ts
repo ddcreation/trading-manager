@@ -9,7 +9,7 @@ export const errorNotificationInterceptor = (error: any): Promise<never> => {
     notifyAction({
       type: NotificationType.ERROR,
       title:
-        error?.data.code ||
+        error?.data.errorCode ||
         `HTTP Error ${error.status || 'server not responding'}`,
       body: error?.data.errorMessage || error.statusText,
       persistent: false,

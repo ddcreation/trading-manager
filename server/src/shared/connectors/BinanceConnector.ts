@@ -12,8 +12,13 @@ import { ExchangeInfoResponse } from '@entities/ExchangeInfoResponse';
 
 const Binance = require('node-binance-api');
 
-interface BinanceError {
+interface BinanceApiError {
   body: string;
+}
+
+interface BinanceError {
+  code: number;
+  msg: string;
 }
 
 export const BinanceConfig: ConnectorConfig = {
@@ -137,7 +142,9 @@ export class BinanceConnector implements Connector {
       ](params.asset, params.quantity, params.price);
     }
 
-    return promise.catch((error: BinanceError) => this._errorHandler(error));
+    return promise.catch((error: BinanceApiError) =>
+      this._errorHandler(JSON.parse(error.body))
+    );
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
@@ -173,12 +180,10 @@ export class BinanceConnector implements Connector {
     });
   }
 
-  private _errorHandler(binanceError: BinanceError): { error: ConnectorError } {
-    const error = JSON.parse(binanceError.body);
-
-    const connectorError = {
-      code: `${this.config.id.toUpperCase()}${error.code}`,
-      message: `${this.config.id.toUpperCase()} API ERROR: ${error.msg}`,
+  private _errorHandler(binanceError: BinanceError): void {
+    const connectorError: ConnectorError = {
+      errorCode: `${this.config.id.toUpperCase()}${binanceError.code}`,
+      errorMessage: binanceError.msg,
     };
 
     throw connectorError;
