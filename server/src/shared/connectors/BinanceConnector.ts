@@ -129,22 +129,34 @@ export class BinanceConnector implements Connector {
     return this._binanceApi.prices().catch(this._errorHandler);
   }
 
-  public placeOrder$(params: Order): Promise<unknown> {
-    let promise;
+  public async placeOrder$(params: Order): Promise<unknown> {
+    const orders = [];
 
-    if (params.type === OrderType.MARKET) {
-      promise = this._binanceApi[
-        params.direction === OrderSide.BUY ? 'marketBuy' : 'marketSell'
-      ](params.asset, params.quantity);
-    } else if (params.type === OrderType.LIMIT) {
-      promise = this._binanceApi[
-        params.direction === OrderSide.BUY ? 'buy' : 'sell'
-      ](params.asset, params.quantity, params.price);
+    const defaultOptions = {
+      newClientOrderId: `${params._id}`,
+    };
+
+    // - market order
+    orders.push(
+      this._binanceApi.order(params.direction, params.asset, params.quantity, false, {...defaultOptions, type: OrderType.MARKET})
+    );
+
+    const limitOptions = { type: OrderType.LIMIT };
+    const limitOrderDirection = params.direction === OrderSide.BUY ? OrderSide.SELL : OrderSide.BUY;
+    // - stoploss order
+    if (params.stopLoss) {
+      orders.push(
+        this._binanceApi.order(limitOrderDirection, params.asset, params.quantity, params.stopLoss, {...defaultOptions, ...limitOptions, newClientOrderId: `${defaultOptions.newClientOrderId}-sl`})
+      );
+    }
+    // - take profit order
+    if (params.takeProfit) {
+      orders.push(
+        this._binanceApi.order(limitOrderDirection, params.asset, params.quantity, params.takeProfit, {...defaultOptions, ...limitOptions, newClientOrderId: `${defaultOptions.newClientOrderId}-tp`})
+      );
     }
 
-    return promise.catch((error: BinanceApiError) =>
-      this._errorHandler(JSON.parse(error.body))
-    );
+    return Promise.all(orders.map((orderPromise) => this._orderPromiseHandler(orderPromise))).catch((error: BinanceError) => this._errorHandler(error));
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
@@ -187,5 +199,17 @@ export class BinanceConnector implements Connector {
     };
 
     throw connectorError;
+  }
+
+  private _orderPromiseHandler(promise: Promise<any>): Promise<unknown> {
+    return new Promise<unknown>((resolve, reject) => {
+      promise.then((orderResponse) => {
+        console.log(orderResponse);
+        if(orderResponse.code < 0) {
+          reject(orderResponse)
+        } 
+        resolve(orderResponse);
+      }).catch((error: BinanceApiError) => reject(JSON.parse(error.body)))
+    });
   }
 }

@@ -45,11 +45,12 @@ export interface Order extends DbEntity {
   status: OrderStatus;
   amount: number;
   direction: OrderSide;
+  stopLoss?: number;
+  takeProfit?: number;
   source: OrderSource;
-  type: OrderType;
-  created_at: string;
-  closed_at?: string;
-  transaction_id?: string;
+  createdAt: string;
+  closedAt?: string;
+  transactionId?: string;
   quantity?: number;
   price?: number;
 }

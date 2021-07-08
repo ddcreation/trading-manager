@@ -101,14 +101,15 @@ export class TradingConnector {
       user_id: this._config.user_id,
       connector_id: this._config.connector_id,
       asset: params.symbol,
-      type: OrderType.MARKET,
       status: OrderStatus.PENDING,
       amount: +params.amount,
       price,
       quantity,
       source: params.source,
+      ...params.stopLoss ? {stopLoss: this.calculateLimitPrice({price, quantity, limit: params.stopLoss, direction: -1}) } : {},
+      ...params.takeProfit ? {takeProfit: this.calculateLimitPrice({price, quantity, limit: params.takeProfit, direction: 1}) } : {},
       direction: params.direction,
-      created_at: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     };
 
     // Save order pending in DB
@@ -118,21 +119,10 @@ export class TradingConnector {
 
     // - Buy asset
     try {
-      const placedOrder = await this._provider.placeOrder$(dbOrder);
-      console.log(placedOrder);
+      const placedOrders = await this._provider.placeOrder$(dbOrder);
+      console.log(placedOrders);
 
       // - Update DB order (status, transactionID for cancel...)
-
-      // - place stoploss order
-      if (params.stopLoss) {
-        // - Determine the matching price for the quantity regarding the stoploss value
-        // - place stoploss limit order
-      }
-      // - place take profit order
-      if (params.takeProfit) {
-        // - Determine the matching price for the quantity regarding the profit value
-        // - place take profit limit order
-      }
     } catch (error) {
       // Delete uncomplete order
       await orderDao.delete$({ _id: dbOrder._id });
@@ -141,6 +131,13 @@ export class TradingConnector {
     }
 
     return dbOrder;
+  }
+
+  public calculateLimitPrice(limitParams: {price: number, quantity: number, limit: number, direction: 1 | -1}): number {
+    const {price, quantity, limit, direction} = limitParams;
+
+    const total = price * quantity;
+    return direction > 0 ? Math.floor((total + limit) / quantity * 100) / 100 : Math.ceil((total - limit) / quantity * 100) / 100;
   }
 
   public async calculatePriceAndQuantityForOrder$(

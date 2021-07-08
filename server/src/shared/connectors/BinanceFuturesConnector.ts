@@ -119,38 +119,34 @@ export class BinanceFuturesConnector implements Connector {
     return this._binanceFutureApi.futuresPrices().catch(this._errorHandler);
   }
 
-  public placeOrder$(params: Order): Promise<unknown> {
-    let promise: Promise<any>;
+  public async placeOrder$(params: Order): Promise<unknown> {
+    const orders = [];
 
-    const options = {
-      newClientOrderId: params._id,
-      newOrderRespType: 'RESULT',
+    const defaultOptions = {
+      newClientOrderId: `${params._id}`,
     };
 
-    if (params.type === OrderType.MARKET) {
-      promise = this._binanceFutureApi[
-        params.direction === OrderSide.BUY
-          ? 'futuresMarketBuy'
-          : 'futuresMarketSell'
-      ](params.asset, params.quantity);
-    } else if (params.type === OrderType.LIMIT) {
-      promise = this._binanceFutureApi[
-        params.direction === OrderSide.BUY ? 'futuresBuy' : 'futuresSell'
-      ](params.asset, params.quantity, params.price);
+    // - market order
+    orders.push(
+      this._binanceFutureApi.futuresOrder(params.direction, params.asset, params.quantity, false, {...defaultOptions, type: OrderType.MARKET})
+    );
+
+    const limitOptions = { type: OrderType.LIMIT };
+    const limitOrderDirection = params.direction === OrderSide.BUY ? OrderSide.SELL : OrderSide.BUY;
+    // - stoploss order
+    if (params.stopLoss) {
+      orders.push(
+        this._binanceFutureApi.futuresOrder(limitOrderDirection, params.asset, params.quantity, params.stopLoss, {...defaultOptions, ...limitOptions, newClientOrderId: `${defaultOptions.newClientOrderId}-sl`})
+      );
+    }
+    // - take profit order
+    if (params.takeProfit) {
+      orders.push(
+        this._binanceFutureApi.futuresOrder(limitOrderDirection, params.asset, params.quantity, params.takeProfit, {...defaultOptions, ...limitOptions, newClientOrderId: `${defaultOptions.newClientOrderId}-tp`})
+      );
     }
 
-    return new Promise<unknown>((resolve, reject) => {
-      promise
-        .then((response: any) => {
-          if (response.code < 0) {
-            reject(response);
-          }
-          resolve(response);
-        })
-        .catch((error: BinanceFuturesApiError) =>
-          reject(JSON.parse(error.body))
-        );
-    }).catch((error: BinanceFuturesError) => this._errorHandler(error));
+    return Promise.all(orders.map((orderPromise) => this._orderPromiseHandler(orderPromise))).catch((error: BinanceFuturesError) => this._errorHandler(error));
   }
 
   private _formatTicksResponse(ticks: Array<string[]>): AssetHistory[] {
@@ -193,5 +189,17 @@ export class BinanceFuturesConnector implements Connector {
     };
 
     throw connectorError;
+  }
+
+  private _orderPromiseHandler(promise: Promise<any>): Promise<unknown> {
+    return new Promise<unknown>((resolve, reject) => {
+      promise.then((orderResponse) => {
+        console.log(orderResponse);
+        if(orderResponse.code < 0) {
+          reject(orderResponse)
+        } 
+        resolve(orderResponse);
+      }).catch((error: BinanceFuturesApiError) => reject(JSON.parse(error.body)))
+    });
   }
 }
