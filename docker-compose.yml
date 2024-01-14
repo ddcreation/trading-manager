@@ -24,7 +24,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
   mongodb:
-    image: mongo:latest
+    image: mongo:5.0
     container_name: mongodb
     hostname: mongodb
     restart: always
